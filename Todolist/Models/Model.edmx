@@ -1,0 +1,958 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="ToDoListDbModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Accounts">
+          <Key>
+            <PropertyRef Name="NidAccount" />
+          </Key>
+          <Property Name="NidAccount" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Title" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="CreateDate" Type="datetime" Nullable="false" />
+          <Property Name="LastModified" Type="datetime" Nullable="false" />
+          <Property Name="Amount" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="LendAmount" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+          <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Goals">
+          <Key>
+            <PropertyRef Name="NidGoal" />
+          </Key>
+          <Property Name="NidGoal" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Title" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="GoalStatus" Type="tinyint" Nullable="false" />
+          <Property Name="FromDate" Type="date" Nullable="false" />
+          <Property Name="ToDate" Type="date" Nullable="false" />
+          <Property Name="Description" Type="nvarchar(max)" />
+          <Property Name="CreateDate" Type="datetime" Nullable="false" />
+          <Property Name="LastModifiedDate" Type="datetime" />
+          <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
+        <EntityType Name="NoteGroups">
+          <Key>
+            <PropertyRef Name="NidGroup" />
+          </Key>
+          <Property Name="NidGroup" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Title" Type="nvarchar" MaxLength="250" Nullable="false" />
+          <Property Name="CreateDate" Type="datetime" Nullable="false" />
+          <Property Name="ModifiedDate" Type="datetime" />
+          <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Notes">
+          <Key>
+            <PropertyRef Name="NidNote" />
+          </Key>
+          <Property Name="NidNote" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="GroupId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Title" Type="nvarchar" MaxLength="250" Nullable="false" />
+          <Property Name="NoteContent" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="CreateDate" Type="datetime" Nullable="false" />
+          <Property Name="ModifiedDate" Type="datetime" />
+        </EntityType>
+        <EntityType Name="Progresses">
+          <Key>
+            <PropertyRef Name="NidProgress" />
+          </Key>
+          <Property Name="NidProgress" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="ScheduleId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="ProgressTime" Type="smallint" Nullable="false" />
+          <Property Name="CreateDate" Type="datetime" Nullable="false" />
+          <Property Name="Description" Type="nvarchar(max)" />
+          <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
+        <EntityType Name="RoutineProgresses">
+          <Key>
+            <PropertyRef Name="NidRoutineProgress" />
+          </Key>
+          <Property Name="NidRoutineProgress" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="RoutineId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="ProgressDate" Type="date" Nullable="false" />
+          <Property Name="CreateDate" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Routines">
+          <Key>
+            <PropertyRef Name="NidRoutine" />
+          </Key>
+          <Property Name="NidRoutine" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Title" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="RepeatType" Type="tinyint" Nullable="false" />
+          <Property Name="RepeatDays" Type="nvarchar" MaxLength="25" Nullable="false" />
+          <Property Name="FromDate" Type="date" Nullable="false" />
+          <Property Name="Todate" Type="date" Nullable="false" />
+          <Property Name="CreateDate" Type="datetime" Nullable="false" />
+          <Property Name="ModifiedDate" Type="datetime" />
+          <Property Name="Status" Type="bit" Nullable="false" />
+          <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Schedules">
+          <Key>
+            <PropertyRef Name="NidSchedule" />
+          </Key>
+          <Property Name="NidSchedule" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="TaskId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="ScheduleDate" Type="date" Nullable="false" />
+          <Property Name="CreateDate" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Shields">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="CreateDate" Type="datetime" Nullable="false" />
+          <Property Name="LastModified" Type="datetime" />
+          <Property Name="Title" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="TargetUrl" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Username" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="Password" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Tasks">
+          <Key>
+            <PropertyRef Name="NidTask" />
+          </Key>
+          <Property Name="NidTask" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="GoalId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Title" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="TaskStatus" Type="bit" Nullable="false" />
+          <Property Name="TaskWeight" Type="tinyint" Nullable="false" />
+          <Property Name="Description" Type="nvarchar(max)" />
+          <Property Name="CreateDate" Type="datetime" Nullable="false" />
+          <Property Name="LastModifiedDate" Type="datetime" Nullable="false" />
+          <Property Name="ClosureDate" Type="datetime" />
+          <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Transactions">
+          <Key>
+            <PropertyRef Name="NidTransaction" />
+          </Key>
+          <Property Name="NidTransaction" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="TransactionType" Type="tinyint" Nullable="false" />
+          <Property Name="PayerAccount" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="RecieverAccount" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Amount" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="CreateDate" Type="datetime" Nullable="false" />
+          <Property Name="TransactionReason" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Users">
+          <Key>
+            <PropertyRef Name="NidUser" />
+          </Key>
+          <Property Name="NidUser" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Username" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="Password" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="IsAdmin" Type="bit" Nullable="false" />
+          <Property Name="CreateDate" Type="datetime" Nullable="false" />
+          <Property Name="LastLoginDate" Type="datetime" />
+          <Property Name="IsDisabled" Type="bit" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_Accounts_Users">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="Accounts" Type="Self.Accounts" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="NidUser" />
+            </Principal>
+            <Dependent Role="Accounts">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Goals_Tasks">
+          <End Role="Goals" Type="Self.Goals" Multiplicity="1" />
+          <End Role="Tasks" Type="Self.Tasks" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Goals">
+              <PropertyRef Name="NidGoal" />
+            </Principal>
+            <Dependent Role="Tasks">
+              <PropertyRef Name="GoalId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Goals_Users">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="Goals" Type="Self.Goals" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="NidUser" />
+            </Principal>
+            <Dependent Role="Goals">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_NoteGroups_Users">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="NoteGroups" Type="Self.NoteGroups" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="NidUser" />
+            </Principal>
+            <Dependent Role="NoteGroups">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Notes_NoteGroups">
+          <End Role="NoteGroups" Type="Self.NoteGroups" Multiplicity="1" />
+          <End Role="Notes" Type="Self.Notes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="NoteGroups">
+              <PropertyRef Name="NidGroup" />
+            </Principal>
+            <Dependent Role="Notes">
+              <PropertyRef Name="GroupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Progresses_Schedules">
+          <End Role="Schedules" Type="Self.Schedules" Multiplicity="1" />
+          <End Role="Progresses" Type="Self.Progresses" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Schedules">
+              <PropertyRef Name="NidSchedule" />
+            </Principal>
+            <Dependent Role="Progresses">
+              <PropertyRef Name="ScheduleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Progresses_Users">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="Progresses" Type="Self.Progresses" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="NidUser" />
+            </Principal>
+            <Dependent Role="Progresses">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RoutineProgresses_Routines">
+          <End Role="Routines" Type="Self.Routines" Multiplicity="1" />
+          <End Role="RoutineProgresses" Type="Self.RoutineProgresses" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Routines">
+              <PropertyRef Name="NidRoutine" />
+            </Principal>
+            <Dependent Role="RoutineProgresses">
+              <PropertyRef Name="RoutineId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Routines_Users">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="Routines" Type="Self.Routines" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="NidUser" />
+            </Principal>
+            <Dependent Role="Routines">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Schedules_Tasks">
+          <End Role="Tasks" Type="Self.Tasks" Multiplicity="1" />
+          <End Role="Schedules" Type="Self.Schedules" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Tasks">
+              <PropertyRef Name="NidTask" />
+            </Principal>
+            <Dependent Role="Schedules">
+              <PropertyRef Name="TaskId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Shields_Users">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="Shields" Type="Self.Shields" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="NidUser" />
+            </Principal>
+            <Dependent Role="Shields">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Tasks_Users">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="Tasks" Type="Self.Tasks" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="NidUser" />
+            </Principal>
+            <Dependent Role="Tasks">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Transactions_Users">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="Transactions" Type="Self.Transactions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="NidUser" />
+            </Principal>
+            <Dependent Role="Transactions">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="ToDoListDbModelStoreContainer">
+          <EntitySet Name="Accounts" EntityType="Self.Accounts" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Goals" EntityType="Self.Goals" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="NoteGroups" EntityType="Self.NoteGroups" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Notes" EntityType="Self.Notes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Progresses" EntityType="Self.Progresses" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RoutineProgresses" EntityType="Self.RoutineProgresses" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Routines" EntityType="Self.Routines" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Schedules" EntityType="Self.Schedules" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Shields" EntityType="Self.Shields" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Tasks" EntityType="Self.Tasks" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Transactions" EntityType="Self.Transactions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Accounts_Users" Association="Self.FK_Accounts_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Accounts" EntitySet="Accounts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Goals_Tasks" Association="Self.FK_Goals_Tasks">
+            <End Role="Goals" EntitySet="Goals" />
+            <End Role="Tasks" EntitySet="Tasks" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Goals_Users" Association="Self.FK_Goals_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Goals" EntitySet="Goals" />
+          </AssociationSet>
+          <AssociationSet Name="FK_NoteGroups_Users" Association="Self.FK_NoteGroups_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="NoteGroups" EntitySet="NoteGroups" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Notes_NoteGroups" Association="Self.FK_Notes_NoteGroups">
+            <End Role="NoteGroups" EntitySet="NoteGroups" />
+            <End Role="Notes" EntitySet="Notes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Progresses_Schedules" Association="Self.FK_Progresses_Schedules">
+            <End Role="Schedules" EntitySet="Schedules" />
+            <End Role="Progresses" EntitySet="Progresses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Progresses_Users" Association="Self.FK_Progresses_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Progresses" EntitySet="Progresses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RoutineProgresses_Routines" Association="Self.FK_RoutineProgresses_Routines">
+            <End Role="Routines" EntitySet="Routines" />
+            <End Role="RoutineProgresses" EntitySet="RoutineProgresses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Routines_Users" Association="Self.FK_Routines_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Routines" EntitySet="Routines" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Schedules_Tasks" Association="Self.FK_Schedules_Tasks">
+            <End Role="Tasks" EntitySet="Tasks" />
+            <End Role="Schedules" EntitySet="Schedules" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Shields_Users" Association="Self.FK_Shields_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Shields" EntitySet="Shields" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Tasks_Users" Association="Self.FK_Tasks_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Tasks" EntitySet="Tasks" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Transactions_Users" Association="Self.FK_Transactions_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Transactions" EntitySet="Transactions" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="ToDoListDbModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Account">
+          <Key>
+            <PropertyRef Name="NidAccount" />
+          </Key>
+          <Property Name="NidAccount" Type="Guid" Nullable="false" />
+          <Property Name="Title" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="LastModified" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Amount" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="LendAmount" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="UserId" Type="Guid" Nullable="false" />
+          <NavigationProperty Name="User" Relationship="ToDoListDbModel.FK_Accounts_Users" FromRole="Account" ToRole="User" />
+        </EntityType>
+        <EntityType Name="Goal">
+          <Key>
+            <PropertyRef Name="NidGoal" />
+          </Key>
+          <Property Name="NidGoal" Type="Guid" Nullable="false" />
+          <Property Name="Title" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="GoalStatus" Type="Byte" Nullable="false" />
+          <Property Name="FromDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="ToDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="LastModifiedDate" Type="DateTime" Precision="3" />
+          <Property Name="UserId" Type="Guid" Nullable="false" />
+          <NavigationProperty Name="Tasks" Relationship="Self.FK_Goals_Tasks" FromRole="Goals" ToRole="Tasks" />
+          <NavigationProperty Name="User" Relationship="ToDoListDbModel.FK_Goals_Users" FromRole="Goal" ToRole="User" />
+        </EntityType>
+        <EntityType Name="NoteGroup">
+          <Key>
+            <PropertyRef Name="NidGroup" />
+          </Key>
+          <Property Name="NidGroup" Type="Guid" Nullable="false" />
+          <Property Name="Title" Type="String" MaxLength="250" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
+          <Property Name="UserId" Type="Guid" Nullable="false" />
+          <NavigationProperty Name="Notes" Relationship="Self.FK_Notes_NoteGroups" FromRole="NoteGroups" ToRole="Notes" />
+          <NavigationProperty Name="User" Relationship="ToDoListDbModel.FK_NoteGroups_Users" FromRole="NoteGroup" ToRole="User" />
+        </EntityType>
+        <EntityType Name="Note">
+          <Key>
+            <PropertyRef Name="NidNote" />
+          </Key>
+          <Property Name="NidNote" Type="Guid" Nullable="false" />
+          <Property Name="GroupId" Type="Guid" Nullable="false" />
+          <Property Name="Title" Type="String" MaxLength="250" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="NoteContent" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="NoteGroup" Relationship="Self.FK_Notes_NoteGroups" FromRole="Notes" ToRole="NoteGroups" />
+        </EntityType>
+        <EntityType Name="Progress">
+          <Key>
+            <PropertyRef Name="NidProgress" />
+          </Key>
+          <Property Name="NidProgress" Type="Guid" Nullable="false" />
+          <Property Name="ScheduleId" Type="Guid" Nullable="false" />
+          <Property Name="ProgressTime" Type="Int16" Nullable="false" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="UserId" Type="Guid" Nullable="false" />
+          <NavigationProperty Name="Schedule" Relationship="Self.FK_Progresses_Schedules" FromRole="Progresses" ToRole="Schedules" />
+          <NavigationProperty Name="User" Relationship="ToDoListDbModel.FK_Progresses_Users" FromRole="Progress" ToRole="User" />
+        </EntityType>
+        <EntityType Name="RoutineProgress">
+          <Key>
+            <PropertyRef Name="NidRoutineProgress" />
+          </Key>
+          <Property Name="NidRoutineProgress" Type="Guid" Nullable="false" />
+          <Property Name="RoutineId" Type="Guid" Nullable="false" />
+          <Property Name="ProgressDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Routine" Relationship="Self.FK_RoutineProgresses_Routines" FromRole="RoutineProgresses" ToRole="Routines" />
+        </EntityType>
+        <EntityType Name="Routine">
+          <Key>
+            <PropertyRef Name="NidRoutine" />
+          </Key>
+          <Property Name="NidRoutine" Type="Guid" Nullable="false" />
+          <Property Name="Title" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="RepeatType" Type="Byte" Nullable="false" />
+          <Property Name="RepeatDays" Type="String" MaxLength="25" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="FromDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Todate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
+          <Property Name="Status" Type="Boolean" Nullable="false" />
+          <Property Name="UserId" Type="Guid" Nullable="false" />
+          <NavigationProperty Name="RoutineProgresses" Relationship="Self.FK_RoutineProgresses_Routines" FromRole="Routines" ToRole="RoutineProgresses" />
+          <NavigationProperty Name="User" Relationship="ToDoListDbModel.FK_Routines_Users" FromRole="Routine" ToRole="User" />
+        </EntityType>
+        <EntityType Name="Schedule">
+          <Key>
+            <PropertyRef Name="NidSchedule" />
+          </Key>
+          <Property Name="NidSchedule" Type="Guid" Nullable="false" />
+          <Property Name="TaskId" Type="Guid" Nullable="false" />
+          <Property Name="ScheduleDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Progresses" Relationship="Self.FK_Progresses_Schedules" FromRole="Schedules" ToRole="Progresses" />
+          <NavigationProperty Name="Task" Relationship="Self.FK_Schedules_Tasks" FromRole="Schedules" ToRole="Tasks" />
+        </EntityType>
+        <EntityType Name="Shield">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Guid" Nullable="false" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="LastModified" Type="DateTime" Precision="3" />
+          <Property Name="Title" Type="String" MaxLength="500" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="TargetUrl" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Username" Type="String" MaxLength="500" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Password" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="UserId" Type="Guid" Nullable="false" />
+          <NavigationProperty Name="User" Relationship="ToDoListDbModel.FK_Shields_Users" FromRole="Shield" ToRole="User" />
+        </EntityType>
+        <EntityType Name="Task">
+          <Key>
+            <PropertyRef Name="NidTask" />
+          </Key>
+          <Property Name="NidTask" Type="Guid" Nullable="false" />
+          <Property Name="GoalId" Type="Guid" Nullable="false" />
+          <Property Name="Title" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="TaskStatus" Type="Boolean" Nullable="false" />
+          <Property Name="TaskWeight" Type="Byte" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="LastModifiedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ClosureDate" Type="DateTime" Precision="3" />
+          <Property Name="UserId" Type="Guid" Nullable="false" />
+          <NavigationProperty Name="Goal" Relationship="Self.FK_Goals_Tasks" FromRole="Tasks" ToRole="Goals" />
+          <NavigationProperty Name="Schedules" Relationship="Self.FK_Schedules_Tasks" FromRole="Tasks" ToRole="Schedules" />
+          <NavigationProperty Name="User" Relationship="ToDoListDbModel.FK_Tasks_Users" FromRole="Task" ToRole="User" />
+        </EntityType>
+        <EntityType Name="Transaction">
+          <Key>
+            <PropertyRef Name="NidTransaction" />
+          </Key>
+          <Property Name="NidTransaction" Type="Guid" Nullable="false" />
+          <Property Name="TransactionType" Type="Byte" Nullable="false" />
+          <Property Name="PayerAccount" Type="Guid" Nullable="false" />
+          <Property Name="RecieverAccount" Type="Guid" Nullable="false" />
+          <Property Name="Amount" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="TransactionReason" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="UserId" Type="Guid" Nullable="false" />
+          <NavigationProperty Name="User" Relationship="ToDoListDbModel.FK_Transactions_Users" FromRole="Transaction" ToRole="User" />
+        </EntityType>
+        <Association Name="FK_Goals_Tasks">
+          <End Role="Goals" Type="Self.Goal" Multiplicity="1" />
+          <End Role="Tasks" Type="Self.Task" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Goals">
+              <PropertyRef Name="NidGoal" />
+            </Principal>
+            <Dependent Role="Tasks">
+              <PropertyRef Name="GoalId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Notes_NoteGroups">
+          <End Role="NoteGroups" Type="Self.NoteGroup" Multiplicity="1" />
+          <End Role="Notes" Type="Self.Note" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="NoteGroups">
+              <PropertyRef Name="NidGroup" />
+            </Principal>
+            <Dependent Role="Notes">
+              <PropertyRef Name="GroupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Progresses_Schedules">
+          <End Role="Schedules" Type="Self.Schedule" Multiplicity="1" />
+          <End Role="Progresses" Type="Self.Progress" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Schedules">
+              <PropertyRef Name="NidSchedule" />
+            </Principal>
+            <Dependent Role="Progresses">
+              <PropertyRef Name="ScheduleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RoutineProgresses_Routines">
+          <End Role="Routines" Type="Self.Routine" Multiplicity="1" />
+          <End Role="RoutineProgresses" Type="Self.RoutineProgress" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Routines">
+              <PropertyRef Name="NidRoutine" />
+            </Principal>
+            <Dependent Role="RoutineProgresses">
+              <PropertyRef Name="RoutineId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Schedules_Tasks">
+          <End Role="Tasks" Type="Self.Task" Multiplicity="1" />
+          <End Role="Schedules" Type="Self.Schedule" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Tasks">
+              <PropertyRef Name="NidTask" />
+            </Principal>
+            <Dependent Role="Schedules">
+              <PropertyRef Name="TaskId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="ToDoListDbEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Accounts" EntityType="Self.Account" />
+          <EntitySet Name="Goals" EntityType="Self.Goal" />
+          <EntitySet Name="NoteGroups" EntityType="Self.NoteGroup" />
+          <EntitySet Name="Notes" EntityType="Self.Note" />
+          <EntitySet Name="Progresses" EntityType="Self.Progress" />
+          <EntitySet Name="RoutineProgresses" EntityType="Self.RoutineProgress" />
+          <EntitySet Name="Routines" EntityType="Self.Routine" />
+          <EntitySet Name="Schedules" EntityType="Self.Schedule" />
+          <EntitySet Name="Shields" EntityType="Self.Shield" />
+          <EntitySet Name="Tasks" EntityType="Self.Task" />
+          <EntitySet Name="Transactions" EntityType="Self.Transaction" />
+          <AssociationSet Name="FK_Goals_Tasks" Association="Self.FK_Goals_Tasks">
+            <End Role="Goals" EntitySet="Goals" />
+            <End Role="Tasks" EntitySet="Tasks" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Notes_NoteGroups" Association="Self.FK_Notes_NoteGroups">
+            <End Role="NoteGroups" EntitySet="NoteGroups" />
+            <End Role="Notes" EntitySet="Notes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Progresses_Schedules" Association="Self.FK_Progresses_Schedules">
+            <End Role="Schedules" EntitySet="Schedules" />
+            <End Role="Progresses" EntitySet="Progresses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RoutineProgresses_Routines" Association="Self.FK_RoutineProgresses_Routines">
+            <End Role="Routines" EntitySet="Routines" />
+            <End Role="RoutineProgresses" EntitySet="RoutineProgresses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Schedules_Tasks" Association="Self.FK_Schedules_Tasks">
+            <End Role="Tasks" EntitySet="Tasks" />
+            <End Role="Schedules" EntitySet="Schedules" />
+          </AssociationSet>
+          <EntitySet Name="Users" EntityType="ToDoListDbModel.User" />
+          <AssociationSet Name="FK_Accounts_Users" Association="ToDoListDbModel.FK_Accounts_Users">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Account" EntitySet="Accounts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Goals_Users" Association="ToDoListDbModel.FK_Goals_Users">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Goal" EntitySet="Goals" />
+          </AssociationSet>
+          <AssociationSet Name="FK_NoteGroups_Users" Association="ToDoListDbModel.FK_NoteGroups_Users">
+            <End Role="User" EntitySet="Users" />
+            <End Role="NoteGroup" EntitySet="NoteGroups" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Progresses_Users" Association="ToDoListDbModel.FK_Progresses_Users">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Progress" EntitySet="Progresses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Routines_Users" Association="ToDoListDbModel.FK_Routines_Users">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Routine" EntitySet="Routines" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Shields_Users" Association="ToDoListDbModel.FK_Shields_Users">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Shield" EntitySet="Shields" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Tasks_Users" Association="ToDoListDbModel.FK_Tasks_Users">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Task" EntitySet="Tasks" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Transactions_Users" Association="ToDoListDbModel.FK_Transactions_Users">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Transaction" EntitySet="Transactions" />
+          </AssociationSet>
+          </EntityContainer>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="NidUser" />
+          </Key>
+          <Property Name="NidUser" Type="Guid" Nullable="false" />
+          <Property Name="Username" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="Password" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="IsAdmin" Type="Boolean" Nullable="false" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="LastLoginDate" Type="DateTime" Precision="3" />
+          <Property Name="IsDisabled" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Accounts" Relationship="ToDoListDbModel.FK_Accounts_Users" FromRole="User" ToRole="Account" />
+          <NavigationProperty Name="Goals" Relationship="ToDoListDbModel.FK_Goals_Users" FromRole="User" ToRole="Goal" />
+          <NavigationProperty Name="NoteGroups" Relationship="ToDoListDbModel.FK_NoteGroups_Users" FromRole="User" ToRole="NoteGroup" />
+          <NavigationProperty Name="Progresses" Relationship="ToDoListDbModel.FK_Progresses_Users" FromRole="User" ToRole="Progress" />
+          <NavigationProperty Name="Routines" Relationship="ToDoListDbModel.FK_Routines_Users" FromRole="User" ToRole="Routine" />
+          <NavigationProperty Name="Shields" Relationship="ToDoListDbModel.FK_Shields_Users" FromRole="User" ToRole="Shield" />
+          <NavigationProperty Name="Tasks" Relationship="ToDoListDbModel.FK_Tasks_Users" FromRole="User" ToRole="Task" />
+          <NavigationProperty Name="Transactions" Relationship="ToDoListDbModel.FK_Transactions_Users" FromRole="User" ToRole="Transaction" />
+        </EntityType>
+        <Association Name="FK_Accounts_Users">
+          <End Type="ToDoListDbModel.User" Role="User" Multiplicity="1" />
+          <End Type="ToDoListDbModel.Account" Role="Account" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="NidUser" />
+            </Principal>
+            <Dependent Role="Account">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Goals_Users">
+          <End Type="ToDoListDbModel.User" Role="User" Multiplicity="1" />
+          <End Type="ToDoListDbModel.Goal" Role="Goal" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="NidUser" />
+            </Principal>
+            <Dependent Role="Goal">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_NoteGroups_Users">
+          <End Type="ToDoListDbModel.User" Role="User" Multiplicity="1" />
+          <End Type="ToDoListDbModel.NoteGroup" Role="NoteGroup" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="NidUser" />
+            </Principal>
+            <Dependent Role="NoteGroup">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Progresses_Users">
+          <End Type="ToDoListDbModel.User" Role="User" Multiplicity="1" />
+          <End Type="ToDoListDbModel.Progress" Role="Progress" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="NidUser" />
+            </Principal>
+            <Dependent Role="Progress">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Routines_Users">
+          <End Type="ToDoListDbModel.User" Role="User" Multiplicity="1" />
+          <End Type="ToDoListDbModel.Routine" Role="Routine" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="NidUser" />
+            </Principal>
+            <Dependent Role="Routine">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Shields_Users">
+          <End Type="ToDoListDbModel.User" Role="User" Multiplicity="1" />
+          <End Type="ToDoListDbModel.Shield" Role="Shield" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="NidUser" />
+            </Principal>
+            <Dependent Role="Shield">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Tasks_Users">
+          <End Type="ToDoListDbModel.User" Role="User" Multiplicity="1" />
+          <End Type="ToDoListDbModel.Task" Role="Task" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="NidUser" />
+            </Principal>
+            <Dependent Role="Task">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Transactions_Users">
+          <End Type="ToDoListDbModel.User" Role="User" Multiplicity="1" />
+          <End Type="ToDoListDbModel.Transaction" Role="Transaction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="NidUser" />
+            </Principal>
+            <Dependent Role="Transaction">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="ToDoListDbModelStoreContainer" CdmEntityContainer="ToDoListDbEntities">
+          <EntitySetMapping Name="Accounts">
+            <EntityTypeMapping TypeName="ToDoListDbModel.Account">
+              <MappingFragment StoreEntitySet="Accounts">
+                <ScalarProperty Name="NidAccount" ColumnName="NidAccount" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="LastModified" ColumnName="LastModified" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="LendAmount" ColumnName="LendAmount" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Goals">
+            <EntityTypeMapping TypeName="ToDoListDbModel.Goal">
+              <MappingFragment StoreEntitySet="Goals">
+                <ScalarProperty Name="NidGoal" ColumnName="NidGoal" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="GoalStatus" ColumnName="GoalStatus" />
+                <ScalarProperty Name="FromDate" ColumnName="FromDate" />
+                <ScalarProperty Name="ToDate" ColumnName="ToDate" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="LastModifiedDate" ColumnName="LastModifiedDate" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="NoteGroups">
+            <EntityTypeMapping TypeName="ToDoListDbModel.NoteGroup">
+              <MappingFragment StoreEntitySet="NoteGroups">
+                <ScalarProperty Name="NidGroup" ColumnName="NidGroup" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Notes">
+            <EntityTypeMapping TypeName="ToDoListDbModel.Note">
+              <MappingFragment StoreEntitySet="Notes">
+                <ScalarProperty Name="NidNote" ColumnName="NidNote" />
+                <ScalarProperty Name="GroupId" ColumnName="GroupId" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="NoteContent" ColumnName="NoteContent" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Progresses">
+            <EntityTypeMapping TypeName="ToDoListDbModel.Progress">
+              <MappingFragment StoreEntitySet="Progresses">
+                <ScalarProperty Name="NidProgress" ColumnName="NidProgress" />
+                <ScalarProperty Name="ScheduleId" ColumnName="ScheduleId" />
+                <ScalarProperty Name="ProgressTime" ColumnName="ProgressTime" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RoutineProgresses">
+            <EntityTypeMapping TypeName="ToDoListDbModel.RoutineProgress">
+              <MappingFragment StoreEntitySet="RoutineProgresses">
+                <ScalarProperty Name="NidRoutineProgress" ColumnName="NidRoutineProgress" />
+                <ScalarProperty Name="RoutineId" ColumnName="RoutineId" />
+                <ScalarProperty Name="ProgressDate" ColumnName="ProgressDate" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Routines">
+            <EntityTypeMapping TypeName="ToDoListDbModel.Routine">
+              <MappingFragment StoreEntitySet="Routines">
+                <ScalarProperty Name="NidRoutine" ColumnName="NidRoutine" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="RepeatType" ColumnName="RepeatType" />
+                <ScalarProperty Name="RepeatDays" ColumnName="RepeatDays" />
+                <ScalarProperty Name="FromDate" ColumnName="FromDate" />
+                <ScalarProperty Name="Todate" ColumnName="Todate" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Schedules">
+            <EntityTypeMapping TypeName="ToDoListDbModel.Schedule">
+              <MappingFragment StoreEntitySet="Schedules">
+                <ScalarProperty Name="NidSchedule" ColumnName="NidSchedule" />
+                <ScalarProperty Name="TaskId" ColumnName="TaskId" />
+                <ScalarProperty Name="ScheduleDate" ColumnName="ScheduleDate" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Shields">
+            <EntityTypeMapping TypeName="ToDoListDbModel.Shield">
+              <MappingFragment StoreEntitySet="Shields">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="LastModified" ColumnName="LastModified" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="TargetUrl" ColumnName="TargetUrl" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Tasks">
+            <EntityTypeMapping TypeName="ToDoListDbModel.Task">
+              <MappingFragment StoreEntitySet="Tasks">
+                <ScalarProperty Name="NidTask" ColumnName="NidTask" />
+                <ScalarProperty Name="GoalId" ColumnName="GoalId" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="TaskStatus" ColumnName="TaskStatus" />
+                <ScalarProperty Name="TaskWeight" ColumnName="TaskWeight" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="LastModifiedDate" ColumnName="LastModifiedDate" />
+                <ScalarProperty Name="ClosureDate" ColumnName="ClosureDate" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Transactions">
+            <EntityTypeMapping TypeName="ToDoListDbModel.Transaction">
+              <MappingFragment StoreEntitySet="Transactions">
+                <ScalarProperty Name="NidTransaction" ColumnName="NidTransaction" />
+                <ScalarProperty Name="TransactionType" ColumnName="TransactionType" />
+                <ScalarProperty Name="PayerAccount" ColumnName="PayerAccount" />
+                <ScalarProperty Name="RecieverAccount" ColumnName="RecieverAccount" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="TransactionReason" ColumnName="TransactionReason" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Users">
+            <EntityTypeMapping TypeName="ToDoListDbModel.User">
+              <MappingFragment StoreEntitySet="Users">
+                <ScalarProperty Name="IsDisabled" ColumnName="IsDisabled" />
+                <ScalarProperty Name="LastLoginDate" ColumnName="LastLoginDate" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="IsAdmin" ColumnName="IsAdmin" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="NidUser" ColumnName="NidUser" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="true" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

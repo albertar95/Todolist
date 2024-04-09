@@ -1,0 +1,76 @@
+﻿@model Todolist.Models.Goal
+
+@{
+    ViewData["Title"] = "EditGoal";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>EditGoal</h1>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="SubmitEditGoal">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="NidGoal" />
+            <input type="hidden" asp-for="UserId" />
+            <div class="form-group" hidden>
+                <label asp-for="GoalStatus" class="control-label"></label>
+                <input asp-for="GoalStatus" class="form-control" />
+                <span asp-validation-for="GoalStatus" class="text-danger"></span>
+            </div>
+            <div class="form-group" hidden>
+                <label asp-for="CreateDate" class="control-label"></label>
+                <input asp-for="CreateDate" class="form-control" />
+                <span asp-validation-for="CreateDate" class="text-danger"></span>
+            </div>
+            <div class="form-group" hidden>
+                <label asp-for="LastModifiedDate" class="control-label"></label>
+                <input asp-for="LastModifiedDate" class="form-control" />
+                <span asp-validation-for="LastModifiedDate" class="text-danger"></span>
+            </div>
+            <div class="form-group" hidden>
+                <label asp-for="UserId" class="control-label"></label>
+                <select asp-for="UserId" class="form-control" asp-items="ViewBag.UserId"></select>
+                <span asp-validation-for="UserId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" autofocus />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="col-md-12 d-flex">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="FromDate" class="control-label"></label>
+                        <input asp-for="FromDate" class="form-control" />
+                        <span asp-validation-for="FromDate" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="ToDate" class="control-label"></label>
+                        <input asp-for="ToDate" class="form-control" />
+                        <span asp-validation-for="ToDate" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <textarea asp-for="Description" class="form-control" rows="5"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-lg-4"></div>
+                    <div class="col-lg-4 text-center">
+                        <input type="submit" value="edit" class="btn btn-warning" />
+                        <a class="btn btn-outline-info" asp-action="Goals">Back to List</a>
+                    </div>
+                    <div class="col-lg-4"></div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+

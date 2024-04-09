@@ -1,0 +1,180 @@
+﻿@model Todolist.ViewModels.GoalViewModel
+@{
+    ViewData["Title"] = "Goals";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="row" style="padding:25px;">
+    <div class="col-lg-6 d-flex">
+    <a href="@Url.Action("AddGoal","Home")" class="btn btn-block btn-outline-success" style="width:200px;justify-content:right;height:38px;overflow:hidden;">add new goal</a>
+    <a href="#" onclick="ShowClosed(event)" class="btn btn-outline-info" style="width:200px;justify-content:right;margin-left:1rem;height:38px;overflow:hidden;">closed goals</a>
+    </div>
+    <div class="col-lg-6">
+        <div class="alert alert-success alert-dismissible fade show" style="width:fit-content;float:right;" role="alert" id="successDiv" hidden>
+            <p id="successMessage"></p>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="alert alert-danger alert-dismissible fade show" style="width:fit-content;float:right;" role="alert" id="errorDiv" hidden>
+            <p id="errorMessage"></p>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    </div>
+</div>
+@{
+    int genRandomNumber(){
+        Random r = new Random();
+        return r.Next(26);
+    }
+}
+@for (var i = 0; i <= Model.Goals.Where(p => p.GoalStatus == 0).Count()/3; i++)
+{
+    <div class="row">
+        @foreach (var goal in Model.Goals.Where(p => p.GoalStatus == 0).OrderBy(p => p.Title).Skip(i * 3).Take(3))
+        {
+            <div class="col-xl-4">
+                <div class="card shadow mb-4 d-flex">
+                    <!-- Card Header - Accordion -->
+                    <a href="@Url.Action("Goal","Home",new {NidGoal = goal.NidGoal})" class="d-block card-header py-3"  style="background-color:@Model.bgColor[genRandomNumber()];">
+                        <h6 class="font-weight-bold text-primary" style="margin:0 auto;">@goal.Title</h6>
+                        <p style="justify-content:right;display:contents;">
+                            Period : @Todolist.Helpers.Dates.ToPersianDate2(goal.FromDate) - @Todolist.Helpers.Dates.ToPersianDate2(goal.ToDate)
+                        </p>
+                    </a>
+                    <!-- Card Content - Collapse -->
+                    <div class="collapse show">
+                        <div class="card-body">
+                            @foreach (var task in Model.Tasks.Where(p => p.GoalId == goal.NidGoal).OrderBy(p => p.TaskStatus).OrderBy(p => p.Title).Take(7))
+                            {
+                                <div class="row">
+                                    <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
+                                    <div class="form-group">
+                                        <div class="custom-control custom-checkbox small">
+                                            @if(task.TaskStatus)
+                                            {
+                                                <input type="checkbox" class="custom-control-input" id="'@task.NidTask'" checked disabled>
+                                            }else
+                                            {
+                                                <input type="checkbox" class="custom-control-input" id="'@task.NidTask'" disabled>
+                                            }
+                                            <label class="custom-control-label" for="'@task.NidTask'">
+                                                @task.Title
+                                            </label>
+                                        </div>
+                                    </div>
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                        <p style="justify-content:right;">@task.TaskWeight %</p>
+                                    </div>
+                                </div>
+                            }
+                            @if (Model.Tasks.Where(p => p.GoalId == goal.NidGoal).Count() > 0)
+                            {
+                                <hr>
+                                <div class="row">
+                                    <div class="col-lg-12" style="text-align:center;">
+                                        <p style="justify-content:right;">Goal Status :  @Model.Tasks.Where(p => p.GoalId == goal.NidGoal && p.TaskStatus == true).Sum(q => q.TaskWeight) / 100%</p>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+
+
+<div id="closedDiv" hidden>
+<hr />
+<div style="text-align:center;"><h2>closed</h2></div>
+<hr />
+@for (var i = 0; i <= Model.Goals.Where(p => p.GoalStatus == 1).Count() / 3; i++)
+{
+    <div class="row">
+        @foreach (var goal in Model.Goals.Where(p => p.GoalStatus == 1).OrderBy(p => p.FromDate).Skip(i * 3).Take(3))
+        {
+            <div class="col-xl-4">
+                <div class="card shadow mb-4 d-flex" style="opacity:60%;">
+                    <!-- Card Header - Accordion -->
+                    <a href="@Url.Action("Goal","Home",new {NidGoal = goal.NidGoal})" class="d-block card-header py-3" style="background-color:@Model.bgColor[genRandomNumber()];">
+                        <h6 class="font-weight-bold text-primary" style="margin:0 auto;">@goal.Title</h6>
+                        <p style="justify-content:right;display:contents;">
+                                Period : @Todolist.Helpers.Dates.ToPersianDate2(goal.FromDate) - @Todolist.Helpers.Dates.ToPersianDate2(goal.ToDate)
+                        </p>
+                    </a>
+                    <!-- Card Content - Collapse -->
+                    <div class="collapse show">
+                        <div class="card-body">
+                            @foreach (var task in Model.Tasks.Where(p => p.GoalId == goal.NidGoal).OrderBy(p => p.TaskStatus).OrderBy(p => p.Title).Take(7))
+                            {
+                                <div class="row">
+                                    <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
+                                        <div class="form-group">
+                                            <div class="custom-control custom-checkbox small">
+                                                @if (task.TaskStatus)
+                                                {
+                                                    <input type="checkbox" class="custom-control-input" id="'@task.NidTask'" checked disabled>
+                                                }
+                                                else
+                                                {
+                                                    <input type="checkbox" class="custom-control-input" id="'@task.NidTask'" disabled>
+                                                }
+                                                <label class="custom-control-label" for="'@task.NidTask'">
+                                                    @task.Title
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                        <div class="col-lg-3  col-md-3 col-sm-3 col-xs-3">
+                                        <p style="justify-content:right;">@task.TaskWeight %</p>
+                                    </div>
+                                </div>
+                            }
+                                @if (Model.Tasks.Where(p => p.GoalId == goal.NidGoal).Count() > 0)
+                                {
+                                    <hr>
+                                    <div class="row">
+                                        <div class="col-lg-12" style="text-align:center;">
+                                            <p style="justify-content:right;">Goal Status :  @Model.Tasks.Where(p => p.GoalId == goal.NidGoal && p.TaskStatus == true).Sum(q => q.TaskWeight) / 100%</p>
+                                        </div>
+                                    </div>
+                                }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+</div>
+@section Scripts
+    {
+    <script type="text/javascript">
+        $(function () {
+            if ('@TempData["GoalSuccess"]' != "") {
+                $("#successDiv").removeAttr('hidden');
+                $("#successMessage").text('@TempData["GoalSuccess"]');
+                window.setTimeout(function () {
+                    $("#successDiv").attr('hidden', 'hidden');
+                }, 5000);
+            }
+            if ('@TempData["GoalError"]' != "") {
+                $("#errorDiv").removeAttr('hidden');
+                $("#errorMessage").text('@TempData["GoalError"]');
+                window.setTimeout(function () {
+                    $("#errorDiv").attr('hidden', 'hidden');
+                }, 5000);
+            }
+        });
+        function ShowClosed(event)
+        {
+            event.preventDefault();
+            $("#closedDiv").removeAttr('hidden');
+        }
+    </script>
+}

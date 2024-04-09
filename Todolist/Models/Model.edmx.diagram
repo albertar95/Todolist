@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="bb65aaa28aac45889c7b45d8e396a26b" Name="Diagram1">
+        <EntityTypeShape EntityType="ToDoListDbModel.Account" Width="1.5" PointX="3" PointY="2.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="ToDoListDbModel.Goal" Width="1.5" PointX="3" PointY="5.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="ToDoListDbModel.NoteGroup" Width="1.5" PointX="3" PointY="9.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="ToDoListDbModel.Note" Width="1.5" PointX="5.25" PointY="9.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="ToDoListDbModel.Progress" Width="1.5" PointX="12.75" PointY="10.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="ToDoListDbModel.RoutineProgress" Width="1.5" PointX="5.25" PointY="13.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="ToDoListDbModel.Routine" Width="1.5" PointX="3" PointY="12.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="ToDoListDbModel.Schedule" Width="1.5" PointX="10.5" PointY="9" IsExpanded="true" />
+        <EntityTypeShape EntityType="ToDoListDbModel.Shield" Width="1.5" PointX="3" PointY="16.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="ToDoListDbModel.Task" Width="1.5" PointX="8.25" PointY="8.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="ToDoListDbModel.Transaction" Width="1.5" PointX="3" PointY="20.125" IsExpanded="true" />
+        <AssociationConnector Association="ToDoListDbModel.FK_Goals_Tasks" ManuallyRouted="false" />
+        <AssociationConnector Association="ToDoListDbModel.FK_Notes_NoteGroups" ManuallyRouted="false" />
+        <AssociationConnector Association="ToDoListDbModel.FK_Progresses_Schedules" ManuallyRouted="false" />
+        <AssociationConnector Association="ToDoListDbModel.FK_RoutineProgresses_Routines" ManuallyRouted="false" />
+        <AssociationConnector Association="ToDoListDbModel.FK_Schedules_Tasks" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="ToDoListDbModel.User" Width="1.5" PointX="0.75" PointY="10.5" />
+        <AssociationConnector Association="ToDoListDbModel.FK_Accounts_Users" />
+        <AssociationConnector Association="ToDoListDbModel.FK_Goals_Users" />
+        <AssociationConnector Association="ToDoListDbModel.FK_NoteGroups_Users" />
+        <AssociationConnector Association="ToDoListDbModel.FK_Progresses_Users" />
+        <AssociationConnector Association="ToDoListDbModel.FK_Routines_Users" />
+        <AssociationConnector Association="ToDoListDbModel.FK_Shields_Users" />
+        <AssociationConnector Association="ToDoListDbModel.FK_Tasks_Users" />
+        <AssociationConnector Association="ToDoListDbModel.FK_Transactions_Users" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
