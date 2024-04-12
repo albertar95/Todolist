@@ -9,6 +9,7 @@ using Todolist.Services.Contracts;
 
 namespace Todolist.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly IRequestProcessor _requestProcessor;
@@ -38,9 +39,10 @@ namespace Todolist.Controllers
             return RedirectToAction("Users");
         }
         [AllowAnonymous]
+        [Route("Login")]
         public ActionResult Login(string ReturnUrl = "")
         {
-            return View("Login", ReturnUrl);
+            return View(new { ReturnUrl });
         }
         public ActionResult Logout()
         {
@@ -328,6 +330,7 @@ namespace Todolist.Controllers
         }
         public ActionResult SubmitDeleteNote(Guid NidNote)
         {
+            var note = _requestProcessor.GetNote(NidNote);
             if (_requestProcessor.DeleteNote(NidNote))
                 TempData["NoteSuccess"] = $"note deleted successfully";
             else
@@ -341,197 +344,85 @@ namespace Todolist.Controllers
         }
         public ActionResult SubmitAddAccount(string Title, decimal Amount, bool IsActive)
         {
-            Guid NidUser = Guid.Parse(User.Claims.Where(p => p.Type == "NidUser").FirstOrDefault().Value);
-            Account account = new Account()
-            {
-                Amount = Amount,
-                CreateDate = DateTime.Now,
-                IsActive = IsActive,
-                LastModified = DateTime.Now,
-                LendAmount = 0,
-                NidAccount = Guid.NewGuid(),
-                Title = Title,
-                UserId = NidUser
-            };
-            StringContent stringContent = new StringContent(JsonConvert.SerializeObject(account), Encoding.UTF8, "application/json");
-            using (HttpClient client = new HttpClient())
-            {
-                var response = await client.PostAsync($"{BaseAddress}/AddAccount", stringContent);
-                if (response.IsSuccessStatusCode)
-                    TempData["FinanceSuccess"] = $"{account.Title} created successfully";
-                else
-                    TempData["FinanceError"] = $"an error occured while creating account!";
-            }
+            Account account = new Account() { Amount = Amount,IsActive = IsActive,LendAmount = 0,Title = Title,UserId = GetUserId() };
+            if (_requestProcessor.PostAccount(account))
+                TempData["FinanceSuccess"] = $"{account.Title} created successfully";
+            else
+                TempData["FinanceError"] = $"an error occured while creating account!";
             return RedirectToAction("FinancialRecords");
         }
         public ActionResult SubmitAddTransaction(byte TrType, Guid PayerAccount, Guid RecieverAccount, decimal Amount, string Reason)
         {
-            Guid NidUser = Guid.Parse(User.Claims.Where(p => p.Type == "NidUser").FirstOrDefault().Value);
-            Transaction tr = new Transaction()
-            {
-                Amount = Amount,
-                CreateDate = DateTime.Now,
-                TransactionType = TrType,
-                PayerAccount = PayerAccount,
-                RecieverAccount = RecieverAccount,
-                TransactionReason = Reason,
-                NidTransaction = Guid.NewGuid(),
-                UserId = NidUser
-            };
-            StringContent stringContent = new StringContent(JsonConvert.SerializeObject(tr), Encoding.UTF8, "application/json");
-            using (HttpClient client = new HttpClient())
-            {
-                var response = await client.PostAsync($"{BaseAddress}/AddTransaction", stringContent);
-                if (response.IsSuccessStatusCode)
-                    TempData["FinanceSuccess"] = $"transaction created successfully";
-                else
-                    TempData["FinanceError"] = $"an error occured while creating transaction!";
-            }
+            Transaction tr = new Transaction() {Amount = Amount,TransactionType = TrType,PayerAccount = PayerAccount,RecieverAccount = RecieverAccount,TransactionReason = Reason,UserId = GetUserId() };
+            if (_requestProcessor.PostTransaction(tr))
+                TempData["FinanceSuccess"] = $"transaction created successfully";
+            else
+                TempData["FinanceError"] = $"an error occured while creating transaction!";
             return RedirectToAction("FinancialRecords");
         }
         public ActionResult SubmitEditTransaction(Guid NidTr, byte TrType, Guid PayerAccount, Guid RecieverAccount, decimal Amount, string Reason)
         {
-            using (HttpClient client = new HttpClient())
-            {
-                Transaction tr = new Transaction();
-                var trresponse = await client.GetAsync($"{BaseAddress}/GetTransactionById/{NidTr}");
-                if (trresponse.StatusCode == HttpStatusCode.OK)
-                {
-                    var stringResponse = await trresponse.Content.ReadAsStringAsync();
-                    tr = JsonConvert.DeserializeObject<Transaction>(stringResponse) ?? new Transaction();
-                }
-                tr.TransactionType = TrType;
-                tr.PayerAccount = PayerAccount;
-                tr.RecieverAccount = RecieverAccount;
-                tr.Amount = Amount;
-                tr.TransactionReason = Reason;
-                StringContent stringContent = new StringContent(JsonConvert.SerializeObject(tr), Encoding.UTF8, "application/json");
-                var response = await client.PatchAsync($"{BaseAddress}/EditTransaction", stringContent);
-                if (response.IsSuccessStatusCode)
-                    TempData["FinanceSuccess"] = $"transaction edited successfully";
-                else
-                    TempData["FinanceError"] = $"an error occured while editing transaction!";
-            }
+            var tr = _requestProcessor.GetTransaction(NidTr);
+            tr.TransactionType = TrType;
+            tr.PayerAccount = PayerAccount;
+            tr.RecieverAccount = RecieverAccount;
+            tr.Amount = Amount;
+            tr.TransactionReason = Reason;
+            if (_requestProcessor.PatchTransaction(tr))
+                TempData["FinanceSuccess"] = $"transaction edited successfully";
+            else
+                TempData["FinanceError"] = $"an error occured while editing transaction!";
             return RedirectToAction("FinancialRecords");
         }
         public ActionResult SubmitDeleteTransaction(Guid NidTr)
         {
-            using (HttpClient client = new HttpClient())
-            {
-                Transaction tr = new Transaction();
-                var trresponse = await client.GetAsync($"{BaseAddress}/GetTransactionById/{NidTr}");
-                if (trresponse.StatusCode == HttpStatusCode.OK)
-                {
-                    var stringResponse = await trresponse.Content.ReadAsStringAsync();
-                    tr = JsonConvert.DeserializeObject<Transaction>(stringResponse) ?? new Transaction();
-                }
-                if (tr.NidTransaction != Guid.Empty)
-                {
-                    var response = await client.DeleteAsync($"{BaseAddress}/DeleteTransaction/{NidTr}");
-                    if (response.IsSuccessStatusCode)
-                        TempData["FinanceSuccess"] = $"transaction deleted successfully";
-                    else
-                        TempData["FinanceError"] = $"an error occured while deleting transaction!";
-                }
-                else
-                    TempData["FinanceError"] = $"an error occured while deleting transaction!";
-            }
+            if (_requestProcessor.DeleteTransaction(NidTr))
+                TempData["FinanceSuccess"] = $"transaction deleted successfully";
+            else
+                TempData["FinanceError"] = $"an error occured while deleting transaction!";
             return RedirectToAction("FinancialRecords");
         }
         public ActionResult GetTrById(Guid NidTransaction)
         {
-            using (HttpClient client = new HttpClient())
-            {
-                Transaction tr = new Transaction();
-                var trresponse = await client.GetAsync($"{BaseAddress}/GetTransactionById/{NidTransaction}");
-                if (trresponse.StatusCode == HttpStatusCode.OK)
+            var tr = _requestProcessor.GetTransaction(NidTransaction);
+            if (tr.NidTransaction == Guid.Empty)
+                return Json(new { HasValue = false });
+            else
+                return Json(new
                 {
-                    var stringResponse = await trresponse.Content.ReadAsStringAsync();
-                    tr = JsonConvert.DeserializeObject<Transaction>(stringResponse) ?? new Transaction();
-                }
-                if (tr.NidTransaction == Guid.Empty)
-                    return Json(new { HasValue = false });
-                else
-                    return Json(new
-                    {
-                        HasValue = true,
-                        NidTr = tr.NidTransaction.ToString(),
-                        TrType = tr.TransactionType.ToString(),
-                        PAccount = tr.PayerAccount.ToString(),
-                        RAccount = tr.RecieverAccount.ToString(),
-                        Reason = tr.TransactionReason.ToString(),
-                        Amount = ((int)(tr.Amount)).ToString()
-                    });
-            }
+                    HasValue = true,
+                    NidTr = tr.NidTransaction.ToString(),
+                    TrType = tr.TransactionType.ToString(),
+                    PAccount = tr.PayerAccount.ToString(),
+                    RAccount = tr.RecieverAccount.ToString(),
+                    Reason = tr.TransactionReason.ToString(),
+                    Amount = ((int)(tr.Amount)).ToString()
+                });
         }
         public ActionResult Account(Guid NidAccount)
         {
-            FinanceViewModel model = new FinanceViewModel();
-            using (HttpClient client = new HttpClient())
-            {
-                Account account = new Account();
-                var response = await client.GetAsync($"{BaseAddress}/GetAccountById/{NidAccount}");
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    var stringResponse = await response.Content.ReadAsStringAsync();
-                    account = JsonConvert.DeserializeObject<Account>(stringResponse) ?? new Account();
-                }
-                return View(account);
-            }
+            return View(_requestProcessor.GetAccount(NidAccount));
         }
         public ActionResult SubmitEditAccount(Account account)
         {
-            using (HttpClient client = new HttpClient())
-            {
-                account.LastModified = DateTime.Now;
-                StringContent stringContent = new StringContent(JsonConvert.SerializeObject(account), Encoding.UTF8, "application/json");
-                var response = await client.PatchAsync($"{BaseAddress}/EditAccount", stringContent);
-                if (response.IsSuccessStatusCode)
-                    TempData["AccountSuccess"] = $"account edited successfully";
-                else
-                    TempData["AccountError"] = $"an error occured while editing account!";
-            }
+            if (_requestProcessor.PatchAccount(account))
+                TempData["AccountSuccess"] = $"account edited successfully";
+            else
+                TempData["AccountError"] = $"an error occured while editing account!";
             return RedirectToAction("Account", new { NidAccount = account.NidAccount });
         }
         public ActionResult SubmitDeleteAccount(Guid NidAccount)
         {
-            using (HttpClient client = new HttpClient())
-            {
-                Account acc = new Account();
-                var accresponse = await client.GetAsync($"{BaseAddress}/GetAccountById/{NidAccount}");
-                if (accresponse.StatusCode == HttpStatusCode.OK)
-                {
-                    var stringResponse = await accresponse.Content.ReadAsStringAsync();
-                    acc = JsonConvert.DeserializeObject<Account>(stringResponse) ?? new Account();
-                }
-                if (acc.NidAccount != Guid.Empty)
-                {
-                    var response = await client.DeleteAsync($"{BaseAddress}/DeleteAccount/{NidAccount}");
-                    if (response.IsSuccessStatusCode)
-                        TempData["FinanceSuccess"] = $"account deleted successfully";
-                    else
-                        TempData["FinanceError"] = $"an error occured while deleting account!";
-                }
-                else
-                    TempData["FinanceError"] = $"an error occured while deleting account!";
-            }
+            if (_requestProcessor.DeleteAccount(NidAccount))
+                TempData["FinanceSuccess"] = $"account deleted successfully";
+            else
+                TempData["FinanceError"] = $"an error occured while deleting account!";
             return RedirectToAction("FinancialRecords");
         }
         //shield section
         public ActionResult Shields(bool IncludeAll = false)
         {
-            using (HttpClient client = new HttpClient())
-            {
-                string NidUser = User.Claims.Where(p => p.Type == "NidUser").FirstOrDefault().Value;
-                List<Shield> shields = new List<Shield>();
-                var response = await client.GetAsync($"{BaseAddress}/GetShieldsByUserId/{NidUser}");
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    var stringResponse = await response.Content.ReadAsStringAsync();
-                    shields = JsonConvert.DeserializeObject<List<Shield>>(stringResponse) ?? new List<Shield>();
-                }
-                return View(shields);
-            }
+            return View(_requestProcessor.GetShields(GetUserId()));
         }
         public ActionResult AddShield()
         {
@@ -539,358 +430,114 @@ namespace Todolist.Controllers
         }
         public ActionResult SubmitAddShield(Shield shield)
         {
-            using (HttpClient client = new HttpClient())
-            {
-                string NidUser = User.Claims.Where(p => p.Type == "NidUser").FirstOrDefault().Value;
-                shield.UserId = Guid.Parse(NidUser);
-                shield.CreateDate = DateTime.Now;
-                shield.Id = Guid.NewGuid();
-                shield.Password = Helpers.Encryption.EncryptString(shield.Password.Trim());
-                StringContent stringContent = new StringContent(JsonConvert.SerializeObject(shield), Encoding.UTF8, "application/json");
-                var response = await client.PostAsync($"{BaseAddress}/AddShield", stringContent);
-                if (response.IsSuccessStatusCode)
-                    TempData["ShieldSuccess"] = $"{shield.Title} created successfully";
-                else
-                    TempData["ShieldError"] = $"an error occured while creating Shield!";
-            }
+            shield.UserId = GetUserId();
+            if (_requestProcessor.PostShield(shield))
+                TempData["ShieldSuccess"] = $"{shield.Title} created successfully";
+            else
+                TempData["ShieldError"] = $"an error occured while creating Shield!";
             return RedirectToAction("Shields");
         }
         public ActionResult SubmitEditShield(Shield shield)
         {
-            using (HttpClient client = new HttpClient())
-            {
-                shield.LastModified = DateTime.Now;
-                shield.Password = Helpers.Encryption.EncryptString(shield.Password.Trim());
-                StringContent stringContent = new StringContent(JsonConvert.SerializeObject(shield), Encoding.UTF8, "application/json");
-                var response = await client.PatchAsync($"{BaseAddress}/EditShield", stringContent);
-                if (response.IsSuccessStatusCode)
-                    TempData["ShieldSuccess"] = $"{shield.Title} edited successfully";
-                else
-                    TempData["ShieldError"] = $"an error occured while editing Shield!";
-            }
+            if (_requestProcessor.PatchShield(shield))
+                TempData["ShieldSuccess"] = $"{shield.Title} edited successfully";
+            else
+                TempData["ShieldError"] = $"an error occured while editing Shield!";
             return RedirectToAction("Shields");
         }
         public ActionResult SubmitDeleteShield(Guid NidShield)
         {
-            using (HttpClient client = new HttpClient())
-            {
-                var response = await client.DeleteAsync($"{BaseAddress}/DeleteShield/{NidShield}");
-                if (response.IsSuccessStatusCode)
-                    TempData["ShieldSuccess"] = $"Shield deleted successfully";
-                else
-                    TempData["ShieldError"] = $"an error occured while deleting Shield!";
-            }
+            if (_requestProcessor.DeleteShield(NidShield))
+                TempData["ShieldSuccess"] = $"Shield deleted successfully";
+            else
+                TempData["ShieldError"] = $"an error occured while deleting Shield!";
             return RedirectToAction("Shields");
         }
         public ActionResult EditShield(Guid NidShield)
         {
-            var shield = new Shield();
-            using (HttpClient client = new HttpClient())
-            {
-                var response = await client.GetAsync($"{BaseAddress}/GetShieldById/{NidShield}");
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    var stringResponse = await response.Content.ReadAsStringAsync();
-                    shield = JsonConvert.DeserializeObject<Shield>(stringResponse) ?? new Shield();
-                }
-            }
-            return View(shield);
+            return View(_requestProcessor.GetShield(NidShield));
         }
         public ActionResult ShieldDetail(Guid NidShield)
         {
-            var shield = new Shield();
-            using (HttpClient client = new HttpClient())
-            {
-                var response = await client.GetAsync($"{BaseAddress}/GetShieldById/{NidShield}");
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    var stringResponse = await response.Content.ReadAsStringAsync();
-                    shield = JsonConvert.DeserializeObject<Shield>(stringResponse) ?? new Shield();
-                }
-            }
-            return View(shield);
+            return View(_requestProcessor.GetShield(NidShield));
         }
 
         //routine section
         public ActionResult Routines()
         {
-            RoutineViewModel model = new RoutineViewModel();
-            using (HttpClient client = new HttpClient())
-            {
-                string NidUser = User.Claims.Where(p => p.Type == "NidUser").FirstOrDefault().Value;
-                List<Routine> routines = new List<Routine>();
-                List<RoutineProgress> routineProgresses = new List<RoutineProgress>();
-                var response = await client.GetAsync($"{BaseAddress}/GetRoutinesByUserId/{NidUser}");
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    var stringResponse = await response.Content.ReadAsStringAsync();
-                    routines = JsonConvert.DeserializeObject<List<Routine>>(stringResponse) ?? new List<Routine>();
-                }
-                foreach (var rt in routines)
-                {
-                    var response2 = await client.GetAsync($"{BaseAddress}/GetProgressesByRoutineId/{rt.NidRoutine}");
-                    if (response2.StatusCode == HttpStatusCode.OK)
-                    {
-                        var stringResponse2 = await response2.Content.ReadAsStringAsync();
-                        routineProgresses.AddRange(JsonConvert.DeserializeObject<List<RoutineProgress>>(stringResponse2));
-                    }
-                }
-                model.Routines = routines;
-                model.RoutineProgresses = routineProgresses;
-                return View(model);
-            }
+            return View(_requestProcessor.GetRoutines(GetUserId()));
         }
         [HttpPost]
         public ActionResult SubmitAddRoutine(Routine routine)
         {
-            routine.NidRoutine = Guid.NewGuid();
-            string NidUser = User.Claims.Where(p => p.Type == "NidUser").FirstOrDefault().Value;
-            routine.UserId = Guid.Parse(NidUser);
-            routine.CreateDate = DateTime.Now;
-            routine.Status = false;
-            StringContent stringContent = new StringContent(JsonConvert.SerializeObject(routine), Encoding.UTF8, "application/json");
-            using (HttpClient client = new HttpClient())
-            {
-                var response = await client.PostAsync($"{BaseAddress}/AddRoutine", stringContent);
-                if (response.IsSuccessStatusCode)
-                    TempData["RoutineSuccess"] = $"{routine.Title} created successfully";
-                else
-                    TempData["RoutineError"] = $"an error occured while creating routine!";
-            }
+            routine.UserId = GetUserId();
+            if (_requestProcessor.PostRoutine(routine))
+                TempData["RoutineSuccess"] = $"{routine.Title} created successfully";
+            else
+                TempData["RoutineError"] = $"an error occured while creating routine!";
             return RedirectToAction("Routines");
         }
         public ActionResult SubmitDeleteRoutine(Guid NidRoutine)
         {
-            Routine routine = new Routine();
-            using (HttpClient client = new HttpClient())
-            {
-                var routineresponse = await client.GetAsync($"{BaseAddress}/GetRoutineById/{NidRoutine}");
-                if (routineresponse.StatusCode == HttpStatusCode.OK)
-                {
-                    var stringResponse = await routineresponse.Content.ReadAsStringAsync();
-                    routine = JsonConvert.DeserializeObject<Routine>(stringResponse) ?? new Routine();
-                }
-                var response = await client.DeleteAsync($"{BaseAddress}/DeleteRoutine/{NidRoutine}");
-                if (response.IsSuccessStatusCode)
-                    TempData["RoutineSuccess"] = $"routine deleted successfully";
-                else
-                    TempData["RoutineError"] = $"an error occured while deleting routine!";
-            }
+            if (_requestProcessor.DeleteRoutine(NidRoutine))
+                TempData["RoutineSuccess"] = $"routine deleted successfully";
+            else
+                TempData["RoutineError"] = $"an error occured while deleting routine!";
             return RedirectToAction("Routines");
         }
         public ActionResult SubmitDeleteRoutine2(Guid NidRoutine, int Direction = 0)
         {
-            Routine routine = new Routine();
-            using (HttpClient client = new HttpClient())
-            {
-                var routineresponse = await client.GetAsync($"{BaseAddress}/GetRoutineById/{NidRoutine}");
-                if (routineresponse.StatusCode == HttpStatusCode.OK)
-                {
-                    var stringResponse = await routineresponse.Content.ReadAsStringAsync();
-                    routine = JsonConvert.DeserializeObject<Routine>(stringResponse) ?? new Routine();
-                }
-                var response = await client.DeleteAsync($"{BaseAddress}/DeleteRoutine/{NidRoutine}");
-                if (response.IsSuccessStatusCode)
-                    TempData["RoutineSuccess"] = $"routine deleted successfully";
-                else
-                    TempData["RoutineError"] = $"an error occured while deleting routine!";
-            }
+            if (_requestProcessor.DeleteRoutine(NidRoutine))
+                TempData["RoutineSuccess"] = $"routine deleted successfully";
+            else
+                TempData["RoutineError"] = $"an error occured while deleting routine!";
             return RedirectToAction("IndexPaginationView2", new { Direction = Direction });
         }
         public ActionResult SubmitDoneRoutine(RoutineProgress Progress)
         {
-            Progress.NidRoutineProgress = Guid.NewGuid();
-            Progress.CreateDate = DateTime.Now;
-            StringContent stringContent = new StringContent(JsonConvert.SerializeObject(Progress), Encoding.UTF8, "application/json");
-            using (HttpClient client = new HttpClient())
-            {
-                var response = await client.PostAsync($"{BaseAddress}/AddRoutineProgress", stringContent);
-                if (response.IsSuccessStatusCode)
-                    TempData["RoutineSuccess"] = $"routine done successfully";
-                else
-                    TempData["RoutineError"] = $"an error occured while doning routine!";
-            }
+            if (_requestProcessor.PostRoutineProgress(Progress))
+                TempData["RoutineSuccess"] = $"routine done successfully";
+            else
+                TempData["RoutineError"] = $"an error occured while doning routine!";
             return RedirectToAction("Routines");
         }
         public ActionResult SubmitUnDoneRoutine(RoutineProgress Progress)
         {
-            List<RoutineProgress> routine = new List<RoutineProgress>();
-            using (HttpClient client = new HttpClient())
-            {
-                var routineresponse = await client.GetAsync($"{BaseAddress}/GetProgressesByRoutineId/{Progress.RoutineId}");
-                if (routineresponse.StatusCode == HttpStatusCode.OK)
-                {
-                    var stringResponse = await routineresponse.Content.ReadAsStringAsync();
-                    routine = JsonConvert.DeserializeObject<List<RoutineProgress>>(stringResponse) ?? new List<RoutineProgress>();
-                    foreach (var rp in routine)
-                    {
-                        if (rp.ProgressDate == Progress.ProgressDate.Date)
-                            await client.DeleteAsync($"{BaseAddress}/DeleteRoutineProgress/{rp.NidRoutineProgress}");
-                    }
-                }
-            }
+            var progresses = _requestProcessor.GetRoutineProgresses(Progress.RoutineId);
+            progresses.ForEach(x => { if(x.ProgressDate == Progress.ProgressDate.Date) _requestProcessor.DeleteRoutineProgress(x.NidRoutineProgress); });
             return RedirectToAction("Routines");
         }
         public ActionResult RoutineCalendar()
         {
-            RoutineViewModel model = new RoutineViewModel();
-            string[] DatePeriod = new string[3];
-            var weekDates = Helpers.Dates.GetWeekPeriod();
-            DatePeriod[0] = $"{weekDates.Item1.ToString("dd/MM/yyyy")} - {weekDates.Item2.ToString("dd/MM/yyyy")}";
-            DatePeriod[1] = "-1";
-            DatePeriod[2] = "1";
-            var persianDates = Helpers.Dates.ToPersianDate(weekDates);
-            using (HttpClient client = new HttpClient())
-            {
-                string NidUser = User.Claims.Where(p => p.Type == "NidUser").FirstOrDefault().Value;
-                List<Routine> routines = new List<Routine>();
-                List<RoutineProgress> routineProgresses = new List<RoutineProgress>();
-                var response = await client.GetAsync($"{BaseAddress}/GetRoutinesByUserId/{NidUser}");
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    var stringResponse = await response.Content.ReadAsStringAsync();
-                    routines = JsonConvert.DeserializeObject<List<Routine>>(stringResponse) ?? new List<Routine>();
-                }
-                foreach (var rt in routines)
-                {
-                    var response2 = await client.GetAsync($"{BaseAddress}/GetProgressesByRoutineId/{rt.NidRoutine}");
-                    if (response2.StatusCode == HttpStatusCode.OK)
-                    {
-                        var stringResponse2 = await response2.Content.ReadAsStringAsync();
-                        routineProgresses.AddRange(JsonConvert.DeserializeObject<List<RoutineProgress>>(stringResponse2));
-                    }
-                }
-                model.Routines = routines;
-                model.RoutineProgresses = routineProgresses;
-                model.PersianDatePeriodInfo = new string[] { persianDates.Item1, persianDates.Item2 };
-                model.DatePeriodInfo = DatePeriod;
-                model.StartDate = weekDates.Item1;
-                model.EndDate = weekDates.Item2;
-                return View(model);
-            }
+            return View(_requestProcessor.GetRoutines(GetUserId()));
         }
         public ActionResult IndexPagination2(int Direction)
         {
-            RoutineViewModel model = new RoutineViewModel();
-            string[] DatePeriod = new string[3];
-            var weekDates = Helpers.Dates.GetWeekPeriod(Direction);
-            DatePeriod[0] = $"{weekDates.Item1.ToString("dd/MM/yyyy")} - {weekDates.Item2.ToString("dd/MM/yyyy")}";
-            DatePeriod[1] = $"{Direction - 1}";
-            DatePeriod[2] = $"{Direction + 1}";
-            var persianDates = Helpers.Dates.ToPersianDate(weekDates);
-            using (HttpClient client = new HttpClient())
-            {
-                string NidUser = User.Claims.Where(p => p.Type == "NidUser").FirstOrDefault().Value;
-                List<Routine> routines = new List<Routine>();
-                List<RoutineProgress> routineProgresses = new List<RoutineProgress>();
-                var response = await client.GetAsync($"{BaseAddress}/GetRoutinesByUserId/{NidUser}");
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    var stringResponse = await response.Content.ReadAsStringAsync();
-                    routines = JsonConvert.DeserializeObject<List<Routine>>(stringResponse) ?? new List<Routine>();
-                }
-                foreach (var rt in routines)
-                {
-                    var response2 = await client.GetAsync($"{BaseAddress}/GetProgressesByRoutineId/{rt.NidRoutine}");
-                    if (response2.StatusCode == HttpStatusCode.OK)
-                    {
-                        var stringResponse2 = await response2.Content.ReadAsStringAsync();
-                        routineProgresses.AddRange(JsonConvert.DeserializeObject<List<RoutineProgress>>(stringResponse2));
-                    }
-                }
-                model.Routines = routines;
-                model.RoutineProgresses = routineProgresses;
-                model.PersianDatePeriodInfo = new string[] { persianDates.Item1, persianDates.Item2 };
-                model.DatePeriodInfo = DatePeriod;
-                model.StartDate = weekDates.Item1;
-                model.EndDate = weekDates.Item2;
-                return Json(new JsonResults() { HasValue = true, Html = await Helpers.RenderViewToString.RenderViewAsync(this, "_RoutineCalendarPartialView", model, true) });
-            }
+            return Json(new JsonResults() { HasValue = true, Html = Helpers.ViewHelper.RenderViewToString(this, "_RoutineCalendarPartialView", _requestProcessor.GetRoutines(GetUserId())) });
         }
         public ActionResult IndexPaginationView2(int Direction)
         {
-            RoutineViewModel model = new RoutineViewModel();
-            string[] DatePeriod = new string[3];
-            var weekDates = Helpers.Dates.GetWeekPeriod(Direction);
-            DatePeriod[0] = $"{weekDates.Item1.ToString("dd/MM/yyyy")} - {weekDates.Item2.ToString("dd/MM/yyyy")}";
-            DatePeriod[1] = $"{Direction - 1}";
-            DatePeriod[2] = $"{Direction + 1}";
-            var persianDates = Helpers.Dates.ToPersianDate(weekDates);
-            using (HttpClient client = new HttpClient())
-            {
-                string NidUser = User.Claims.Where(p => p.Type == "NidUser").FirstOrDefault().Value;
-                List<Routine> routines = new List<Routine>();
-                List<RoutineProgress> routineProgresses = new List<RoutineProgress>();
-                var response = await client.GetAsync($"{BaseAddress}/GetRoutinesByUserId/{NidUser}");
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    var stringResponse = await response.Content.ReadAsStringAsync();
-                    routines = JsonConvert.DeserializeObject<List<Routine>>(stringResponse) ?? new List<Routine>();
-                }
-                foreach (var rt in routines)
-                {
-                    var response2 = await client.GetAsync($"{BaseAddress}/GetProgressesByRoutineId/{rt.NidRoutine}");
-                    if (response2.StatusCode == HttpStatusCode.OK)
-                    {
-                        var stringResponse2 = await response2.Content.ReadAsStringAsync();
-                        routineProgresses.AddRange(JsonConvert.DeserializeObject<List<RoutineProgress>>(stringResponse2));
-                    }
-                }
-                model.Routines = routines;
-                model.RoutineProgresses = routineProgresses;
-                model.PersianDatePeriodInfo = new string[] { persianDates.Item1, persianDates.Item2 };
-                model.DatePeriodInfo = DatePeriod;
-                model.StartDate = weekDates.Item1;
-                model.EndDate = weekDates.Item2;
-                return View("RoutineCalendar", model);
-            }
+            return View("RoutineCalendar", _requestProcessor.GetRoutines(GetUserId()));
         }
         public ActionResult SubmitEditRoutine(Routine Routine, int Direction = 0)
         {
-            using (HttpClient client = new HttpClient())
-            {
-                Routine r = new Routine();
-                var response = await client.GetAsync($"{BaseAddress}/GetRoutineById/{Routine.NidRoutine}");
-                if (response.IsSuccessStatusCode)
-                {
-                    var stringResponse = await response.Content.ReadAsStringAsync();
-                    r = JsonConvert.DeserializeObject<Routine>(stringResponse);
-                    r.Todate = Routine.Todate;
-                    r.FromDate = Routine.FromDate;
-                    r.Title = Routine.Title;
-                    r.ModifiedDate = DateTime.Now;
-                }
-                StringContent stringContent = new StringContent(JsonConvert.SerializeObject(r), Encoding.UTF8, "application/json");
-                var response2 = await client.PatchAsync($"{BaseAddress}/EditRoutine", stringContent);
-                if (response2.IsSuccessStatusCode)
-                    TempData["RoutineSuccess"] = $"routine edited successfully";
-                else
-                    TempData["RoutineError"] = $"an error occured while editing routine!";
-            }
+            if (_requestProcessor.PatchRoutine(Routine))
+                TempData["RoutineSuccess"] = $"routine edited successfully";
+            else
+                TempData["RoutineError"] = $"an error occured while editing routine!";
             return RedirectToAction("IndexPaginationView2", new { Direction = Direction });
         }
         public ActionResult SubmitDeleteRoutineProgress(Guid NidRoutineProgress, int Direction = 0)
         {
-            List<RoutineProgress> routine = new List<RoutineProgress>();
-            using (HttpClient client = new HttpClient())
-            {
-                var routineresponse = await client.DeleteAsync($"{BaseAddress}/DeleteRoutineProgress/{NidRoutineProgress}");
-            }
+            _requestProcessor.DeleteRoutineProgress(NidRoutineProgress);
             return RedirectToAction("IndexPaginationView2", new { Direction = Direction });
         }
         public ActionResult SubmitAddRoutineProgress(RoutineProgress Progress, int Direction = 0)
         {
-            Progress.NidRoutineProgress = Guid.NewGuid();
-            Progress.CreateDate = DateTime.Now;
-            StringContent stringContent = new StringContent(JsonConvert.SerializeObject(Progress), Encoding.UTF8, "application/json");
-            using (HttpClient client = new HttpClient())
-            {
-                var response = await client.PostAsync($"{BaseAddress}/AddRoutineProgress", stringContent);
-                if (response.IsSuccessStatusCode)
-                    TempData["RoutineSuccess"] = $"routine done successfully";
-                else
-                    TempData["RoutineError"] = $"an error occured while doning routine!";
-            }
+            if (_requestProcessor.PostRoutineProgress(Progress))
+                TempData["RoutineSuccess"] = $"routine done successfully";
+            else
+                TempData["RoutineError"] = $"an error occured while doning routine!";
             return RedirectToAction("IndexPaginationView2", new { Direction = Direction });
         }
     }

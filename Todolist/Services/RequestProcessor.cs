@@ -20,7 +20,11 @@ namespace Todolist.Services
 
         public bool DeleteAccount(Guid nidAccount)
         {
-            throw new NotImplementedException();
+            var account = _dbRepository.Get<Account>(p => p.NidAccount == nidAccount);
+            if (account != null)
+                return _dbRepository.Delete<Account>(account);
+            else
+                return false;
         }
 
         public bool DeleteGoal(Guid nidGoal)
@@ -59,11 +63,38 @@ namespace Todolist.Services
                 return false;
         }
 
+        public bool DeleteRoutine(Guid nidRoutine)
+        {
+            var routine = _dbRepository.Get<Routine>(p => p.NidRoutine == nidRoutine);
+            if (routine != null)
+                return _dbRepository.Delete<Routine>(routine);
+            else
+                return false;
+        }
+
+        public bool DeleteRoutineProgress(Guid nidRoutineProgress)
+        {
+            var routineProg = _dbRepository.Get<RoutineProgress>(p => p.NidRoutineProgress == nidRoutineProgress);
+            if (routineProg != null)
+                return _dbRepository.Delete<RoutineProgress>(routineProg);
+            else
+                return false;
+        }
+
         public bool DeleteSchedule(Guid nidSchedule)
         {
             var schedule = _dbRepository.Get<Schedule>(p => p.NidSchedule == nidSchedule);
             if (schedule != null)
                 return _dbRepository.Delete<Schedule>(schedule);
+            else
+                return false;
+        }
+
+        public bool DeleteShield(Guid nidShield)
+        {
+            var shield = _dbRepository.Get<Shield>(p => p.Id == nidShield);
+            if (shield != null)
+                return _dbRepository.Delete<Shield>(shield);
             else
                 return false;
         }
@@ -79,7 +110,11 @@ namespace Todolist.Services
 
         public bool DeleteTransaction(Guid nidTransaction)
         {
-            throw new NotImplementedException();
+            var tran = _dbRepository.Get<Transaction>(p => p.NidTransaction == nidTransaction);
+            if (tran != null)
+                return _dbRepository.Delete<Transaction>(tran);
+            else
+                return false;
         }
 
         public bool DeleteUser(Guid nidUser)
@@ -102,7 +137,7 @@ namespace Todolist.Services
 
         public Account GetAccount(Guid nidAccount)
         {
-            throw new NotImplementedException();
+            return _dbRepository.Get<Account>(p => p.NidAccount == nidAccount);
         }
 
         public FinanceViewModel GetFinacialRecords(Guid nidUser,bool includeAll = false)
@@ -190,6 +225,44 @@ namespace Todolist.Services
             return _dbRepository.GetList<Note>(p => p.GroupId == nidGroup);
         }
 
+        public Routine GetRoutine(Guid nidRoutine)
+        {
+            return _dbRepository.Get<Routine>(p => p.NidRoutine == nidRoutine);
+        }
+
+        public List<RoutineProgress> GetRoutineProgresses(Guid nidRoutine)
+        {
+            return _dbRepository.GetList<RoutineProgress>(p => p.RoutineId == nidRoutine);
+        }
+
+        public RoutineViewModel GetRoutines(Guid nidUser, int Direction = 0)
+        {
+            var result = new RoutineViewModel();
+            result.Routines = _dbRepository.GetList<Routine>(p => p.UserId == nidUser);
+            string[] DatePeriod = new string[3];
+            var weekDates = Helpers.Dates.GetWeekPeriod();
+            DatePeriod[0] = $"{weekDates.Item1.ToString("dd/MM/yyyy")} - {weekDates.Item2.ToString("dd/MM/yyyy")}";
+            DatePeriod[1] = $"{Direction - 1}";
+            DatePeriod[2] = $"{Direction + 1}";
+            var persianDates = Helpers.Dates.ToPersianDate(weekDates);
+            result.Routines.ForEach(x => { result.RoutineProgresses.AddRange(_dbRepository.GetList<RoutineProgress>(p => p.RoutineId == x.NidRoutine)); });
+            result.PersianDatePeriodInfo = new string[] { persianDates.Item1, persianDates.Item2 };
+            result.DatePeriodInfo = DatePeriod;
+            result.StartDate = weekDates.Item1;
+            result.EndDate = weekDates.Item2;
+            return result;
+        }
+
+        public Shield GetShield(Guid nidShield)
+        {
+            return _dbRepository.Get<Shield>(p => p.Id == nidShield);
+        }
+
+        public List<Shield> GetShields(Guid nidUser)
+        {
+            return _dbRepository.GetList<Shield>(p => p.UserId == nidUser);
+        }
+
         public Task GetTask(Guid nidTask)
         {
             return _dbRepository.Get<Task>(p => p.NidTask == nidTask);
@@ -197,7 +270,7 @@ namespace Todolist.Services
 
         public Transaction GetTransaction(Guid nidTransaction)
         {
-            throw new NotImplementedException();
+            return _dbRepository.Get<Transaction>(p => p.NidTransaction == nidTransaction);
         }
 
         public List<User> GetUsers()
@@ -216,7 +289,8 @@ namespace Todolist.Services
 
         public bool PatchAccount(Account account)
         {
-            throw new NotImplementedException();
+            account.LastModified = DateTime.Now;
+            return _dbRepository.Update<Account>(account);
         }
 
         public bool PatchGoal(Goal goal)
@@ -242,6 +316,18 @@ namespace Todolist.Services
             return _dbRepository.Update<Progress>(progress);
         }
 
+        public bool PatchRoutine(Routine routine)
+        {
+            return _dbRepository.Update<Routine>(routine);
+        }
+
+        public bool PatchShield(Shield shield)
+        {
+            shield.LastModified = DateTime.Now;
+            shield.Password = Helpers.Encryption.EncryptString(shield.Password);
+            return _dbRepository.Update<Shield>(shield);
+        }
+
         public bool PatchTask(Task task)
         {
             return _dbRepository.Update<Task>(task);
@@ -249,12 +335,15 @@ namespace Todolist.Services
 
         public bool PatchTransaction(Transaction transaction)
         {
-            throw new NotImplementedException();
+            return _dbRepository.Update<Transaction>(transaction);
         }
 
         public bool PostAccount(Account account)
         {
-            throw new NotImplementedException();
+            account.NidAccount = Guid.NewGuid();
+            account.CreateDate = DateTime.Now;
+            account.LastModified = DateTime.Now;
+            return _dbRepository.Add<Account>(account);
         }
 
         public bool PostGoal(Goal goal)
@@ -289,11 +378,34 @@ namespace Todolist.Services
             return _dbRepository.Add<Progress>(progress);
         }
 
+        public bool PostRoutine(Routine routine)
+        {
+            routine.NidRoutine = Guid.NewGuid();
+            routine.CreateDate = DateTime.Now;
+            routine.Status = false;
+            return _dbRepository.Add<Routine>(routine);
+        }
+
+        public bool PostRoutineProgress(RoutineProgress routineProgress)
+        {
+            routineProgress.NidRoutineProgress = Guid.NewGuid();
+            routineProgress.CreateDate = DateTime.Now;
+            return _dbRepository.Add<RoutineProgress>(routineProgress);
+        }
+
         public bool PostSchedule(Schedule schedule)
         {
             schedule.NidSchedule = Guid.NewGuid();
             schedule.CreateDate = DateTime.Now;
             return _dbRepository.Add<Schedule>(schedule);
+        }
+
+        public bool PostShield(Shield shield)
+        {
+            shield.Id = Guid.NewGuid();
+            shield.CreateDate = DateTime.Now;
+            shield.Password = Helpers.Encryption.EncryptString(shield.Password);
+            return _dbRepository.Add<Shield>(shield);
         }
 
         public bool PostTask(Task task)
@@ -307,7 +419,9 @@ namespace Todolist.Services
 
         public bool PostTransaction(Transaction transaction)
         {
-            throw new NotImplementedException();
+            transaction.NidTransaction = Guid.NewGuid();
+            transaction.CreateDate = DateTime.Now;
+            return _dbRepository.Add<Transaction>(transaction);
         }
 
         public bool PostUser(User user)
