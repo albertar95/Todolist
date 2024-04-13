@@ -142,7 +142,7 @@
             </div>
             <div class="modal-body">
                 <div id="AddDailySection" hidden>
-                    <form asp-action="SubmitAddRoutine" enctype="multipart/form-data" method="post">
+                    <form action="SubmitAddRoutine" enctype="multipart/form-data" method="post">
                         <input type="number" id="RepeatType1" name="RepeatType" value="1" hidden />
                         <input type="text" id="RepeatDays1" name="RepeatDays" value="0" hidden />
                         <div class="form-group">
@@ -170,7 +170,7 @@
                     </form>
                 </div>
                 <div id="AddWeeklySection" hidden>
-                    <form asp-action="SubmitAddRoutine" enctype="multipart/form-data" method="post">
+                    <form action="SubmitAddRoutine" enctype="multipart/form-data" method="post">
                         <input type="number" id="RepeatType2" name="RepeatType" value="2" hidden />
                         <input type="text" id="RepeatDays2" name="RepeatDays" hidden />
                         <div class="form-group">
@@ -261,7 +261,7 @@
                     </div>
                 </div>
                 <div id="DoneRoutineSection" hidden>
-                    <form asp-action="SubmitDoneRoutine" enctype="multipart/form-data" method="post">
+                    <form action="SubmitDoneRoutine" enctype="multipart/form-data" method="post">
                         <input name="NidRoutineProgress" type="text" hidden />
                         <input name="RoutineId" id="RoutineId1" type="text" hidden />
                         <div class="form-group">
@@ -282,7 +282,7 @@
                     </form>
                 </div>
                 <div id="UnDoneRoutineSection" hidden>
-                    <form asp-action="SubmitUnDoneRoutine" enctype="multipart/form-data" method="post">
+                    <form action="SubmitUnDoneRoutine" enctype="multipart/form-data" method="post">
                         <input name="NidRoutineProgress" type="text" hidden />
                         <input name="RoutineId" id="RoutineId2" type="text" hidden />
                         <div class="form-group">

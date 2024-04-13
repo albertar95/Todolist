@@ -17,6 +17,7 @@
           <Property Name="LendAmount" Type="decimal" Precision="18" Scale="0" Nullable="false" />
           <Property Name="IsActive" Type="bit" Nullable="false" />
           <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="IsBackup" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Goals">
           <Key>
@@ -376,20 +377,6 @@
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="ToDoListDbModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
-        <EntityType Name="Account">
-          <Key>
-            <PropertyRef Name="NidAccount" />
-          </Key>
-          <Property Name="NidAccount" Type="Guid" Nullable="false" />
-          <Property Name="Title" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="LastModified" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="Amount" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
-          <Property Name="LendAmount" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
-          <Property Name="IsActive" Type="Boolean" Nullable="false" />
-          <Property Name="UserId" Type="Guid" Nullable="false" />
-          <NavigationProperty Name="User" Relationship="ToDoListDbModel.FK_Accounts_Users" FromRole="Account" ToRole="User" />
-        </EntityType>
         <EntityType Name="Goal">
           <Key>
             <PropertyRef Name="NidGoal" />
@@ -588,7 +575,6 @@
           </ReferentialConstraint>
         </Association>
         <EntityContainer Name="ToDoListDbEntities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="Accounts" EntityType="Self.Account" />
           <EntitySet Name="Goals" EntityType="Self.Goal" />
           <EntitySet Name="NoteGroups" EntityType="Self.NoteGroup" />
           <EntitySet Name="Notes" EntityType="Self.Note" />
@@ -620,10 +606,6 @@
             <End Role="Schedules" EntitySet="Schedules" />
           </AssociationSet>
           <EntitySet Name="Users" EntityType="ToDoListDbModel.User" />
-          <AssociationSet Name="FK_Accounts_Users" Association="ToDoListDbModel.FK_Accounts_Users">
-            <End Role="User" EntitySet="Users" />
-            <End Role="Account" EntitySet="Accounts" />
-          </AssociationSet>
           <AssociationSet Name="FK_Goals_Users" Association="ToDoListDbModel.FK_Goals_Users">
             <End Role="User" EntitySet="Users" />
             <End Role="Goal" EntitySet="Goals" />
@@ -652,6 +634,11 @@
             <End Role="User" EntitySet="Users" />
             <End Role="Transaction" EntitySet="Transactions" />
           </AssociationSet>
+          <EntitySet Name="Accounts" EntityType="ToDoListDbModel.Account" />
+          <AssociationSet Name="FK_Accounts_Users" Association="ToDoListDbModel.FK_Accounts_Users">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Account" EntitySet="Accounts" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="User">
           <Key>
@@ -664,7 +651,6 @@
           <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="LastLoginDate" Type="DateTime" Precision="3" />
           <Property Name="IsDisabled" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="Accounts" Relationship="ToDoListDbModel.FK_Accounts_Users" FromRole="User" ToRole="Account" />
           <NavigationProperty Name="Goals" Relationship="ToDoListDbModel.FK_Goals_Users" FromRole="User" ToRole="Goal" />
           <NavigationProperty Name="NoteGroups" Relationship="ToDoListDbModel.FK_NoteGroups_Users" FromRole="User" ToRole="NoteGroup" />
           <NavigationProperty Name="Progresses" Relationship="ToDoListDbModel.FK_Progresses_Users" FromRole="User" ToRole="Progress" />
@@ -672,19 +658,8 @@
           <NavigationProperty Name="Shields" Relationship="ToDoListDbModel.FK_Shields_Users" FromRole="User" ToRole="Shield" />
           <NavigationProperty Name="Tasks" Relationship="ToDoListDbModel.FK_Tasks_Users" FromRole="User" ToRole="Task" />
           <NavigationProperty Name="Transactions" Relationship="ToDoListDbModel.FK_Transactions_Users" FromRole="User" ToRole="Transaction" />
+          <NavigationProperty Name="Accounts" Relationship="ToDoListDbModel.FK_Accounts_Users" FromRole="User" ToRole="Account" />
         </EntityType>
-        <Association Name="FK_Accounts_Users">
-          <End Type="ToDoListDbModel.User" Role="User" Multiplicity="1" />
-          <End Type="ToDoListDbModel.Account" Role="Account" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="User">
-              <PropertyRef Name="NidUser" />
-            </Principal>
-            <Dependent Role="Account">
-              <PropertyRef Name="UserId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Goals_Users">
           <End Type="ToDoListDbModel.User" Role="User" Multiplicity="1" />
           <End Type="ToDoListDbModel.Goal" Role="Goal" Multiplicity="*" />
@@ -769,26 +744,39 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="Account">
+          <Key>
+            <PropertyRef Name="NidAccount" />
+          </Key>
+          <Property Name="NidAccount" Type="Guid" Nullable="false" />
+          <Property Name="Title" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="LastModified" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Amount" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+          <Property Name="LendAmount" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="UserId" Type="Guid" Nullable="false" />
+          <Property Name="IsBackup" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="User" Relationship="ToDoListDbModel.FK_Accounts_Users" FromRole="Account" ToRole="User" />
+        </EntityType>
+        <Association Name="FK_Accounts_Users">
+          <End Type="ToDoListDbModel.User" Role="User" Multiplicity="1" />
+          <End Type="ToDoListDbModel.Account" Role="Account" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="NidUser" />
+            </Principal>
+            <Dependent Role="Account">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="ToDoListDbModelStoreContainer" CdmEntityContainer="ToDoListDbEntities">
-          <EntitySetMapping Name="Accounts">
-            <EntityTypeMapping TypeName="ToDoListDbModel.Account">
-              <MappingFragment StoreEntitySet="Accounts">
-                <ScalarProperty Name="NidAccount" ColumnName="NidAccount" />
-                <ScalarProperty Name="Title" ColumnName="Title" />
-                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
-                <ScalarProperty Name="LastModified" ColumnName="LastModified" />
-                <ScalarProperty Name="Amount" ColumnName="Amount" />
-                <ScalarProperty Name="LendAmount" ColumnName="LendAmount" />
-                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
-                <ScalarProperty Name="UserId" ColumnName="UserId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Goals">
             <EntityTypeMapping TypeName="ToDoListDbModel.Goal">
               <MappingFragment StoreEntitySet="Goals">
@@ -929,6 +917,21 @@
                 <ScalarProperty Name="Password" ColumnName="Password" />
                 <ScalarProperty Name="Username" ColumnName="Username" />
                 <ScalarProperty Name="NidUser" ColumnName="NidUser" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Accounts">
+            <EntityTypeMapping TypeName="ToDoListDbModel.Account">
+              <MappingFragment StoreEntitySet="Accounts">
+                <ScalarProperty Name="IsBackup" ColumnName="IsBackup" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="LendAmount" ColumnName="LendAmount" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="LastModified" ColumnName="LastModified" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="NidAccount" ColumnName="NidAccount" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -27,7 +27,7 @@
                     <div class="text-center">
                         <h1 class="h4 text-gray-900 mb-4">Account : @Model.Title </h1>
                     </div>
-                    <form class="user" style="padding:25px;" asp-action="SubmitEditAccount" enctype="multipart/form-data">
+                    <form class="user" style="padding:25px;" action="SubmitEditAccount" enctype="multipart/form-data">
                         <div class="form-group">
                             <input type="text" class="form-control form-control-user" id="NidAccount" name="NidAccount"
                                    value="@Model.NidAccount" hidden>
@@ -56,7 +56,7 @@
                             <input type="text" class="form-control form-control-user" id="LendAmount" name="LendAmount"
                                    value="@Model.LendAmount" readonly>
                         </div>
-                        @if(Model.IsActive)
+                        @if (Model.IsActive)
                         {
                             <div class="form-group">
                                 <div class="custom-control custom-checkbox small">
@@ -66,7 +66,8 @@
                                     </label>
                                 </div>
                             </div>
-                        }else
+                        }
+                        else
                         {
                             <div class="form-group">
                                 <div class="custom-control custom-checkbox small">
@@ -75,7 +76,29 @@
                                         Is Active
                                     </label>
                                 </div>
-                            </div>                            
+                            </div>
+                        }
+                        @if (Model.IsBackup != null && Model.IsBackup == true)
+                        {
+                        <div class="form-group">
+                            <div class="custom-control custom-checkbox small">
+                                <input type="checkbox" class="custom-control-input" id="IsBackup" name="IsBackup" value="true" onclick="$(this).attr('value', this.checked ? 'true' : 'false')" checked>
+                                <label class="custom-control-label" for="IsBackup">
+                                    Is Backup
+                                </label>
+                            </div>
+                        </div>
+                        }
+                        else
+                        {
+                        <div class="form-group">
+                            <div class="custom-control custom-checkbox small">
+                                <input type="checkbox" class="custom-control-input" id="IsBackup" name="IsBackup" value="false" onclick="$(this).attr('value', this.checked ? 'true' : 'false')">
+                                <label class="custom-control-label" for="IsBackup">
+                                    Is Backup
+                                </label>
+                            </div>
+                        </div>
                         }
                         <button type="submit" class="btn btn-warning btn-user btn-block" style="width:50%;margin:0 auto;">
                             edit account

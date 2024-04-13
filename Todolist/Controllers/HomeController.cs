@@ -32,10 +32,13 @@ namespace Todolist.Controllers
         }
         public ActionResult DeleteUser(Guid NidUser)
         {
-            if (_requestProcessor.DeleteUser(NidUser))
-                TempData["UserSuccess"] = "user deleted successfully";
-            else
-                TempData["UserError"] = "an error occured while deleting user!";
+            if(NidUser != GetUserId())
+            {
+                if (_requestProcessor.DeleteUser(NidUser))
+                    TempData["UserSuccess"] = "user deleted successfully";
+                else
+                    TempData["UserError"] = "an error occured while deleting user!";
+            }
             return RedirectToAction("Users");
         }
         [AllowAnonymous]
@@ -59,6 +62,7 @@ namespace Todolist.Controllers
             return RedirectToAction("Login");
         }
         [AllowAnonymous]
+        [HttpPost]
         public ActionResult SubmitLogin(string Username, string Password, string returnUrl = "")
         {
             var loginResult = _requestProcessor.LoginUser(Username,Password);
@@ -218,6 +222,7 @@ namespace Todolist.Controllers
         }
         public ActionResult IndexPagination(int Direction)
         {
+            var tmp = Helpers.ViewHelper.RenderViewToString(this, "_IndexPartialView", _requestProcessor.GetIndex(GetUserId(), Direction));
             return Json(new JsonResults()
             {
                 HasValue = true,
@@ -257,7 +262,7 @@ namespace Todolist.Controllers
         private Guid GetUserId()
         {
             if (Request.Cookies.AllKeys.Contains("TodolistCookie"))
-                return Guid.Parse(Request.Cookies["TodolistCookie"].Values["UserLevel"]);
+                return Guid.Parse(Request.Cookies["TodolistCookie"].Values["NidUser"]);
             else
                 return Guid.Empty;
         }
@@ -342,16 +347,16 @@ namespace Todolist.Controllers
         {
             return View(_requestProcessor.GetFinacialRecords(GetUserId()));
         }
-        public ActionResult SubmitAddAccount(string Title, decimal Amount, bool IsActive)
+        public ActionResult SubmitAddAccount(string Title, decimal Amount, bool IsActive,bool IsBackup = false)
         {
-            Account account = new Account() { Amount = Amount,IsActive = IsActive,LendAmount = 0,Title = Title,UserId = GetUserId() };
+            Account account = new Account() { Amount = Amount,IsActive = IsActive,LendAmount = 0,Title = Title,UserId = GetUserId(), IsBackup = IsBackup };
             if (_requestProcessor.PostAccount(account))
                 TempData["FinanceSuccess"] = $"{account.Title} created successfully";
             else
                 TempData["FinanceError"] = $"an error occured while creating account!";
             return RedirectToAction("FinancialRecords");
         }
-        public ActionResult SubmitAddTransaction(byte TrType, Guid PayerAccount, Guid RecieverAccount, decimal Amount, string Reason)
+        public ActionResult SubmitAddTransaction(byte TrType, Guid PayerAccount, Guid RecieverAccount, decimal Amount, string Reason = "")
         {
             Transaction tr = new Transaction() {Amount = Amount,TransactionType = TrType,PayerAccount = PayerAccount,RecieverAccount = RecieverAccount,TransactionReason = Reason,UserId = GetUserId() };
             if (_requestProcessor.PostTransaction(tr))
@@ -409,7 +414,7 @@ namespace Todolist.Controllers
                 TempData["AccountSuccess"] = $"account edited successfully";
             else
                 TempData["AccountError"] = $"an error occured while editing account!";
-            return RedirectToAction("Account", new { NidAccount = account.NidAccount });
+            return RedirectToAction("FinancialRecords");
         }
         public ActionResult SubmitDeleteAccount(Guid NidAccount)
         {
@@ -513,15 +518,19 @@ namespace Todolist.Controllers
         }
         public ActionResult IndexPagination2(int Direction)
         {
-            return Json(new JsonResults() { HasValue = true, Html = Helpers.ViewHelper.RenderViewToString(this, "_RoutineCalendarPartialView", _requestProcessor.GetRoutines(GetUserId())) });
+            return Json(new JsonResults() { HasValue = true, Html = Helpers.ViewHelper.RenderViewToString(this, "_RoutineCalendarPartialView", _requestProcessor.GetRoutines(GetUserId(),Direction)) });
         }
         public ActionResult IndexPaginationView2(int Direction)
         {
-            return View("RoutineCalendar", _requestProcessor.GetRoutines(GetUserId()));
+            return View("RoutineCalendar", _requestProcessor.GetRoutines(GetUserId(),Direction));
         }
         public ActionResult SubmitEditRoutine(Routine Routine, int Direction = 0)
         {
-            if (_requestProcessor.PatchRoutine(Routine))
+            var current = _requestProcessor.GetRoutine(Routine.NidRoutine);
+            current.Title = Routine.Title;
+            current.FromDate = Routine.FromDate;
+            current.Todate = Routine.Todate;
+            if (_requestProcessor.PatchRoutine(current))
                 TempData["RoutineSuccess"] = $"routine edited successfully";
             else
                 TempData["RoutineError"] = $"an error occured while editing routine!";

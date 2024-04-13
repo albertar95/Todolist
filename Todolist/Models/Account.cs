@@ -22,6 +22,7 @@ namespace Todolist.Models
         public decimal LendAmount { get; set; }
         public bool IsActive { get; set; }
         public System.Guid UserId { get; set; }
+        public bool IsBackup { get; set; }
     
         public virtual User User { get; set; }
     }

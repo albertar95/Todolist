@@ -112,7 +112,12 @@ namespace Todolist.Services
         {
             var tran = _dbRepository.Get<Transaction>(p => p.NidTransaction == nidTransaction);
             if (tran != null)
-                return _dbRepository.Delete<Transaction>(tran);
+            {
+                if (UndoTransaction(tran))
+                    return _dbRepository.Delete<Transaction>(tran);
+                else
+                    return false;
+            }
             else
                 return false;
         }
@@ -152,7 +157,7 @@ namespace Todolist.Services
                 PersianCalendar pc = new PersianCalendar();
                 var StartOfMonth = pc.ToDateTime(pc.GetYear(DateTime.Now), pc.GetMonth(DateTime.Now), 1, 0, 0, 0, 0);
                 var EndOfMonth = pc.ToDateTime(pc.GetYear(StartOfMonth.AddMonths(1).AddDays(3)), pc.GetMonth(StartOfMonth.AddMonths(1).AddDays(3)), 1, 0, 0, 0, 0);
-                result.Transactions = _dbRepository.GetList<Transaction>(p => p.UserId == nidUser && p.CreateDate.Date >= StartOfMonth && p.CreateDate < EndOfMonth);
+                result.Transactions = _dbRepository.GetList<Transaction>(p => p.UserId == nidUser).Where(q => q.CreateDate >= StartOfMonth && q.CreateDate < EndOfMonth).ToList();
             }
             return result;
         }
@@ -181,20 +186,20 @@ namespace Todolist.Services
 
         public IndexViewModel GetIndex(Guid nidUser, int Direction = 0)
         {
-            var result = new IndexViewModel();
-            result.AllGoals = _dbRepository.GetList<Goal>(p => p.UserId == nidUser);
-            result.Goals = result.AllGoals.Where(p => p.GoalStatus == 0).ToList();
-            result.AllGoals.ForEach(x => { result.AllTasks.AddRange(_dbRepository.GetList<Task>(p => p.GoalId == x.NidGoal)); });
-            result.Tasks = result.AllTasks.Where(p => p.TaskStatus == false && result.Goals.GroupBy(x => x.NidGoal).Select(q => q.Key).ToList()
-            .Contains(p.GoalId)).ToList() ?? new List<Models.Task>();
-            result.AllTasks.ForEach(x => { result.Schedules.AddRange(_dbRepository.GetList<Schedule>(p => p.TaskId == x.NidTask)); });
-            result.Schedules.ForEach(x => { result.Progresses.AddRange(_dbRepository.GetList<Progress>(p => p.ScheduleId == x.NidSchedule)); });
+            var result = new IndexViewModel() { AllTasks = new List<Task>(), Schedules = new List<Schedule>(), Progresses = new List<Progress>() };
             string[] DatePeriod = new string[3];
             var weekDates = Helpers.Dates.GetWeekPeriod(Direction);
             DatePeriod[0] = $"{weekDates.Item1.ToString("dd/MM/yyyy")} - {weekDates.Item2.ToString("dd/MM/yyyy")}";
             DatePeriod[1] = $"{Direction - 1}";
             DatePeriod[2] = $"{Direction + 1}";
             var persianDates = Helpers.Dates.ToPersianDate(weekDates);
+            result.AllGoals = _dbRepository.GetList<Goal>(p => p.UserId == nidUser);
+            result.Goals = result.AllGoals.Where(p => p.GoalStatus == 0).ToList();
+            result.AllGoals.ForEach(x => { result.AllTasks.AddRange(_dbRepository.GetList<Task>(p => p.GoalId == x.NidGoal)); });
+            result.Tasks = result.AllTasks.Where(p => p.TaskStatus == false && result.Goals.GroupBy(x => x.NidGoal).Select(q => q.Key).ToList()
+            .Contains(p.GoalId)).ToList() ?? new List<Models.Task>();
+            result.AllTasks.ForEach(x => { result.Schedules.AddRange(_dbRepository.GetList<Schedule>(p => p.TaskId == x.NidTask).Where(p => p.ScheduleDate >= weekDates.Item1 && p.ScheduleDate <= weekDates.Item2)); });
+            result.Schedules.ForEach(x => { result.Progresses.AddRange(_dbRepository.GetList<Progress>(p => p.ScheduleId == x.NidSchedule)); });
             result.DatePeriodInfo = DatePeriod;
             result.PersianDatePeriodInfo = new string[] { persianDates.Item1, persianDates.Item2 };
             result.StartDate = weekDates.Item1;
@@ -237,10 +242,10 @@ namespace Todolist.Services
 
         public RoutineViewModel GetRoutines(Guid nidUser, int Direction = 0)
         {
-            var result = new RoutineViewModel();
+            var result = new RoutineViewModel() {  RoutineProgresses = new List<RoutineProgress>() };
             result.Routines = _dbRepository.GetList<Routine>(p => p.UserId == nidUser);
             string[] DatePeriod = new string[3];
-            var weekDates = Helpers.Dates.GetWeekPeriod();
+            var weekDates = Helpers.Dates.GetWeekPeriod(Direction);
             DatePeriod[0] = $"{weekDates.Item1.ToString("dd/MM/yyyy")} - {weekDates.Item2.ToString("dd/MM/yyyy")}";
             DatePeriod[1] = $"{Direction - 1}";
             DatePeriod[2] = $"{Direction + 1}";
@@ -280,7 +285,8 @@ namespace Todolist.Services
 
         public UserLoginDto LoginUser(string username, string password)
         {
-            var user = _dbRepository.Get<User>(p => p.Username == username.Trim() && p.Password == Helpers.Encryption.EncryptString(password.Trim()));
+            password = Helpers.Encryption.EncryptString(password.Trim());
+            var user = _dbRepository.Get<User>(p => p.Username == username.Trim() && p.Password == password);
             if (user != null)
                 return new UserLoginDto() {  IsSuccessful = true, IsAdmin = user.IsAdmin, NidUser = user.NidUser, Username = user.Username };
             else
@@ -419,9 +425,14 @@ namespace Todolist.Services
 
         public bool PostTransaction(Transaction transaction)
         {
-            transaction.NidTransaction = Guid.NewGuid();
-            transaction.CreateDate = DateTime.Now;
-            return _dbRepository.Add<Transaction>(transaction);
+            if (PerformTransaction(transaction))
+            {
+                transaction.NidTransaction = Guid.NewGuid();
+                transaction.CreateDate = DateTime.Now;
+                return _dbRepository.Add<Transaction>(transaction);
+            }
+            else
+                return false;
         }
 
         public bool PostUser(User user)
@@ -439,6 +450,118 @@ namespace Todolist.Services
             task.ClosureDate = null;
             task.LastModifiedDate = DateTime.Now;
             return _dbRepository.Update<Task>(task);
+        }
+        private bool PerformTransaction(Transaction Transaction)
+        {
+            bool IsAccUpdate = false;
+            bool IsConditionOk = false;
+            var payer = _dbRepository.Get<Account>(p => p.NidAccount == Transaction.PayerAccount);
+            var reciever = _dbRepository.Get<Account>(p => p.NidAccount == Transaction.RecieverAccount);
+            if (payer != null)
+            {
+                if (Transaction.Amount <= payer.Amount)
+                {
+                    payer.Amount = payer.Amount - Transaction.Amount;
+                    payer.LastModified = DateTime.Now;
+                    if (Transaction.TransactionType == 2)
+                        payer.LendAmount = payer.LendAmount + Transaction.Amount;
+                    if (reciever != null)
+                    {
+                        reciever.Amount = reciever.Amount + Transaction.Amount;
+                        if (Transaction.TransactionType == 3)
+                        {
+                            if (Transaction.Amount <= reciever.LendAmount)
+                            {
+                                reciever.LendAmount = reciever.LendAmount - Transaction.Amount;
+                                IsConditionOk = true;
+                            }
+                        }
+                        else
+                            IsConditionOk = true;
+                    }
+                    if (IsConditionOk)
+                    {
+                        if (_dbRepository.Update<Account>(payer))
+                            IsAccUpdate = _dbRepository.Update<Account>(reciever);
+                    }
+                }
+            }
+            return IsAccUpdate;
+        }
+        private bool UndoTransaction(Transaction Transaction)
+        {
+            bool IsAccountOk = false;
+            try
+            {
+                var payer = _dbRepository.Get<Account>(p => p.NidAccount == Transaction.PayerAccount);
+                var reciever = _dbRepository.Get<Account>(p => p.NidAccount == Transaction.RecieverAccount);
+                if (payer != null && reciever != null)
+                {
+                    switch (Transaction.TransactionType)
+                    {
+                        case 1://pay
+                            if (reciever.Amount >= Transaction.Amount)
+                            {
+                                reciever.Amount = reciever.Amount - Transaction.Amount;
+                                payer.Amount = payer.Amount + Transaction.Amount;
+                                if(_dbRepository.Update(reciever))
+                                {
+                                    if (_dbRepository.Update(payer))
+                                        IsAccountOk = true;
+                                    else
+                                    {
+                                        reciever.Amount = reciever.Amount + Transaction.Amount;
+                                        _dbRepository.Update(reciever);
+                                    }
+                                }
+                            }
+                            break;
+                        case 2://lend
+                            if (reciever.Amount >= Transaction.Amount)
+                            {
+                                reciever.Amount = reciever.Amount - Transaction.Amount;
+                                payer.Amount = payer.Amount + Transaction.Amount;
+                                if (payer.LendAmount >= Transaction.Amount)
+                                {
+                                    payer.LendAmount = payer.LendAmount - Transaction.Amount;
+                                    if(_dbRepository.Update(reciever))
+                                    {
+                                        if(_dbRepository.Update(payer))
+                                            IsAccountOk = true;
+                                        else
+                                        {
+                                            reciever.Amount = reciever.Amount + Transaction.Amount;
+                                            _dbRepository.Update(reciever);
+                                        }
+                                    }
+                                }
+                            }
+                            break;
+                        case 3://lend back
+                            if (reciever.Amount >= Transaction.Amount)
+                            {
+                                reciever.Amount = reciever.Amount - Transaction.Amount;
+                                reciever.LendAmount = reciever.LendAmount + Transaction.Amount;
+                                payer.Amount = payer.Amount + Transaction.Amount;
+                                if(_dbRepository.Update(reciever))
+                                {
+                                    if(_dbRepository.Update(payer))
+                                        IsAccountOk = true;
+                                    else
+                                    {
+                                        reciever.Amount = reciever.Amount + Transaction.Amount;
+                                        _dbRepository.Update(reciever);
+                                    }
+                                }
+                            }
+                            break;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+            }
+            return IsAccountOk;
         }
     }
 }

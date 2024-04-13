@@ -8,33 +8,33 @@
 <hr />
 <div class="row">
     <div class="col-md-12">
-        <form asp-action="SubmitEditShield">
+        <form action="SubmitEditShield">
             <input type="text" name="Id" value="@Model.Id" hidden />
             <input type="text" name="UserId" value="@Model.UserId" hidden />
             <input type="text" name="CreateDate" value="@Model.CreateDate" hidden />
             <input type="text" name="LastModified" value="@Model.LastModified" hidden />
             <div class="form-group">
                 <label asp-for="Title" class="control-label"></label>
-                <input asp-for="Title" class="form-control" value="@Model.Title" autofocus />
+                <input asp-for="Title" name="Title" class="form-control" value="@Model.Title" autofocus />
             </div>
             <div class="form-group">
                 <label asp-for="TargetUrl" class="control-label"></label>
-                <input asp-for="TargetUrl" class="form-control" value="@Model.TargetUrl" />
+                <input asp-for="TargetUrl" name="TargetUrl" class="form-control" value="@Model.TargetUrl" />
             </div>
             <div class="form-group">
                 <label asp-for="Username" class="control-label"></label>
-                <input asp-for="Username" class="form-control" value="@Model.Username" />
+                <input asp-for="Username" name="Username" class="form-control" value="@Model.Username" />
             </div>
             <div class="form-group">
                 <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" class="form-control" value="@Todolist.Helpers.Encryption.DecryptString(Model.Password)" />
+                <input asp-for="Password" name="Password" class="form-control" value="@Todolist.Helpers.Encryption.DecryptString(Model.Password)" />
             </div>
             <div class="form-group">
                 <div class="row">
                     <div class="col-lg-4"></div>
                     <div class="col-lg-4 text-center">
                         <input type="submit" value="Update" class="btn btn-warning" />
-                        <a class="btn btn-outline-info" asp-action="Shields">Back to List</a>
+                        <a class="btn btn-outline-info" href="@Url.Action("Shields","Home")">Back to List</a>
                     </div>
                     <div class="col-lg-4"></div>
                 </div>

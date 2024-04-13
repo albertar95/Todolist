@@ -17,12 +17,12 @@
     <title>ToDo List - Login</title>
 
     <!-- Custom fonts for this template-->
-    <link href="@Url.Content("~/vendor/fontawesome-free/css/all.min.css")" rel="stylesheet" type="text/css">
-    <link href="@Url.Content("~/css/fonts.css")"
+    <link href="@Url.Content("~/Contents/vendor/fontawesome-free/css/all.min.css")" rel="stylesheet" type="text/css">
+    <link href="@Url.Content("~/Contents/css/fonts.css")"
           rel="stylesheet">
 
     <!-- Custom styles for this template-->
-    <link href="@Url.Content("~/css/sb-admin-2.min.css")" rel="stylesheet">
+    <link href="@Url.Content("~/Contents/css/sb-admin-2.min.css")" rel="stylesheet">
 
 </head>
 
@@ -45,7 +45,7 @@
                                     <div class="text-center">
                                         <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
                                     </div>
-                                    <form class="user" asp-action="SubmitLogin" enctype="multipart/form-data">
+                                    <form class="user" action="SubmitLogin" enctype="multipart/form-data" method="post">
                                         @if (!string.IsNullOrWhiteSpace(Model.ToString()))
                                         {
                                             <input type="text" class="form-control form-control-user"
@@ -60,9 +60,7 @@
                                             <input type="password" class="form-control form-control-user" required
                                                    id="Password" name="Password" placeholder="Password">
                                         </div>
-                                        <button class="btn btn-primary btn-user btn-block" style="width:100px;margin:0 auto;" type="submit">
-                                            Login
-                                        </button>
+                                        <input class="btn btn-primary btn-user btn-block" style="width:100px;margin:0 auto;" type="submit" value="Login" />
                                         <hr>
                                         <div class="row">
                                             <div class="alert alert-success alert-dismissible fade show" role="alert" id="successDiv" hidden>
@@ -92,14 +90,14 @@
     </div>
 
     <!-- Bootstrap core JavaScript-->
-    <script src="@Url.Content("~/vendor/jquery/jquery.min.js")"></script>
-    <script src="@Url.Content("~/vendor/bootstrap/js/bootstrap.bundle.min.js")"></script>
+    <script src="@Url.Content("~/Contents/vendor/jquery/jquery.min.js")"></script>
+    <script src="@Url.Content("~/Contents/vendor/bootstrap/js/bootstrap.bundle.min.js")"></script>
 
     <!-- Core plugin JavaScript-->
-    <script src="@Url.Content("~/vendor/jquery-easing/jquery.easing.min.js")"></script>
+    <script src="@Url.Content("~/Contents/vendor/jquery-easing/jquery.easing.min.js")"></script>
 
     <!-- Custom scripts for all pages-->
-    <script src="@Url.Content("~/js/sb-admin-2.min.js")"></script>
+    <script src="@Url.Content("~/Contents/js/sb-admin-2.min.js")"></script>
     <script type="text/javascript">
     $(function()
     {

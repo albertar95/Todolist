@@ -25,7 +25,6 @@ namespace Todolist.Models
             throw new UnintentionalCodeFirstException();
         }
     
-        public DbSet<Account> Accounts { get; set; }
         public DbSet<Goal> Goals { get; set; }
         public DbSet<NoteGroup> NoteGroups { get; set; }
         public DbSet<Note> Notes { get; set; }
@@ -37,5 +36,6 @@ namespace Todolist.Models
         public DbSet<Task> Tasks { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Account> Accounts { get; set; }
     }
 }

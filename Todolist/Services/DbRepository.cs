@@ -22,7 +22,7 @@ namespace Todolist.Services
             try
             {
             _context.Entry(entity).State = System.Data.EntityState.Added;
-            if (_context.SaveChanges() == 1)
+            if (_context.SaveChanges() >= 1)
                 return true;
             else
                 return false;
@@ -37,12 +37,12 @@ namespace Todolist.Services
             try
             {
                 _context.Entry(entity).State = System.Data.EntityState.Modified;
-                if (_context.SaveChanges() == 1)
+                if (_context.SaveChanges() >= 1)
                     return true;
                 else
                     return false;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return false;
             }
@@ -52,7 +52,7 @@ namespace Todolist.Services
             try
             {
                 _context.Entry(entity).State = System.Data.EntityState.Deleted;
-                if (_context.SaveChanges() == 1)
+                if (_context.SaveChanges() >= 1)
                     return true;
                 else
                     return false;

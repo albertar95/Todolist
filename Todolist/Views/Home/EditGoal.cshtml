@@ -9,54 +9,49 @@
 <hr />
 <div class="row">
     <div class="col-md-12">
-        <form asp-action="SubmitEditGoal">
+        <form action="SubmitEditGoal">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="NidGoal" />
-            <input type="hidden" asp-for="UserId" />
+            <input type="hidden" asp-for="NidGoal" name="NidGoal" value="@Model.NidGoal" />
+            <input type="hidden" asp-for="UserId" name="UserId" value="@Model.UserId" />
             <div class="form-group" hidden>
                 <label asp-for="GoalStatus" class="control-label"></label>
-                <input asp-for="GoalStatus" class="form-control" />
+                <input asp-for="GoalStatus" name="GoalStatus" class="form-control" value="@Model.GoalStatus" />
                 <span asp-validation-for="GoalStatus" class="text-danger"></span>
             </div>
             <div class="form-group" hidden>
                 <label asp-for="CreateDate" class="control-label"></label>
-                <input asp-for="CreateDate" class="form-control" />
+                <input asp-for="CreateDate" name="CreateDate" class="form-control" value="@Model.CreateDate" />
                 <span asp-validation-for="CreateDate" class="text-danger"></span>
             </div>
             <div class="form-group" hidden>
                 <label asp-for="LastModifiedDate" class="control-label"></label>
-                <input asp-for="LastModifiedDate" class="form-control" />
+                <input asp-for="LastModifiedDate" name="LastModifiedDate" class="form-control" value="@Model.LastModifiedDate" />
                 <span asp-validation-for="LastModifiedDate" class="text-danger"></span>
             </div>
-            <div class="form-group" hidden>
-                <label asp-for="UserId" class="control-label"></label>
-                <select asp-for="UserId" class="form-control" asp-items="ViewBag.UserId"></select>
-                <span asp-validation-for="UserId" class="text-danger"></span>
-            </div>
             <div class="form-group">
-                <label asp-for="Title" class="control-label"></label>
-                <input asp-for="Title" class="form-control" autofocus />
+                <label asp-for="Title" class="control-label">Title</label>
+                <input asp-for="Title" name="Title" class="form-control" autofocus value="@Model.Title" placeholder="Title" />
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
             <div class="col-md-12 d-flex">
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label asp-for="FromDate" class="control-label"></label>
-                        <input asp-for="FromDate" class="form-control" />
+                        <label asp-for="FromDate" class="control-label">FromDate</label>
+                        <input asp-for="FromDate" name="FromDate" type="date" class="form-control" value="@Model.FromDate" />
                         <span asp-validation-for="FromDate" class="text-danger"></span>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label asp-for="ToDate" class="control-label"></label>
-                        <input asp-for="ToDate" class="form-control" />
+                        <label asp-for="ToDate" class="control-label">ToDate</label>
+                        <input asp-for="ToDate" name="ToDate" type="date" class="form-control" value="@Model.ToDate" />
                         <span asp-validation-for="ToDate" class="text-danger"></span>
                     </div>
                 </div>
             </div>
             <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <textarea asp-for="Description" class="form-control" rows="5"></textarea>
+                <label asp-for="Description" class="control-label">Description</label>
+                <textarea asp-for="Description" name="Description" class="form-control" rows="5" value="@Model.Description"></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -64,7 +59,7 @@
                     <div class="col-lg-4"></div>
                     <div class="col-lg-4 text-center">
                         <input type="submit" value="edit" class="btn btn-warning" />
-                        <a class="btn btn-outline-info" asp-action="Goals">Back to List</a>
+                        <a class="btn btn-outline-info" href="@Url.Action("Goals","Home")">Back to List</a>
                     </div>
                     <div class="col-lg-4"></div>
                 </div>

@@ -30,10 +30,10 @@
         return r.Next(26);
     }
 }
-@for (var i = 0; i <= Model.Accounts.Where(p => p.IsActive == true && p.Title.Contains("(")).Count() / 6; i++)
+@for (var i = 0; i <= Model.Accounts.Where(p => p.IsActive == true && p.IsBackup == false).Count() / 6; i++)
 {
     <div class="row">
-        @foreach (var acc in Model.Accounts.Where(p => p.IsActive == true && p.Title.Contains("(")).OrderBy(p => p.Title).Skip(i * 6).Take(6))
+        @foreach (var acc in Model.Accounts.Where(p => p.IsActive == true && p.IsBackup == false).OrderBy(p => p.Title).Skip(i * 6).Take(6))
         {
             <div class="col-xl-2">
                 <div class="card shadow mb-2 d-flex">
@@ -53,10 +53,10 @@
         }
     </div>
 }
-@for (var i = 0; i <= Model.Accounts.Where(p => p.IsActive == true && !p.Title.Contains("(")).Count() / 6; i++)
+@for (var i = 0; i <= Model.Accounts.Where(p => p.IsActive == true && p.IsBackup == true).Count() / 6; i++)
 {
     <div class="row">
-        @foreach (var acc in Model.Accounts.Where(p => p.IsActive == true && !p.Title.Contains("(")).OrderByDescending(p => p.Amount).Skip(i * 6).Take(6))
+        @foreach (var acc in Model.Accounts.Where(p => p.IsActive == true && p.IsBackup == true).OrderByDescending(p => p.Amount).Skip(i * 6).Take(6))
         {
             <div class="col-xl-2">
                 <div class="card shadow mb-2 d-flex" style="opacity:60%;">
@@ -139,8 +139,16 @@
                     <div class="form-group">
                         <div class="custom-control custom-checkbox small">
                             <input type="checkbox" class="custom-control-input" id="AccountIsActive" name="IsActive" onclick="$(this).attr('value', this.checked ? 'true' : 'false')">
-                            <label class="custom-control-label" for="IsActive">
+                            <label class="custom-control-label" for="AccountIsActive">
                                 Is Active
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="custom-control custom-checkbox small">
+                            <input type="checkbox" class="custom-control-input" id="AccountIsBackup" name="IsBackup" onclick="$(this).attr('value', this.checked ? 'true' : 'false')">
+                            <label class="custom-control-label" for="AccountIsBackup">
+                                Is Backup
                             </label>
                         </div>
                     </div>
@@ -252,6 +260,8 @@
             $("#txtAccountTitle").val('');
             $("#AccountIsActive").attr('checked','checked');
             $("#AccountIsActive").val('true');
+            $("#AccountIsBackup").removeAttr('checked');
+            $("#AccountIsBackup").val('false');
             $("#btnSubmitAddAccount").removeAttr('hidden');
             $("#btnSubmitAddTransaction").attr('hidden', 'hidden');
             $("#btnSubmitEditTransaction").attr('hidden', 'hidden');
@@ -266,7 +276,7 @@
         {
             e.preventDefault();
             window.location.href = '@Url.Action("SubmitAddAccount","Home")' + '?Title=' + $("#txtAccountTitle").val()
-                + '&Amount=' + $("#txtAccountAmount").val() + '&IsActive=' + $("#AccountIsActive").val();
+                + '&Amount=' + $("#txtAccountAmount").val() + '&IsActive=' + $("#AccountIsActive").val() + '&IsBackup=' + $("#AccountIsBackup").val();
         }
         function AddTransaction(e)
         {
