@@ -23,12 +23,6 @@
         </div>
     </div>
 </div>
-@{
-    int genRandomNumber(){
-        Random r = new Random();
-        return r.Next(26);
-    }
-}
 @for (var i = 0; i <= Model.Goals.Where(p => p.GoalStatus == 0).Count()/3; i++)
 {
     <div class="row">
@@ -37,7 +31,7 @@
             <div class="col-xl-4">
                 <div class="card shadow mb-4 d-flex">
                     <!-- Card Header - Accordion -->
-                    <a href="@Url.Action("Goal","Home",new {NidGoal = goal.NidGoal})" class="d-block card-header py-3"  style="background-color:@Model.bgColor[genRandomNumber()];">
+                    <a href="@Url.Action("Goal","Home",new {NidGoal = goal.NidGoal})" class="d-block card-header py-3"  style="background-color:@Model.bgColor[Todolist.Helpers.Calc.genRandomNumber()];">
                         <h6 class="font-weight-bold text-primary" style="margin:0 auto;">@goal.Title</h6>
                         <p style="justify-content:right;display:contents;">
                             Period : @Todolist.Helpers.Dates.ToPersianDate2(goal.FromDate) - @Todolist.Helpers.Dates.ToPersianDate2(goal.ToDate)
@@ -101,7 +95,7 @@
             <div class="col-xl-4">
                 <div class="card shadow mb-4 d-flex" style="opacity:60%;">
                     <!-- Card Header - Accordion -->
-                    <a href="@Url.Action("Goal","Home",new {NidGoal = goal.NidGoal})" class="d-block card-header py-3" style="background-color:@Model.bgColor[genRandomNumber()];">
+                    <a href="@Url.Action("Goal","Home",new {NidGoal = goal.NidGoal})" class="d-block card-header py-3" style="background-color:@Model.bgColor[Todolist.Helpers.Calc.genRandomNumber()];">
                         <h6 class="font-weight-bold text-primary" style="margin:0 auto;">@goal.Title</h6>
                         <p style="justify-content:right;display:contents;">
                                 Period : @Todolist.Helpers.Dates.ToPersianDate2(goal.FromDate) - @Todolist.Helpers.Dates.ToPersianDate2(goal.ToDate)

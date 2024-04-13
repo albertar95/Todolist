@@ -325,6 +325,8 @@ namespace Todolist.Controllers
         {
             return View(_requestProcessor.GetNote(NidNote));
         }
+        [AllowAnonymous]
+        [ValidateInput(false)]
         public ActionResult SubmitEditNote(Note note)
         {
             if (_requestProcessor.PatchNote(note))

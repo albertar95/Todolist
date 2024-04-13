@@ -39,13 +39,6 @@
             </div>
         </div>
     </div>
-@{
-    int genRandomNumber()
-    {
-        Random r = new Random();
-        return r.Next(26);
-    }
-}
 @for (var i = 0; i <= Model.Notes.Count / 3; i++)
 {
     <div class="row" style="padding:25px;">
@@ -53,7 +46,7 @@
         {
             <div class="col-xl-4">
                 <div class="card shadow mb-4 d-flex">
-                    <a href="@Url.Action("Note","Home",new {NidNote = note.NidNote })" class="d-block card-header py-3" style="background-color:@Model.bgColor[genRandomNumber()];">
+                    <a href="@Url.Action("Note","Home",new {NidNote = note.NidNote })" class="d-block card-header py-3" style="background-color:@Model.bgColor[Todolist.Helpers.Calc.genRandomNumber()];">
                         <h6 class="font-weight-bold text-primary" style="margin:0 auto;">@note.Title</h6>
                     </a>
                     <!-- Card Content - Collapse -->

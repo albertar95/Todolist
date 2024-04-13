@@ -16,5 +16,10 @@ namespace Todolist.Helpers
             }
             return result;
         }
+        public static int genRandomNumber()
+        {
+            Random r = new Random();
+            return r.Next(26);
+        }
     }
 }
