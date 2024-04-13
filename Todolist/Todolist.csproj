@@ -113,7 +113,7 @@
   <ItemGroup>
     <Content Include="Contents\css\fonts.css" />
     <Content Include="Contents\css\sb-admin-2.min.css" />
-    <Content Include="Contents\favicon.ico" />
+    <Content Include="favicon.ico" />
     <Content Include="Contents\img\checked.png" />
     <Content Include="Contents\img\unchecked.png" />
     <Content Include="Contents\img\undraw_profile.svg" />
