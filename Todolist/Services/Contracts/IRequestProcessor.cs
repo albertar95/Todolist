@@ -73,5 +73,6 @@ namespace Todolist.Services.Contracts
         List<RoutineProgress> GetRoutineProgresses(Guid nidRoutine);
         bool PostRoutineProgress(RoutineProgress routineProgress);
         bool DeleteRoutineProgress(Guid nidRoutineProgress);
+        List<LendDetailViewModel> LendDetails(Guid nidAccount);
     }
 }

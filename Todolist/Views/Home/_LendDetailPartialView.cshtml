@@ -1,0 +1,22 @@
+﻿@model List<Todolist.ViewModels.LendDetailViewModel>
+<div class="row">
+    <div class="table-responsive">
+        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+            <thead>
+                <tr style="text-align:center;">
+                    <th>Destination Account</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var tr in Model)
+                {
+                <tr style="text-align:center;">
+                    <td>@tr.AccountName</td>
+                    <td>@string.Format("{0:n0}", tr.Amount) $</td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

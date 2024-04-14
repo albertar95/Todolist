@@ -38,8 +38,10 @@
                     <!-- Card Content - Collapse -->
                     <div class="collapse show">
                         <div class="card-body">
-                            <p>Amount : @string.Format("{0:n0}",acc.Amount) $</p>
-                            <p>Lend : @string.Format("{0:n0}",acc.LendAmount) $</p>
+                            <p>Amount : @string.Format("{0:n0}", acc.Amount) $</p>
+                            <a href="#" onclick="ShowLendDetail(event,'@acc.NidAccount')"><p>Lend : @string.Format("{0:n0}", acc.LendAmount) $</p></a>
+                            <p>income : @string.Format("{0:n0}", Model.Transactions.Where(p => p.CreateDate >= Model.StartOfMonth && p.RecieverAccount == acc.NidAccount).Sum(q => q.Amount)) $</p>
+                            <p>spence : @string.Format("{0:n0}", Model.Transactions.Where(p => p.CreateDate >= Model.StartOfMonth && p.PayerAccount == acc.NidAccount).Sum(q => q.Amount)) $</p>
                         </div>
                     </div>
                 </div>
@@ -216,6 +218,8 @@
                         </div>
                     </div>
                 </div>
+                <div id="LendDetailSection" hidden>
+                </div>
             </div>
             <div class="modal-footer">
             </div>
@@ -264,6 +268,7 @@
             $("#AccountSection").removeAttr('hidden');
             $("#DeleteSection").attr('hidden', 'hidden');
             $("#TransactionSection").attr('hidden', 'hidden');
+            $("#LendDetailSection").attr('hidden', 'hidden');
             $("#financeModal").modal();
         }
         function SubmitAddAccount(e)
@@ -271,6 +276,30 @@
             e.preventDefault();
             window.location.href = '@Url.Action("SubmitAddAccount","Home")' + '?Title=' + $("#txtAccountTitle").val()
                 + '&Amount=' + $("#txtAccountAmount").val() + '&IsActive=' + $("#AccountIsActive").val() + '&IsBackup=' + $("#AccountIsBackup").val();
+        }
+        function ShowLendDetail(e,nidAcc)
+        {
+            e.preventDefault();
+            $.ajax(
+                {
+                    url: '@Url.Action("LendDetail","Home")',
+                    type:'post',
+                    datatype:'json',
+                    data: { NidAccount: nidAcc },
+                    success:function(result)
+                    {
+                        if(result.HasValue)
+                        {
+                            $("#LendDetailSection").html(result.Html);
+                            $("#LendDetailSection").removeAttr('hidden');
+                            $("#TransactionSection").attr('hidden', 'hidden');
+                            $("#DeleteSection").attr('hidden', 'hidden');
+                            $("#AccountSection").attr('hidden', 'hidden');
+                            $("#financeModal").modal();
+                        }
+                    },
+                    error:function(){}
+                });
         }
         function AddTransaction(e)
         {
@@ -287,7 +316,8 @@
             $("#financeModalLabel").text('Add Transaction');
             $("#DeleteSection").attr('hidden', 'hidden');
             $("#TransactionSection").removeAttr('hidden');
-            $("#AccountSection").attr('hidden','hidden');
+            $("#AccountSection").attr('hidden', 'hidden');
+            $("#LendDetailSection").attr('hidden', 'hidden');
             $("#financeModal").modal();
         }
         function SubmitAddTransaction(e) {
@@ -322,6 +352,7 @@
                             $("#TransactionSection").removeAttr('hidden');
                             $("#DeleteSection").attr('hidden', 'hidden');
                             $("#AccountSection").attr('hidden', 'hidden');
+                            $("#LendDetailSection").attr('hidden', 'hidden');
                             $("#financeModal").modal();
                         }
                     },
@@ -343,6 +374,7 @@
             $("#DeleteSection").removeAttr('hidden');
             $("#TransactionSection").attr('hidden', 'hidden');
             $("#AccountSection").attr('hidden', 'hidden');
+            $("#LendDetailSection").attr('hidden', 'hidden');
             $("#btnSubmitDelete").removeAttr('hidden');
             $("#btnSubmitAddAccount").attr('hidden', 'hidden');
             $("#btnSubmitAddTransaction").attr('hidden', 'hidden');

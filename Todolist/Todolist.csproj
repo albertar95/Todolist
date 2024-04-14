@@ -1878,6 +1878,7 @@
     <Compile Include="ViewModels\GoalPageViewModel.cs" />
     <Compile Include="ViewModels\GoalViewModel.cs" />
     <Compile Include="ViewModels\IndexViewModel.cs" />
+    <Compile Include="ViewModels\LendDetailViewModel.cs" />
     <Compile Include="ViewModels\NotesViewModel.cs" />
     <Compile Include="ViewModels\ProgressViewModel.cs" />
     <Compile Include="ViewModels\RoutineViewModel.cs" />
@@ -2094,6 +2095,7 @@
     <Content Include="Views\Home\Users.cshtml" />
     <Content Include="Views\Home\_IndexPartialView.cshtml" />
     <Content Include="Views\Home\_RoutineCalendarPartialView.cshtml" />
+    <Content Include="Views\Home\_LendDetailPartialView.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

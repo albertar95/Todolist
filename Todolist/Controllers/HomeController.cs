@@ -551,6 +551,14 @@ namespace Todolist.Controllers
                 TempData["RoutineError"] = $"an error occured while doning routine!";
             return RedirectToAction("IndexPaginationView2", new { Direction = Direction });
         }
+        public ActionResult LendDetail(Guid NidAccount)
+        {
+            var details = _requestProcessor.LendDetails(NidAccount);
+            if(details.Any())
+                return Json(new JsonResults() {  HasValue = true, Html = Helpers.ViewHelper.RenderViewToString(this, "_LendDetailPartialView", details)});
+            else
+                return Json(new JsonResults() {  HasValue = false });
+        }
     }
     public class JsonResults
     {

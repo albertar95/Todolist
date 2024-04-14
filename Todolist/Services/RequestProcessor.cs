@@ -150,15 +150,14 @@ namespace Todolist.Services
             var result = new FinanceViewModel();
             result.Accounts = _dbRepository.GetList<Account>(p => p.UserId == nidUser);
             result.AllTransactions = includeAll;
-            if(includeAll)
+            PersianCalendar pc = new PersianCalendar();
+            var StartOfMonth = pc.ToDateTime(pc.GetYear(DateTime.Now), pc.GetMonth(DateTime.Now), 1, 0, 0, 0, 0);
+            var EndOfMonth = pc.ToDateTime(pc.GetYear(StartOfMonth.AddMonths(1).AddDays(3)), pc.GetMonth(StartOfMonth.AddMonths(1).AddDays(3)), 1, 0, 0, 0, 0);
+            if (includeAll)
                 result.Transactions = _dbRepository.GetList<Transaction>(p => p.UserId == nidUser);
             else
-            {
-                PersianCalendar pc = new PersianCalendar();
-                var StartOfMonth = pc.ToDateTime(pc.GetYear(DateTime.Now), pc.GetMonth(DateTime.Now), 1, 0, 0, 0, 0);
-                var EndOfMonth = pc.ToDateTime(pc.GetYear(StartOfMonth.AddMonths(1).AddDays(3)), pc.GetMonth(StartOfMonth.AddMonths(1).AddDays(3)), 1, 0, 0, 0, 0);
                 result.Transactions = _dbRepository.GetList<Transaction>(p => p.UserId == nidUser).Where(q => q.CreateDate >= StartOfMonth && q.CreateDate < EndOfMonth).ToList();
-            }
+            result.StartOfMonth = StartOfMonth.Date;
             return result;
         }
 
@@ -281,6 +280,35 @@ namespace Todolist.Services
         public List<User> GetUsers()
         {
             return _dbRepository.GetList<User>();
+        }
+
+        public List<LendDetailViewModel> LendDetails(Guid nidAccount)
+        {
+            var lendTrs = _dbRepository.GetList<Transaction>(p => p.PayerAccount == nidAccount && p.TransactionType == 2)
+                .GroupBy(q => q.RecieverAccount).Select(w => new { nidAcc = w.Key,amount = w.Sum(x => x.Amount)}).ToList();
+            var lendBackTrs = _dbRepository.GetList<Transaction>(p => p.RecieverAccount == nidAccount && p.TransactionType == 3)
+                .GroupBy(q => q.PayerAccount).Select(w => new { nidAcc = w.Key, amount = w.Sum(x => x.Amount) }).ToList();
+            var result = new List<LendDetailViewModel>();
+            lendTrs.ForEach(x => { result.Add(new LendDetailViewModel() {  NidAccount = x.nidAcc, Amount = x.amount }); });
+            foreach (var lb in lendBackTrs)
+            {
+                if(lendTrs.Any(p => p.nidAcc == lb.nidAcc))
+                {
+                    if(lb.amount <= lendTrs.FirstOrDefault(p => p.nidAcc == lb.nidAcc).amount)
+                    {
+                        var oldAmount = result.FirstOrDefault(p => p.NidAccount == lb.nidAcc).Amount;
+                        result.Remove(result.FirstOrDefault(p => p.NidAccount == lb.nidAcc));
+                        result.Add(new LendDetailViewModel() {  NidAccount = lb.nidAcc, Amount = oldAmount - lb.amount});
+                    }
+                }
+            }
+            var result2 = new List<LendDetailViewModel>();
+            foreach (var ln in result)
+            {
+                if (ln.Amount != 0)
+                    result2.Add(new LendDetailViewModel() {  NidAccount = ln.NidAccount, Amount = ln.Amount, AccountName = _dbRepository.Get<Account>(p => p.NidAccount == ln.NidAccount).Title });
+            }
+            return result2;
         }
 
         public UserLoginDto LoginUser(string username, string password)
