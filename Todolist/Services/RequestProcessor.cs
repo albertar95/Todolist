@@ -157,6 +157,9 @@ namespace Todolist.Services
                 result.Transactions = _dbRepository.GetList<Transaction>(p => p.UserId == nidUser);
             else
                 result.Transactions = _dbRepository.GetList<Transaction>(p => p.UserId == nidUser).Where(q => q.CreateDate >= StartOfMonth && q.CreateDate < EndOfMonth).ToList();
+            var externalAccounts = _dbRepository.GetList<Account>(p => p.IsBackup).GroupBy(p => p.NidAccount).Select(q => q.Key).ToList();
+            result.ExternalTransactions = _dbRepository.GetList<Transaction>(p => p.UserId == nidUser)
+                .Where(q => q.CreateDate >= StartOfMonth && q.CreateDate < EndOfMonth && externalAccounts.Contains(q.NidTransaction)).ToList();
             result.StartOfMonth = StartOfMonth.Date;
             return result;
         }
@@ -306,7 +309,10 @@ namespace Todolist.Services
             foreach (var ln in result)
             {
                 if (ln.Amount != 0)
-                    result2.Add(new LendDetailViewModel() {  NidAccount = ln.NidAccount, Amount = ln.Amount, AccountName = _dbRepository.Get<Account>(p => p.NidAccount == ln.NidAccount).Title });
+                {
+                    if(_dbRepository.Get<Account>(p => p.NidAccount == ln.NidAccount).IsActive)
+                        result2.Add(new LendDetailViewModel() { NidAccount = ln.NidAccount, Amount = ln.Amount, AccountName = _dbRepository.Get<Account>(p => p.NidAccount == ln.NidAccount).Title });
+                }
             }
             return result2;
         }

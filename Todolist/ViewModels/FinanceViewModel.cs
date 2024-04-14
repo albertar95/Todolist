@@ -8,6 +8,7 @@ namespace Todolist.ViewModels
     {
         public List<Account> Accounts { get; set; }
         public List<Transaction> Transactions { get; set; }
+        public List<Transaction> ExternalTransactions { get; set; }
         public bool AllTransactions { get; set; }
         public DateTime StartOfMonth { get; set; }
         public string[] bgColor { get; set; } = new string[] { "aquamarine", "burlywood", "lemonchiffon", "azure", "cadetblue", "chartreuse", "lightcoral", "lightsteelblue", "plum", "lightseagreen", "peru", "cornflowerblue", "darkgray", "darkkhaki", "lightblue", "bisque", "violet", "mediumseagreen", "palegreen", "paleturquoise", "tan", "hotpink", "cyan", "thistle", "goldenrod", "darksalmon" };

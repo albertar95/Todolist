@@ -40,8 +40,8 @@
                         <div class="card-body">
                             <p>Amount : @string.Format("{0:n0}", acc.Amount) $</p>
                             <a href="#" onclick="ShowLendDetail(event,'@acc.NidAccount')"><p>Lend : @string.Format("{0:n0}", acc.LendAmount) $</p></a>
-                            <p>income : @string.Format("{0:n0}", Model.Transactions.Where(p => p.CreateDate >= Model.StartOfMonth && p.RecieverAccount == acc.NidAccount).Sum(q => q.Amount)) $</p>
-                            <p>spence : @string.Format("{0:n0}", Model.Transactions.Where(p => p.CreateDate >= Model.StartOfMonth && p.PayerAccount == acc.NidAccount).Sum(q => q.Amount)) $</p>
+                            <p>income : @string.Format("{0:n0}", Model.ExternalTransactions.Where(p => p.RecieverAccount == acc.NidAccount).Sum(q => q.Amount)) $</p>
+                            <p>spence : @string.Format("{0:n0}", Model.ExternalTransactions.Where(p => p.PayerAccount == acc.NidAccount).Sum(q => q.Amount)) $</p>
                         </div>
                     </div>
                 </div>
