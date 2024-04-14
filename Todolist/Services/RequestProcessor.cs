@@ -157,9 +157,9 @@ namespace Todolist.Services
                 result.Transactions = _dbRepository.GetList<Transaction>(p => p.UserId == nidUser);
             else
                 result.Transactions = _dbRepository.GetList<Transaction>(p => p.UserId == nidUser).Where(q => q.CreateDate >= StartOfMonth && q.CreateDate < EndOfMonth).ToList();
-            var externalAccounts = _dbRepository.GetList<Account>(p => p.IsBackup).GroupBy(p => p.NidAccount).Select(q => q.Key).ToList();
+            var externalAccounts = _dbRepository.GetList<Account>(p => p.IsBackup == true && p.IsActive == true).GroupBy(p => p.NidAccount).Select(q => q.Key).ToList();
             result.ExternalTransactions = _dbRepository.GetList<Transaction>(p => p.UserId == nidUser)
-                .Where(q => q.CreateDate >= StartOfMonth && q.CreateDate < EndOfMonth && externalAccounts.Contains(q.NidTransaction)).ToList();
+                .Where(q => q.CreateDate >= StartOfMonth && q.CreateDate < EndOfMonth && (externalAccounts.Contains(q.PayerAccount) || externalAccounts.Contains(q.RecieverAccount))).ToList();
             result.StartOfMonth = StartOfMonth.Date;
             return result;
         }
