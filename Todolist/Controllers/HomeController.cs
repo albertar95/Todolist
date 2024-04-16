@@ -460,13 +460,42 @@ namespace Todolist.Controllers
                 TempData["ShieldError"] = $"an error occured while deleting Shield!";
             return RedirectToAction("Shields");
         }
-        public ActionResult EditShield(Guid NidShield)
+        public ActionResult EditShield(Guid NidShield,string masterPassword = "")
         {
-            return View(_requestProcessor.GetShield(NidShield));
+            var shield = _requestProcessor.GetShield(NidShield);
+            var decrypt = Helpers.Encryption.RSADecrypt(shield.Password, masterPassword);
+            if (!string.IsNullOrEmpty(decrypt))
+            {
+                shield.Password = decrypt;
+                return View(shield);
+            }else
+            {
+                TempData["ShieldError"] = $"wrong master password";
+                return RedirectToAction("Shields");
+            }
         }
-        public ActionResult ShieldDetail(Guid NidShield)
+        public ActionResult ShieldDetail(Guid NidShield, string masterPassword = "")
         {
-            return View(_requestProcessor.GetShield(NidShield));
+            var shield = _requestProcessor.GetShield(NidShield);
+            var decrypt = Helpers.Encryption.RSADecrypt(shield.Password, masterPassword);
+            if (!string.IsNullOrEmpty(decrypt))
+            {
+                shield.Password = decrypt;
+                return View(shield);
+            }
+            else
+            {
+                TempData["ShieldError"] = $"wrong master password";
+                return RedirectToAction("Shields");
+            }
+        }
+        public ActionResult ConvertShields()
+        {
+            if (_requestProcessor.ConvertShields())
+                TempData["ShieldSuccess"] = $"Shield converted successfully";
+            else
+                TempData["ShieldError"] = $"an error occured while converting Shield!";
+            return RedirectToAction("Shields");
         }
 
         //routine section

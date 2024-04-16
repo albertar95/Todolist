@@ -29,6 +29,7 @@
                         <h1 class="h4 text-gray-900 mb-4">User Information</h1>
                     </div>
                     <a href="@Url.Action("AddShield","Home")" style="width:120px;margin:15px;" class="btn btn-block btn-outline-success">add shield</a>
+                    <a href="@Url.Action("ConvertShields","Home")" style="width:120px;margin:15px;" class="btn btn-block btn-outline-success">Convert shield</a>
                 </div>
             </div>
         </div>
@@ -51,8 +52,8 @@
                                 <td>@sh.TargetUrl</td>
                                 <td>@sh.Username</td>
                                 <td>
-                                    <a href="@Url.Action("EditShield","Home",new { NidShield = sh.Id })" class="btn btn-outline-warning"><i class="fa fa-pen"></i></a>
-                                    <a href="@Url.Action("ShieldDetail","Home",new { NidShield = sh.Id })" class="btn btn-outline-info"><i class="fa fa-info"></i></a>
+                                    <a href="@Url.Action("EditShield","Home",new { NidShield = sh.Id })" onclick="ShowMasterPasswordForm(event,1,'@sh.Id')" class="btn btn-outline-warning"><i class="fa fa-pen"></i></a>
+                                    <a href="@Url.Action("ShieldDetail","Home",new { NidShield = sh.Id })" onclick="ShowMasterPasswordForm(event,2,'@sh.Id')" class="btn btn-outline-info"><i class="fa fa-info"></i></a>
                                     <a href="#" onclick="DeleteShield(event,'@sh.Id','@sh.Title')" class="btn btn-outline-danger"><i class="fa fa-trash"></i></a>
                                 </td>
                             </tr>
@@ -86,11 +87,36 @@
     </div>
 </div>
 
+<div class="modal fade" id="masterPassModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">please enter master password</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input id="txtActionType" type="text" class="form-control" hidden />
+                <input id="txtNidShield" type="text" class="form-control" hidden />
+                <input id="txtMasterPass" type="password" class="form-control" autofocus />
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-primary" href="#" onclick="SubmitMasterPassword(event)">Submit</a>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 @section Scripts
     {
     <script type="text/javascript">
         $(function () {
+            $(".modal").on('shown.bs.modal', function () {
+                $(this).find('[autofocus]').focus();
+            });
             if ('@TempData["ShieldSuccess"]' != "") {
                 $("#successDiv").removeAttr('hidden');
                 $("#successMessage").text('@TempData["ShieldSuccess"]');
@@ -111,6 +137,24 @@
             $("#txtmodalBody").text('title : ' + title);
             $("#btnMDelete").attr('href', '@Url.Action("SubmitDeleteShield","Home")' + '?NidShield=' + nidshield);
             $("#deleteModal").modal();
+        }
+        function ShowMasterPasswordForm(e, action, nid)
+        {
+            e.preventDefault();
+            $("#txtMasterPass").val('');
+            $("#txtActionType").val(action);
+            $("#txtNidShield").val(nid);
+            $("#masterPassModal").modal();
+        }
+        function SubmitMasterPassword(e)
+        {
+            e.preventDefault();
+            if ($("#txtActionType").val() == "1") {
+                window.location = '@Url.Action("EditShield","Home")' + '?NidShield=' + $("#txtNidShield").val() + '&masterPassword=' + $("#txtMasterPass").val();
+            }
+            if ($("#txtActionType").val() == "2") {
+                window.location = '@Url.Action("ShieldDetail", "Home")' + '?NidShield=' + $("#txtNidShield").val() + '&masterPassword=' + $("#txtMasterPass").val();
+            }
         }
     </script>
 }

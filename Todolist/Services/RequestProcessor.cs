@@ -18,6 +18,18 @@ namespace Todolist.Services
             _dbRepository = dbRepository;
         }
 
+        public bool ConvertShields()
+        {
+            bool result = true;
+            var shields = _dbRepository.GetList<Shield>();
+            var decryptedSheilds = shields;
+            shields.ForEach(x => { decryptedSheilds.FirstOrDefault(p => p.Id == x.Id).Password = Helpers.Encryption.DecryptString(x.Password); });
+            var newShields = decryptedSheilds;
+            decryptedSheilds.ForEach(x => { newShields.FirstOrDefault(p => p.Id == x.Id).Password = Helpers.Encryption.RSAEncrypt(x.Password); });
+            newShields.ForEach(x => { if (!_dbRepository.Update(x)) result = false; });
+            return result;
+        }
+
         public bool DeleteAccount(Guid nidAccount)
         {
             var account = _dbRepository.Get<Account>(p => p.NidAccount == nidAccount);
@@ -364,7 +376,7 @@ namespace Todolist.Services
         public bool PatchShield(Shield shield)
         {
             shield.LastModified = DateTime.Now;
-            shield.Password = Helpers.Encryption.EncryptString(shield.Password);
+            shield.Password = Helpers.Encryption.RSAEncrypt(shield.Password);
             return _dbRepository.Update<Shield>(shield);
         }
 
@@ -444,7 +456,7 @@ namespace Todolist.Services
         {
             shield.Id = Guid.NewGuid();
             shield.CreateDate = DateTime.Now;
-            shield.Password = Helpers.Encryption.EncryptString(shield.Password);
+            shield.Password = Helpers.Encryption.RSAEncrypt(shield.Password);
             return _dbRepository.Add<Shield>(shield);
         }
 

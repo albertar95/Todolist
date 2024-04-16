@@ -63,6 +63,7 @@ namespace Todolist.Services.Contracts
         bool PatchShield(Shield shield);
         bool DeleteShield(Guid nidShield);
         List<Shield> GetShields(Guid nidUser);
+        bool ConvertShields();
 
         RoutineViewModel GetRoutines(Guid nidUser, int Direction = 0);
         Routine GetRoutine(Guid nidRoutine);

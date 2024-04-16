@@ -111,6 +111,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\privatekey\0.txt" />
+    <Content Include="App_Data\privatekey\1.txt" />
+    <Content Include="App_Data\privatekey\2.txt" />
+    <Content Include="App_Data\privatekey\3.txt" />
+    <Content Include="App_Data\privatekey\4.txt" />
+    <Content Include="App_Data\privatekey\5.txt" />
+    <Content Include="App_Data\privatekey\6.txt" />
+    <Content Include="App_Data\privatekey\7.txt" />
+    <Content Include="App_Data\privatekey\8.txt" />
+    <Content Include="App_Data\privatekey\9.txt" />
     <Content Include="Contents\css\fonts.css" />
     <Content Include="Contents\css\sb-admin-2.min.css" />
     <Content Include="favicon.ico" />
@@ -1805,6 +1815,7 @@
       <DependentUpon>Model.edmx</DependentUpon>
       <LastGenOutput>Model.cs</LastGenOutput>
     </Content>
+    <Content Include="robots.txt" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
