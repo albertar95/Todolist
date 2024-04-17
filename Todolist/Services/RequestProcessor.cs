@@ -331,7 +331,7 @@ namespace Todolist.Services
 
         public UserLoginDto LoginUser(string username, string password)
         {
-            password = Helpers.Encryption.EncryptString(password.Trim());
+            password = Helpers.Encryption.Sha256Hash(password.Trim());
             var user = _dbRepository.Get<User>(p => p.Username == username.Trim() && p.Password == password);
             if (user != null)
                 return new UserLoginDto() {  IsSuccessful = true, IsAdmin = user.IsAdmin, NidUser = user.NidUser, Username = user.Username };
