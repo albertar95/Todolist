@@ -319,7 +319,7 @@
                             <div class="form-group">
                                 <select id="GoalId" class="form-control" onchange="SetTasks(this)" required>
                                     <option disabled selected>select goal</option>
-                                    @foreach (var tsk in Model.Goals.Where(p => p.FromDate <= Model.EndDate && p.ToDate >= Model.EndDate).OrderBy(p => p.FromDate).ThenBy(q => q.Title))
+                                    @foreach (var tsk in Model.Goals.Where(p => p.FromDate <= Model.EndDate && p.ToDate >= Model.EndDate).OrderBy(q => q.Title))
                                     {
                                         <option value="@tsk.NidGoal">@tsk.Title</option>
                                     }

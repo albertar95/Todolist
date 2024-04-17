@@ -21,12 +21,12 @@ namespace Todolist.Services
         public bool ConvertShields()
         {
             bool result = true;
-            var shields = _dbRepository.GetList<Shield>();
-            var decryptedSheilds = shields;
-            shields.ForEach(x => { decryptedSheilds.FirstOrDefault(p => p.Id == x.Id).Password = Helpers.Encryption.DecryptString(x.Password); });
-            var newShields = decryptedSheilds;
-            decryptedSheilds.ForEach(x => { newShields.FirstOrDefault(p => p.Id == x.Id).Password = Helpers.Encryption.RSAEncrypt(x.Password); });
-            newShields.ForEach(x => { if (!_dbRepository.Update(x)) result = false; });
+            var users = _dbRepository.GetList<User>();
+            var decryptedUsers = users;
+            users.ForEach(x => { decryptedUsers.FirstOrDefault(p => p.NidUser == x.NidUser).Password = Helpers.Encryption.DecryptString(x.Password); });
+            var newUsers = decryptedUsers;
+            decryptedUsers.ForEach(x => { newUsers.FirstOrDefault(p => p.NidUser == x.NidUser).Password = Helpers.Encryption.Sha256Hash(x.Password); });
+            newUsers.ForEach(x => { if (!_dbRepository.Update(x)) result = false; });
             return result;
         }
 
@@ -485,7 +485,7 @@ namespace Todolist.Services
         {
             user.NidUser = Guid.NewGuid();
             user.CreateDate = DateTime.Now;
-            user.Password = Helpers.Encryption.EncryptString(user.Password);
+            user.Password = Helpers.Encryption.Sha256Hash(user.Password);
             return _dbRepository.Add<User>(user);
         }
 
