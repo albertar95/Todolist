@@ -12,15 +12,15 @@ namespace Todolist.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Note
+    public partial class TransactionGroup
     {
-        public System.Guid NidNote { get; set; }
-        public System.Guid GroupId { get; set; }
+        public System.Guid NidTransactionGroup { get; set; }
         public string Title { get; set; }
-        public string NoteContent { get; set; }
+        public byte PaymentType { get; set; }
         public System.DateTime CreateDate { get; set; }
-        public Nullable<System.DateTime> ModifiedDate { get; set; }
+        public bool IsActive { get; set; }
+        public System.Guid UserId { get; set; }
     
-        public virtual NoteGroup NoteGroup { get; set; }
+        public virtual User User { get; set; }
     }
 }

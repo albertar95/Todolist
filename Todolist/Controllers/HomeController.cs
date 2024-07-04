@@ -347,7 +347,7 @@ namespace Todolist.Controllers
         //account section
         public ActionResult FinancialRecords(bool IncludeAll = false)
         {
-            return View(_requestProcessor.GetFinacialRecords(GetUserId()));
+            return View(_requestProcessor.GetFinacialRecords(GetUserId(),IncludeAll));
         }
         public ActionResult SubmitAddAccount(string Title, decimal Amount, bool IsActive,bool IsBackup = false)
         {

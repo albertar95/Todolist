@@ -30,6 +30,8 @@
         <AssociationConnector Association="ToDoListDbModel.FK_Transactions_Users" />
         <EntityTypeShape EntityType="ToDoListDbModel.Account" Width="1.5" PointX="3" PointY="1" />
         <AssociationConnector Association="ToDoListDbModel.FK_Accounts_Users" />
+        <EntityTypeShape EntityType="ToDoListDbModel.TransactionGroup" Width="1.5" PointX="3" PointY="24.375" />
+        <AssociationConnector Association="ToDoListDbModel.FK_TransactionTypes_Users" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -1816,6 +1816,8 @@
       <LastGenOutput>Model.cs</LastGenOutput>
     </Content>
     <Content Include="robots.txt" />
+    <Content Include="tmp\SQLQuery1.sql" />
+    <Content Include="tmp\SQLQuery2.sql" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -1875,6 +1877,9 @@
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Transaction.cs">
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\TransactionGroup.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\User.cs">
