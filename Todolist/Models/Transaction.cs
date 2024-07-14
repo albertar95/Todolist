@@ -22,6 +22,7 @@ namespace Todolist.Models
         public System.DateTime CreateDate { get; set; }
         public string TransactionReason { get; set; }
         public System.Guid UserId { get; set; }
+        public Nullable<System.Guid> TransactionGroupId { get; set; }
     
         public virtual User User { get; set; }
     }

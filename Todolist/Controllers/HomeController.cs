@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using System.Web.Security;
 using Todolist.Models;
 using Todolist.Services.Contracts;
+using Todolist.ViewModels;
 
 namespace Todolist.Controllers
 {
@@ -358,9 +359,9 @@ namespace Todolist.Controllers
                 TempData["FinanceError"] = $"an error occured while creating account!";
             return RedirectToAction("FinancialRecords");
         }
-        public ActionResult SubmitAddTransaction(byte TrType, Guid PayerAccount, Guid RecieverAccount, decimal Amount, string Reason = "")
+        public ActionResult SubmitAddTransaction(byte TrType, Guid PayerAccount, Guid RecieverAccount, decimal Amount, Guid TransactionGroupId, string Reason = "")
         {
-            Transaction tr = new Transaction() {Amount = Amount,TransactionType = TrType,PayerAccount = PayerAccount,RecieverAccount = RecieverAccount,TransactionReason = Reason,UserId = GetUserId() };
+            Transaction tr = new Transaction() {Amount = Amount,TransactionType = TrType,PayerAccount = PayerAccount,RecieverAccount = RecieverAccount,TransactionReason = Reason,UserId = GetUserId(), TransactionGroupId = TransactionGroupId };
             if (_requestProcessor.PostTransaction(tr))
                 TempData["FinanceSuccess"] = $"transaction created successfully";
             else
@@ -587,6 +588,55 @@ namespace Todolist.Controllers
                 return Json(new JsonResults() {  HasValue = true, Html = Helpers.ViewHelper.RenderViewToString(this, "_LendDetailPartialView", details)});
             else
                 return Json(new JsonResults() {  HasValue = false });
+        }
+        //transaction group section
+        public ActionResult TransactionGroups(bool IncludeAll = false)
+        {
+            return View(_requestProcessor.GetTransactionGroups(GetUserId(), IncludeAll));
+        }
+        public ActionResult SubmitAddTransactionGroup(byte PaymentType,string Title)
+        {
+            TransactionGroup tr = new TransactionGroup() { UserId = GetUserId(), IsActive = true, PaymentType = PaymentType, Title = Title };
+            if (_requestProcessor.PostTransactionGroups(tr))
+                TempData["TransactionGroupSuccess"] = $"transaction group created successfully";
+            else
+                TempData["TransactionGroupError"] = $"an error occured while creating transaction group!";
+            return RedirectToAction("TransactionGroups");
+        }
+        public ActionResult SubmitDeactiveTransactionGroup(Guid NidTr)
+        {
+            if (_requestProcessor.DeleteTransactionGroup(NidTr))
+                TempData["TransactionGroupSuccess"] = $"transaction group deleted successfully";
+            else
+                TempData["TransactionGroupError"] = $"an error occured while deleting transaction group!";
+            return RedirectToAction("TransactionGroups");
+        }
+        public ActionResult GetTrGroupById(Guid NidTransactionGroup)
+        {
+            var tr = _requestProcessor.GetTransactionGroup(NidTransactionGroup);
+            if (tr.NidTransactionGroup == Guid.Empty)
+                return Json(new { HasValue = false });
+            else
+                return Json(new
+                {
+                    HasValue = true,
+                    NidTr = tr.NidTransactionGroup.ToString(),
+                    Title = tr.Title.ToString()
+                });
+        }
+
+        //edit transaction
+        public ActionResult EditTransaction(Guid TrId)
+        {
+            return View(_requestProcessor.GetEditTransaction(TrId,GetUserId()));
+        }
+        public ActionResult SubmitEditTransaction2(Transaction transaction)
+        {
+            if (_requestProcessor.PatchTransaction(transaction))
+                TempData["EditTrSuccess"] = $"transaction edited successfully";
+            else
+                TempData["EditTrError"] = $"an error occured while editing transaction!";
+            return RedirectToAction("EditTransaction",new { TrId = transaction.NidTransaction});
         }
     }
     public class JsonResults

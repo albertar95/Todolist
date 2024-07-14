@@ -1890,6 +1890,7 @@
     <Compile Include="Services\Contracts\IRequestProcessor.cs" />
     <Compile Include="Services\DbRepository.cs" />
     <Compile Include="Services\RequestProcessor.cs" />
+    <Compile Include="ViewModels\EditTransactionViewModel.cs" />
     <Compile Include="ViewModels\FinanceViewModel.cs" />
     <Compile Include="ViewModels\GoalPageViewModel.cs" />
     <Compile Include="ViewModels\GoalViewModel.cs" />
@@ -2113,6 +2114,8 @@
     <Content Include="Views\Home\_IndexPartialView.cshtml" />
     <Content Include="Views\Home\_RoutineCalendarPartialView.cshtml" />
     <Content Include="Views\Home\_LendDetailPartialView.cshtml" />
+    <Content Include="Views\Home\TransactionGroups.cshtml" />
+    <Content Include="Views\Home\EditTransaction.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

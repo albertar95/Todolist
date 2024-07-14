@@ -75,5 +75,10 @@ namespace Todolist.Services.Contracts
         bool PostRoutineProgress(RoutineProgress routineProgress);
         bool DeleteRoutineProgress(Guid nidRoutineProgress);
         List<LendDetailViewModel> LendDetails(Guid nidAccount);
+        List<TransactionGroup> GetTransactionGroups(Guid nidUser, bool includeAll = false);
+        bool PostTransactionGroups(TransactionGroup transactionGroup);
+        TransactionGroup GetTransactionGroup(Guid nidTransactionGroup);
+        bool DeleteTransactionGroup(Guid nidTransactionGroup);
+        EditTransactionViewModel GetEditTransaction(Guid nidTransaction, Guid nidUser);
     }
 }

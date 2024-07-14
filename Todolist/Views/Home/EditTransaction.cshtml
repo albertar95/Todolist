@@ -1,0 +1,191 @@
+﻿@model Todolist.ViewModels.EditTransactionViewModel
+
+@{
+    ViewBag.Title = "EditTransaction";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Edit Transaction</h2>
+
+<div class="row" style="padding:25px;">
+    <div class="col-lg-6 d-flex">
+    </div>
+    <div class="col-lg-6">
+        <div class="alert alert-success alert-dismissible fade show" style="width:fit-content;float:right;" role="alert" id="successDiv" hidden>
+            <p id="successMessage"></p>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="alert alert-danger alert-dismissible fade show" style="width:fit-content;float:right;" role="alert" id="errorDiv" hidden>
+            <p id="errorMessage"></p>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginForm("SubmitEditTransaction2", "Home", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>Transaction</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group" hidden>
+            @Html.LabelFor(model => model.Transaction.NidTransaction, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Transaction.NidTransaction, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Transaction.NidTransaction, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Transaction.TransactionType, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <select id="sltTransactionType" name="Transaction.TransactionType" class="form-control" required>
+                    <option disabled>select Transaction Type</option>
+                    @foreach (var typ in Todolist.ViewModels.FinanceViewModel.TransactionTypes)
+                    {
+                        if (Model.Transaction.TransactionType == typ.Item1)
+                        {
+                            <option value="@typ.Item1" selected>@typ.Item2</option>
+                        }
+                        else
+                        {
+                            <option value="@typ.Item1">@typ.Item2</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Transaction.PayerAccount, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <select id="sltPayerAccount" name="Transaction.PayerAccount" class="form-control" required>
+                    <option value="0" disabled>select Payer</option>
+                    @foreach (var acc in Model.Accounts.Where(p => p.IsActive).OrderBy(q => q.Title).ToList())
+                    {
+                        if (Model.Transaction.PayerAccount == acc.NidAccount)
+                        {
+                            <option value="@acc.NidAccount" selected>@acc.Title</option>
+                        }
+                        else
+                        {
+                            <option value="@acc.NidAccount">@acc.Title</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Transaction.RecieverAccount, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <select id="sltRecieverAccount" name="Transaction.RecieverAccount" class="form-control" required>
+                    <option value="0" disabled selected>select Reciever</option>
+                    @foreach (var acc in Model.Accounts.Where(p => p.IsActive).OrderBy(q => q.Title).ToList())
+                    {
+                        if (Model.Transaction.RecieverAccount == acc.NidAccount)
+                        {
+                            <option value="@acc.NidAccount" selected>@acc.Title</option>
+                        }
+                        else
+                        {
+                            <option value="@acc.NidAccount">@acc.Title</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Transaction.Amount, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Transaction.Amount, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Transaction.Amount, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group" hidden>
+            @Html.LabelFor(model => model.Transaction.CreateDate, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Transaction.CreateDate, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Transaction.CreateDate, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Transaction.TransactionReason, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Transaction.TransactionReason, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Transaction.TransactionReason, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group" hidden>
+            @Html.LabelFor(model => model.Transaction.UserId, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Transaction.UserId, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Transaction.UserId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Transaction.TransactionGroupId, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <select id="sltTransactionGroupId" name="Transaction.TransactionGroupId" class="form-control" required>
+                    @if (Model.Transaction.TransactionGroupId != null)
+                    {
+                        <option disabled>select Transaction Group</option>
+                    }
+                    else
+                    {
+                        <option disabled selected>select Transaction Group</option>
+                    }
+                    @foreach (var typ in Model.Groups.OrderBy(p => p.Title))
+                    {
+                        if (Model.Transaction.TransactionGroupId == typ.NidTransactionGroup)
+                        {
+                            <option value="@typ.NidTransactionGroup" selected>@typ.Title</option>
+                        }
+                        else
+                        {
+                            <option value="@typ.NidTransactionGroup">@typ.Title</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-warning btn-user btn-block" />
+                <hr>
+                <a href="@Url.Action("EditTransaction",new { TrId = Model.NextTrId})" class="btn btn-outline-info btn-block" style="width:50%;margin:0 auto;">next Tr</a>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts
+    {
+    <script type="text/javascript">
+        $(function () {
+            if ('@TempData["EditTrSuccess"]' != "") {
+                $("#successDiv").removeAttr('hidden');
+                $("#successMessage").text('@TempData["EditTrSuccess"]');
+                window.setTimeout(function () {
+                    $("#successDiv").attr('hidden', 'hidden');
+                }, 5000);
+            }
+            if ('@TempData["EditTrError"]' != "") {
+                $("#errorDiv").removeAttr('hidden');
+                $("#errorMessage").text('@TempData["EditTrError"]');
+                window.setTimeout(function () {
+                    $("#errorDiv").attr('hidden', 'hidden');
+                }, 5000);
+            }
+        });
+    </script>
+}

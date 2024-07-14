@@ -149,6 +149,7 @@
           <Property Name="CreateDate" Type="datetime" Nullable="false" />
           <Property Name="TransactionReason" Type="nvarchar(max)" Nullable="false" />
           <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="TransactionGroupId" Type="uniqueidentifier" />
         </EntityType>
         <EntityType Name="Users">
           <Key>
@@ -528,20 +529,6 @@
           <NavigationProperty Name="Schedules" Relationship="Self.FK_Schedules_Tasks" FromRole="Tasks" ToRole="Schedules" />
           <NavigationProperty Name="User" Relationship="ToDoListDbModel.FK_Tasks_Users" FromRole="Task" ToRole="User" />
         </EntityType>
-        <EntityType Name="Transaction">
-          <Key>
-            <PropertyRef Name="NidTransaction" />
-          </Key>
-          <Property Name="NidTransaction" Type="Guid" Nullable="false" />
-          <Property Name="TransactionType" Type="Byte" Nullable="false" />
-          <Property Name="PayerAccount" Type="Guid" Nullable="false" />
-          <Property Name="RecieverAccount" Type="Guid" Nullable="false" />
-          <Property Name="Amount" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
-          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="TransactionReason" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="UserId" Type="Guid" Nullable="false" />
-          <NavigationProperty Name="User" Relationship="ToDoListDbModel.FK_Transactions_Users" FromRole="Transaction" ToRole="User" />
-        </EntityType>
         <Association Name="FK_Goals_Tasks">
           <End Role="Goals" Type="Self.Goal" Multiplicity="1" />
           <End Role="Tasks" Type="Self.Task" Multiplicity="*" />
@@ -612,7 +599,6 @@
           <EntitySet Name="Schedules" EntityType="Self.Schedule" />
           <EntitySet Name="Shields" EntityType="Self.Shield" />
           <EntitySet Name="Tasks" EntityType="Self.Task" />
-          <EntitySet Name="Transactions" EntityType="Self.Transaction" />
           <AssociationSet Name="FK_Goals_Tasks" Association="Self.FK_Goals_Tasks">
             <End Role="Goals" EntitySet="Goals" />
             <End Role="Tasks" EntitySet="Tasks" />
@@ -658,10 +644,6 @@
             <End Role="User" EntitySet="Users" />
             <End Role="Task" EntitySet="Tasks" />
           </AssociationSet>
-          <AssociationSet Name="FK_Transactions_Users" Association="ToDoListDbModel.FK_Transactions_Users">
-            <End Role="User" EntitySet="Users" />
-            <End Role="Transaction" EntitySet="Transactions" />
-          </AssociationSet>
           <EntitySet Name="Accounts" EntityType="ToDoListDbModel.Account" />
           <AssociationSet Name="FK_Accounts_Users" Association="ToDoListDbModel.FK_Accounts_Users">
             <End Role="User" EntitySet="Users" />
@@ -671,6 +653,11 @@
           <AssociationSet Name="FK_TransactionTypes_Users" Association="ToDoListDbModel.FK_TransactionTypes_Users">
             <End Role="User" EntitySet="Users" />
             <End Role="TransactionGroup" EntitySet="TransactionGroups" />
+          </AssociationSet>
+          <EntitySet Name="Transactions" EntityType="ToDoListDbModel.Transaction" />
+          <AssociationSet Name="FK_Transactions_Users" Association="ToDoListDbModel.FK_Transactions_Users">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Transaction" EntitySet="Transactions" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="User">
@@ -690,9 +677,9 @@
           <NavigationProperty Name="Routines" Relationship="ToDoListDbModel.FK_Routines_Users" FromRole="User" ToRole="Routine" />
           <NavigationProperty Name="Shields" Relationship="ToDoListDbModel.FK_Shields_Users" FromRole="User" ToRole="Shield" />
           <NavigationProperty Name="Tasks" Relationship="ToDoListDbModel.FK_Tasks_Users" FromRole="User" ToRole="Task" />
-          <NavigationProperty Name="Transactions" Relationship="ToDoListDbModel.FK_Transactions_Users" FromRole="User" ToRole="Transaction" />
           <NavigationProperty Name="Accounts" Relationship="ToDoListDbModel.FK_Accounts_Users" FromRole="User" ToRole="Account" />
           <NavigationProperty Name="TransactionGroups" Relationship="ToDoListDbModel.FK_TransactionTypes_Users" FromRole="User" ToRole="TransactionGroup" />
+          <NavigationProperty Name="Transactions" Relationship="ToDoListDbModel.FK_Transactions_Users" FromRole="User" ToRole="Transaction" />
         </EntityType>
         <Association Name="FK_Goals_Users">
           <End Type="ToDoListDbModel.User" Role="User" Multiplicity="1" />
@@ -766,18 +753,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Transactions_Users">
-          <End Type="ToDoListDbModel.User" Role="User" Multiplicity="1" />
-          <End Type="ToDoListDbModel.Transaction" Role="Transaction" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="User">
-              <PropertyRef Name="NidUser" />
-            </Principal>
-            <Dependent Role="Transaction">
-              <PropertyRef Name="UserId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="Account">
           <Key>
             <PropertyRef Name="NidAccount" />
@@ -825,6 +800,33 @@
               <PropertyRef Name="NidUser" />
             </Principal>
             <Dependent Role="TransactionGroup">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Transaction">
+          <Key>
+            <PropertyRef Name="NidTransaction" />
+          </Key>
+          <Property Name="NidTransaction" Type="Guid" Nullable="false" />
+          <Property Name="TransactionType" Type="Byte" Nullable="false" />
+          <Property Name="PayerAccount" Type="Guid" Nullable="false" />
+          <Property Name="RecieverAccount" Type="Guid" Nullable="false" />
+          <Property Name="Amount" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="TransactionReason" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="UserId" Type="Guid" Nullable="false" />
+          <Property Name="TransactionGroupId" Type="Guid" />
+          <NavigationProperty Name="User" Relationship="ToDoListDbModel.FK_Transactions_Users" FromRole="Transaction" ToRole="User" />
+        </EntityType>
+        <Association Name="FK_Transactions_Users">
+          <End Type="ToDoListDbModel.User" Role="User" Multiplicity="1" />
+          <End Type="ToDoListDbModel.Transaction" Role="Transaction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="NidUser" />
+            </Principal>
+            <Dependent Role="Transaction">
               <PropertyRef Name="UserId" />
             </Dependent>
           </ReferentialConstraint>
@@ -951,20 +953,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Transactions">
-            <EntityTypeMapping TypeName="ToDoListDbModel.Transaction">
-              <MappingFragment StoreEntitySet="Transactions">
-                <ScalarProperty Name="NidTransaction" ColumnName="NidTransaction" />
-                <ScalarProperty Name="TransactionType" ColumnName="TransactionType" />
-                <ScalarProperty Name="PayerAccount" ColumnName="PayerAccount" />
-                <ScalarProperty Name="RecieverAccount" ColumnName="RecieverAccount" />
-                <ScalarProperty Name="Amount" ColumnName="Amount" />
-                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
-                <ScalarProperty Name="TransactionReason" ColumnName="TransactionReason" />
-                <ScalarProperty Name="UserId" ColumnName="UserId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Users">
             <EntityTypeMapping TypeName="ToDoListDbModel.User">
               <MappingFragment StoreEntitySet="Users">
@@ -1002,6 +990,21 @@
                 <ScalarProperty Name="PaymentType" ColumnName="PaymentType" />
                 <ScalarProperty Name="Title" ColumnName="Title" />
                 <ScalarProperty Name="NidTransactionGroup" ColumnName="NidTransactionGroup" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Transactions">
+            <EntityTypeMapping TypeName="ToDoListDbModel.Transaction">
+              <MappingFragment StoreEntitySet="Transactions">
+                <ScalarProperty Name="TransactionGroupId" ColumnName="TransactionGroupId" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="TransactionReason" ColumnName="TransactionReason" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="RecieverAccount" ColumnName="RecieverAccount" />
+                <ScalarProperty Name="PayerAccount" ColumnName="PayerAccount" />
+                <ScalarProperty Name="TransactionType" ColumnName="TransactionType" />
+                <ScalarProperty Name="NidTransaction" ColumnName="NidTransaction" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

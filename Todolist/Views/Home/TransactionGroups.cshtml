@@ -1,0 +1,167 @@
+﻿@model List<Todolist.Models.TransactionGroup>
+@{
+    ViewBag.Title = "TransactionGroups";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row" style="padding:25px;">
+    <div class="col-lg-6 d-flex">
+        <a href="#" onclick="AddTransactionGroup(event)" class="btn btn-outline-success" style="width:80px;justify-content:right;height:38px;margin-right:5px;overflow:hidden;"><i class="fa fa-plus"></i> Group</a>
+    </div>
+    <div class="col-lg-6">
+        <div class="alert alert-success alert-dismissible fade show" style="width:fit-content;float:right;" role="alert" id="successDiv" hidden>
+            <p id="successMessage"></p>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="alert alert-danger alert-dismissible fade show" style="width:fit-content;float:right;" role="alert" id="errorDiv" hidden>
+            <p id="errorMessage"></p>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="table-responsive">
+        <table class="table table-bordered" id="dataTable1" width="100%" cellspacing="0">
+            <thead style="text-align:center;">
+                <tr>
+                    <th>Payment Type</th>
+                    <th>Title</th>
+                    <th>Create Date</th>
+                    <th>Is Active</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var tr in Model.OrderByDescending(p => p.CreateDate))
+                {
+                <tr style="text-align:center;">
+                    <td>@Todolist.ViewModels.FinanceViewModel.TransactionTypes.FirstOrDefault(p => p.Item1 == tr.PaymentType).Item2</td>
+                    <td>@tr.Title</td>
+                    <td>@Todolist.Helpers.Dates.ToPersianDate2(tr.CreateDate, true)</td>
+                    <td>@string.Format("{0}",tr.IsActive == true ? "true" : "false")</td>
+                    <td>
+                        @*<a href="#" onclick="EditTransaction(event,'@tr.NidTransaction')" class="btn btn-outline-warning"><i class="fa fa-pen"></i></a>*@
+                        <a href="#" onclick="DeleteTransactionGroup(event,'@tr.NidTransactionGroup')" class="btn btn-outline-danger"><i class="fa fa-trash"></i></a>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="financeModal" tabindex="-1" role="dialog" aria-labelledby="financeModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="financeModalLabel"></h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="TransactionGroupSection" hidden>
+                    <div class="form-group">
+                        <input id="txtTitle" type="text" class="form-control" placeholder="Title" autofocus />
+                    </div>
+                    <div class="form-group">
+                        <select id="PaymentType" class="form-control" required>
+                            <option disabled selected>select Payment Type</option>
+                            @foreach (var typ in Todolist.ViewModels.FinanceViewModel.TransactionTypes)
+                            {
+                                <option value="@typ.Item1">@typ.Item2</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-lg-4"></div>
+                            <div class="col-lg-4 text-center">
+                                <a href="#" class="btn btn-primary" onclick="SubmitAddGroup(event)" id="btnSubmitAddGroup" hidden>create</a>
+                            </div>
+                            <div class="col-lg-4"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="DeleteSection" hidden>
+                    <div class="form-group">
+                        <p id="txtDelete"></p>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-lg-4"></div>
+                            <div class="col-lg-4 text-center">
+                                <a href="#" class="btn btn-danger" id="btnSubmitDelete" hidden>delete</a>
+                            </div>
+                            <div class="col-lg-4"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts
+    {
+    <script type="text/javascript">
+        $(function () {
+            $(".modal").on('shown.bs.modal', function () {
+                $(this).find('[autofocus]').focus();
+            });
+            $("#dataTable1").DataTable({
+            "order": [[2, "desc"]]});
+            if ('@TempData["TransactionGroupSuccess"]' != "") {
+                $("#successDiv").removeAttr('hidden');
+                $("#successMessage").text('@TempData["TransactionGroupSuccess"]');
+                window.setTimeout(function () {
+                    $("#successDiv").attr('hidden', 'hidden');
+                }, 5000);
+            }
+            if ('@TempData["TransactionGroupError"]' != "") {
+                $("#errorDiv").removeAttr('hidden');
+                $("#errorMessage").text('@TempData["TransactionGroupError"]');
+                window.setTimeout(function () {
+                    $("#errorDiv").attr('hidden', 'hidden');
+                }, 5000);
+            }
+        });
+        function AddTransactionGroup(e)
+        {
+            e.preventDefault();
+            $("#PaymentType").val(0);
+            $("#txtTitle").val('');
+            $("#btnSubmitAddGroup").removeAttr('hidden');
+            $("#btnSubmitDelete").attr('hidden', 'hidden');
+            $("#financeModalLabel").text('Add Transaction Group');
+            $("#TransactionGroupSection").removeAttr('hidden');
+            $("#DeleteSection").attr('hidden', 'hidden');
+            $("#financeModal").modal();
+        }
+        function SubmitAddGroup(e)
+        {
+            e.preventDefault();
+            window.location.href = '@Url.Action("SubmitAddTransactionGroup", "Home")' + '?Title=' + $("#txtTitle").val()
+                + '&PaymentType=' + $("#PaymentType").val();
+        }
+        function DeleteTransactionGroup(e,nid)
+        {
+            e.preventDefault();
+            $("#txtDelete").text('are you sure to delete this transaction group?');
+            $("#btnSubmitDelete").attr('href','@Url.Action("SubmitDeactiveTransactionGroup", "Home")' + '?NidTr=' + nid);
+            $("#DeleteSection").removeAttr('hidden');
+            $("#TransactionGroupSection").attr('hidden', 'hidden');
+            $("#btnSubmitDelete").removeAttr('hidden');
+            $("#btnSubmitAddGroup").attr('hidden', 'hidden');
+            $("#financeModal").modal();
+        }
+    </script>
+}
+

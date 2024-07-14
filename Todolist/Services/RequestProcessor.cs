@@ -173,6 +173,7 @@ namespace Todolist.Services
             result.ExternalTransactions = _dbRepository.GetList<Transaction>(p => p.UserId == nidUser)
                 .Where(q => q.CreateDate >= StartOfMonth && q.CreateDate < EndOfMonth && (externalAccounts.Contains(q.PayerAccount) || externalAccounts.Contains(q.RecieverAccount))).ToList();
             result.StartOfMonth = StartOfMonth.Date;
+            result.Groups = _dbRepository.GetList<TransactionGroup>();
             return result;
         }
 
@@ -608,6 +609,55 @@ namespace Todolist.Services
             {
             }
             return IsAccountOk;
+        }
+
+        public List<TransactionGroup> GetTransactionGroups(Guid nidUser, bool includeAll = false)
+        {
+            if(!includeAll)
+                return _dbRepository.GetList<TransactionGroup>(p => p.UserId == nidUser && p.IsActive == true);
+            else
+                return _dbRepository.GetList<TransactionGroup>(p => p.UserId == nidUser);
+        }
+        public bool PostTransactionGroups(TransactionGroup transactionGroup)
+        {
+            transactionGroup.NidTransactionGroup = Guid.NewGuid();
+            transactionGroup.CreateDate = DateTime.Now;
+            return _dbRepository.Add<TransactionGroup>(transactionGroup);
+        }
+        public TransactionGroup GetTransactionGroup(Guid nidTransactionGroup)
+        {
+            return _dbRepository.Get<TransactionGroup>(p => p.NidTransactionGroup == nidTransactionGroup);
+        }
+        public bool DeleteTransactionGroup(Guid nidTransactionGroup)
+        {
+            var transactionGroup = _dbRepository.Get<TransactionGroup>(p => p.NidTransactionGroup == nidTransactionGroup);
+            if (transactionGroup != null)
+            {
+                if (!_dbRepository.GetList<Transaction>(p => p.TransactionGroupId == nidTransactionGroup).Any())
+                    return _dbRepository.Delete<TransactionGroup>(transactionGroup);
+                else
+                {
+                    transactionGroup.IsActive = false;
+                    return _dbRepository.Update(transactionGroup);
+                }
+            }
+            else
+                return false;
+        }
+        public EditTransactionViewModel GetEditTransaction(Guid nidTransaction,Guid nidUser)
+        {
+            var result = new EditTransactionViewModel();
+            result.Accounts = _dbRepository.GetList<Account>(p => p.UserId == nidUser);
+            PersianCalendar pc = new PersianCalendar();
+            var StartOfMonth = pc.ToDateTime(pc.GetYear(DateTime.Now), pc.GetMonth(DateTime.Now), 1, 0, 0, 0, 0);
+            var EndOfMonth = pc.ToDateTime(pc.GetYear(StartOfMonth.AddMonths(1).AddDays(3)), pc.GetMonth(StartOfMonth.AddMonths(1).AddDays(3)), 1, 0, 0, 0, 0);
+            result.Groups = _dbRepository.GetList<TransactionGroup>(p => p.IsActive == true);
+            result.Transaction = _dbRepository.Get<Transaction>(p => p.NidTransaction == nidTransaction);
+            var trIds = _dbRepository.GetList<Transaction>().OrderBy(p => p.CreateDate).ToArray();
+            var nextSelected = Array.FindIndex(trIds, p => p.NidTransaction == nidTransaction) + 1;
+            result.NextTrId = trIds.Count() > nextSelected ? trIds[nextSelected].NidTransaction : trIds[0].NidTransaction;
+            result.StartOfMonth = StartOfMonth.Date;
+            return result;
         }
     }
 }

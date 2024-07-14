@@ -34,9 +34,9 @@ namespace Todolist.Models
         public DbSet<Schedule> Schedules { get; set; }
         public DbSet<Shield> Shields { get; set; }
         public DbSet<Task> Tasks { get; set; }
-        public DbSet<Transaction> Transactions { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Account> Accounts { get; set; }
         public DbSet<TransactionGroup> TransactionGroups { get; set; }
+        public DbSet<Transaction> Transactions { get; set; }
     }
 }
