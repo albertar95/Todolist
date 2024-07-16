@@ -116,7 +116,12 @@
                 @Html.ValidationMessageFor(model => model.Transaction.CreateDate, "", new { @class = "text-danger" })
             </div>
         </div>
-
+        <div class="form-group">
+            <label class="control-label col-md-2">create date</label>
+            <div class="col-md-10">
+                <input type="text" class="form-control" readonly value="@Todolist.Helpers.Dates.ToPersianDate2(Model.Transaction.CreateDate)" />
+            </div>
+        </div>
         <div class="form-group">
             @Html.LabelFor(model => model.Transaction.TransactionReason, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">

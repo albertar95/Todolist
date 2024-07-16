@@ -99,7 +99,7 @@
                 {
                 <tr style="text-align:center;">
                     <td>@Todolist.ViewModels.FinanceViewModel.TransactionTypes.FirstOrDefault(p => p.Item1 == tr.TransactionType).Item2</td>
-                    @if (tr.TransactionGroupId != Guid.Empty)
+                    @if (tr.TransactionGroupId != null)
                     {
                         <td>@Model.Groups.FirstOrDefault(p => p.NidTransactionGroup == tr.TransactionGroupId).Title</td>
                     }
@@ -253,7 +253,7 @@
                 $(this).find('[autofocus]').focus();
             });
             $("#dataTable1").DataTable({
-            "order": [[4, "desc"]]});
+            "order": [[5, "desc"]]});
             if ('@TempData["FinanceSuccess"]' != "") {
                 $("#successDiv").removeAttr('hidden');
                 $("#successMessage").text('@TempData["FinanceSuccess"]');
