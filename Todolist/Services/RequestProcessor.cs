@@ -659,5 +659,25 @@ namespace Todolist.Services
             result.StartOfMonth = StartOfMonth.Date;
             return result;
         }
+        public FinancialReportViewModel GetFinancialReport(Guid nidUser)
+        {
+            var result = new FinancialReportViewModel();
+            result.CurrentMonth = Helpers.Dates.CurrentMonth();
+            result.MonthlySpenceBarChart = new Tuple<string, string,decimal>("['test1','test2']","[10000,20000]",30000);
+            result.MonthlyIncomeBarChart = new Tuple<string, string, decimal>("['test1','test2']", "[10000,20000]", 30000);
+            result.MonthSpencesBarChart = new Tuple<string, string, decimal>("['test1','test2']", "[10000,20000]", 30000);
+            result.TopFiveGroupBarChart = new Tuple<string, string, decimal>("['test1','test2']", "[10000,20000]", 30000);
+            result.GroupSpenceBarChart = new Tuple<string, string, decimal>("['test1','test2']", "[10000,20000]", 30000);
+            result.GroupIncomeBarChart = new Tuple<string, string, decimal>("['test1','test2']", "[10000,20000]", 30000);
+            result.YearlyCardStat = new Tuple<decimal, decimal, decimal, decimal>(
+            100000000/*total fund*/,
+            10000000/*total in fund*/,
+            50000000/*total out fund*/,
+            60000000/*remain fund*/);
+            result.FundDistributionPieChart = new Tuple<string, string>("[\"test1\",\"test2\"]", "[28,72]");
+            result.FundAccumulationAreaChart = new Tuple<string, string>("['test1','test2','test3','test4','test5']", "[10000,20000,40000,32000,48000]");
+            result.Groups = _dbRepository.GetList<TransactionGroup>();
+            return result;
+        }
     }
 }

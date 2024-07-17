@@ -123,6 +123,14 @@
     <Content Include="App_Data\privatekey\9.txt" />
     <Content Include="Contents\css\fonts.css" />
     <Content Include="Contents\css\sb-admin-2.min.css" />
+    <Content Include="Contents\js\demo\chart-area-demo.js" />
+    <Content Include="Contents\js\demo\chart-bar-demo.js" />
+    <Content Include="Contents\js\demo\chart-pie-demo.js" />
+    <Content Include="Contents\pages\charts.html" />
+    <Content Include="Contents\vendor\chart.js\Chart.bundle.js" />
+    <Content Include="Contents\vendor\chart.js\Chart.bundle.min.js" />
+    <Content Include="Contents\vendor\chart.js\Chart.js" />
+    <Content Include="Contents\vendor\chart.js\Chart.min.js" />
     <Content Include="favicon.ico" />
     <Content Include="Contents\img\checked.png" />
     <Content Include="Contents\img\unchecked.png" />
@@ -1892,6 +1900,7 @@
     <Compile Include="Services\RequestProcessor.cs" />
     <Compile Include="ViewModels\EditTransactionViewModel.cs" />
     <Compile Include="ViewModels\FinanceViewModel.cs" />
+    <Compile Include="ViewModels\FinancialReportViewModel.cs" />
     <Compile Include="ViewModels\GoalPageViewModel.cs" />
     <Compile Include="ViewModels\GoalViewModel.cs" />
     <Compile Include="ViewModels\IndexViewModel.cs" />
@@ -2116,6 +2125,7 @@
     <Content Include="Views\Home\_LendDetailPartialView.cshtml" />
     <Content Include="Views\Home\TransactionGroups.cshtml" />
     <Content Include="Views\Home\EditTransaction.cshtml" />
+    <Content Include="Views\Home\FinancialReport.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

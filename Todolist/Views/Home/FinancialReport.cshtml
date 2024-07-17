@@ -1,0 +1,218 @@
+﻿@model Todolist.ViewModels.FinancialReportViewModel
+@{
+    ViewBag.Title = "FinancialReport";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-xl-12 col-lg-12">
+        <div class="card shadow mb-4">
+            <!-- Card Header - Accordion -->
+            <a href="#collapseCardMonth" class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapseCardMonth">
+                <h6 class="m-0 font-weight-bold text-primary">Monthly Report</h6>
+            </a>
+            <!-- Card Content - Collapse -->
+            <div class="collapse show" id="collapseCardMonth" style="">
+                <div class="card-body">
+                    <div class="form-group">
+                        <label class="control-label col-md-2">month : </label>
+                        <div class="col-md-10">
+                            <select id="sltCurrentMonth" class="form-control">
+                                <option disabled>select month</option>
+                                <option value="1">1-farvardin</option>
+                                <option value="2">2-ordibehesht</option>
+                                <option value="3">3-khordad</option>
+                                <option value="4">4-tir</option>
+                                <option value="5">5-mordad</option>
+                                <option value="6">6-shahrivar</option>
+                                <option value="7">7-mehr</option>
+                                <option value="8">8-aban</option>
+                                <option value="9">9-azar</option>
+                                <option value="10">10-dey</option>
+                                <option value="11">11-bahman</option>
+                                <option value="12">12-esfand</option>
+                            </select>
+                        </div>
+                    </div>
+                    <h4 class="header-control mb-4">spence report</h4>
+                    <div class="chart-bar">
+                        <canvas id="MonthlySpenceBar"></canvas>
+                    </div>
+                    <h4 class="header-control mb-4">income report</h4>
+                    <div class="chart-bar">
+                        <canvas id="MonthlyIncomeBar"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xl-12 col-lg-12">
+        <div class="card shadow mb-4">
+            <!-- Card Header - Accordion -->
+            <a href="#collapseCardYear" class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapseCardYear">
+                <h6 class="m-0 font-weight-bold text-primary">Yearly Report</h6>
+            </a>
+            <!-- Card Content - Collapse -->
+            <div class="collapse show" id="collapseCardYear" style="">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                Initial Fund
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">@string.Format("{0:n0}", Model.YearlyCardStat.Item1) $</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-success shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                                Total Income
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">@string.Format("{0:n0}", Model.YearlyCardStat.Item2) $</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-danger shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                                Total Spence
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">@string.Format("{0:n0}", Model.YearlyCardStat.Item3) $</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-info shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                                Current Fund
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">@string.Format("{0:n0}", Model.YearlyCardStat.Item4) $</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <h4 class="header-control mb-4">Fund Distribution</h4>
+                        <div class="chart-pie pt-4">
+                            <canvas id="FundDistributionPie"></canvas>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <h4 class="header-control mb-4">Fund accumulation Report</h4>
+                        <div class="chart-area">
+                            <canvas id="FundAccumulationArea"></canvas>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <h4 class="header-control mb-4">Month's Spence Report</h4>
+                        <div class="chart-bar">
+                            <canvas id="MonthSpencesBar"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xl-12 col-lg-12">
+        <div class="card shadow mb-4">
+            <!-- Card Header - Accordion -->
+            <a href="#collapseCardGroup" class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapseCardGroup">
+                <h6 class="m-0 font-weight-bold text-primary">Group Report</h6>
+            </a>
+            <!-- Card Content - Collapse -->
+            <div class="collapse show" id="collapseCardGroup" style="">
+                <div class="card-body">
+                    <label class="control-label col-md-2">Top 5 groups : </label>
+                    <div class="chart-bar">
+                        <canvas id="TopFiveGroupBar"></canvas>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-2">group : </label>
+                        <div class="col-md-10">
+                            <select id="TransactionGroup" class="form-control">
+                                <option value="0" disabled selected>select group</option>
+                                @foreach (var acc in Model.Groups.Where(p => p.IsActive).OrderBy(q => q.Title).ToList())
+                                {
+                                    <option value="@acc.NidTransactionGroup">@acc.Title</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <label class="control-label col-md-2"><b id="grpName"></b> Spences : </label>
+                    <div class="chart-bar">
+                        <canvas id="GroupSpenceBar"></canvas>
+                    </div>
+                    <label class="control-label col-md-2"><b id="grpName"></b> Incomes : </label>
+                    <div class="chart-bar">
+                        <canvas id="GroupIncomeBar"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts
+    {
+    <!-- Page level plugins -->
+    <script src="@Url.Content("~/Contents/vendor/chart.js/Chart.min.js")"></script>
+    <!-- Page level custom scripts -->
+    <script src="@Url.Content("~/Contents/js/demo/chart-area-demo.js")"></script>
+    <script src="@Url.Content("~/Contents/js/demo/chart-pie-demo.js")"></script>
+    <script src="@Url.Content("~/Contents/js/demo/chart-bar-demo.js")"></script>
+    <script type="text/javascript">
+        $(function ()
+        {
+            $("#sltCurrentMonth").val(@Model.CurrentMonth).change();
+            var t1 = @Html.Raw(Model.MonthlySpenceBarChart.Item1);
+            SetBarChart('MonthlySpenceBar', @Html.Raw(Model.MonthlySpenceBarChart.Item1), @Html.Raw(Model.MonthlySpenceBarChart.Item2), @Html.Raw(Model.MonthlySpenceBarChart.Item3));
+            SetBarChart('MonthlyIncomeBar', @Html.Raw(Model.MonthlyIncomeBarChart.Item1), @Html.Raw(Model.MonthlyIncomeBarChart.Item2), @Html.Raw(Model.MonthlyIncomeBarChart.Item3));
+            SetBarChart('MonthSpencesBar', @Html.Raw(Model.MonthSpencesBarChart.Item1), @Html.Raw(Model.MonthSpencesBarChart.Item2), @Html.Raw(Model.MonthSpencesBarChart.Item3));
+            SetBarChart('TopFiveGroupBar', @Html.Raw(Model.TopFiveGroupBarChart.Item1), @Html.Raw(Model.TopFiveGroupBarChart.Item2), @Html.Raw(Model.TopFiveGroupBarChart.Item3));
+            SetBarChart('GroupSpenceBar', @Html.Raw(Model.GroupSpenceBarChart.Item1), @Html.Raw(Model.GroupSpenceBarChart.Item2), @Html.Raw(Model.GroupSpenceBarChart.Item3));
+            SetBarChart('GroupIncomeBar', @Html.Raw(Model.GroupIncomeBarChart.Item1), @Html.Raw(Model.GroupIncomeBarChart.Item2), @Html.Raw(Model.GroupIncomeBarChart.Item3));
+            SetPieChart('FundDistributionPie',@Html.Raw(Model.FundDistributionPieChart.Item1),@Html.Raw(Model.FundDistributionPieChart.Item2));
+            SetAreaChart('FundAccumulationArea',@Html.Raw(Model.FundAccumulationAreaChart.Item1),@Html.Raw(Model.FundAccumulationAreaChart.Item2));
+        });
+    </script>
+}

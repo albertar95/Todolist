@@ -80,5 +80,6 @@ namespace Todolist.Services.Contracts
         TransactionGroup GetTransactionGroup(Guid nidTransactionGroup);
         bool DeleteTransactionGroup(Guid nidTransactionGroup);
         EditTransactionViewModel GetEditTransaction(Guid nidTransaction, Guid nidUser);
+        FinancialReportViewModel GetFinancialReport(Guid nidUser);
     }
 }

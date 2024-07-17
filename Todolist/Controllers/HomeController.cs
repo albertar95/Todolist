@@ -638,6 +638,12 @@ namespace Todolist.Controllers
                 TempData["EditTrError"] = $"an error occured while editing transaction!";
             return RedirectToAction("EditTransaction",new { TrId = transaction.NidTransaction});
         }
+
+        //financial report
+        public ActionResult FinancialReport()
+        {
+            return View(_requestProcessor.GetFinancialReport(GetUserId()));
+        }
     }
     public class JsonResults
     {

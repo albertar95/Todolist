@@ -25,5 +25,10 @@ namespace Todolist.Helpers
             else
                 return $"{pc.GetYear(date).ToString("0000")}/{pc.GetMonth(date).ToString("00")}/{pc.GetDayOfMonth(date).ToString("00")} {date.Hour.ToString("00")}:{date.Minute.ToString("00")}:{date.Second.ToString("00")}";
         }
+        public static int CurrentMonth()
+        {
+            PersianCalendar pc = new PersianCalendar();
+            return pc.GetMonth(DateTime.Now);
+        }
     }
 }
