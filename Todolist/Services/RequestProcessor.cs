@@ -663,21 +663,246 @@ namespace Todolist.Services
         {
             var result = new FinancialReportViewModel();
             result.CurrentMonth = Helpers.Dates.CurrentMonth();
-            result.MonthlySpenceBarChart = new Tuple<string, string,decimal>("['test1','test2']","[10000,20000]",30000);
-            result.MonthlyIncomeBarChart = new Tuple<string, string, decimal>("['test1','test2']", "[10000,20000]", 30000);
-            result.MonthSpencesBarChart = new Tuple<string, string, decimal>("['test1','test2']", "[10000,20000]", 30000);
-            result.TopFiveGroupBarChart = new Tuple<string, string, decimal>("['test1','test2']", "[10000,20000]", 30000);
-            result.GroupSpenceBarChart = new Tuple<string, string, decimal>("['test1','test2']", "[10000,20000]", 30000);
-            result.GroupIncomeBarChart = new Tuple<string, string, decimal>("['test1','test2']", "[10000,20000]", 30000);
-            result.YearlyCardStat = new Tuple<decimal, decimal, decimal, decimal>(
-            100000000/*total fund*/,
-            10000000/*total in fund*/,
-            50000000/*total out fund*/,
-            60000000/*remain fund*/);
-            result.FundDistributionPieChart = new Tuple<string, string>("[\"test1\",\"test2\"]", "[28,72]");
-            result.FundAccumulationAreaChart = new Tuple<string, string>("['test1','test2','test3','test4','test5']", "[10000,20000,40000,32000,48000]");
+            result.MonthlySpenceBarChart = MonthlySpenceBarCalc(Helpers.Dates.CurrentMonth());
+            result.MonthlyIncomeBarChart = MonthlyIncomeBarCalc(Helpers.Dates.CurrentMonth());
+            result.MonthSpencesBarChart = MonthSpencesBarCalc();
+            result.TopFiveGroupBarChart = TopFiveGroupBarCalc();
+            result.GroupSpenceBarChart = new Tuple<string, string, decimal>("[]", "[]", 0);
+            result.GroupIncomeBarChart = new Tuple<string, string, decimal>("[]", "[]", 0);
+            result.FundDistributionPieChart = FundDistributionPieCalc();
+            result.FundAccumulationAreaChart = FundAccumulationAreaCalc();
+            result.YearlyCardStat = new Tuple<decimal, decimal, decimal>(
+            GetInitialYearAmounts().Sum(o => o.Amount)/*initial fund*/,
+            GetYearIncomeAmounts()/*total in fund*/,
+            GetYearSpenceAmounts()/*total out fund*/);
             result.Groups = _dbRepository.GetList<TransactionGroup>();
             return result;
         }
+        public Tuple<string, string, decimal> MonthlySpenceBarCalc(int month)
+        {
+            var startofmonth = Helpers.Dates.GetStartAndEndOfMonth(month).Item1;
+            var currentMonthSpenceTransactions = _dbRepository.GetList<Transaction>(p => p.CreateDate >= startofmonth)
+                .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true).Select(r => r.NidAccount).Contains(q.RecieverAccount))
+                .GroupBy(a => a.PayerAccount).Select(m => new { acc = m.Key,totalAmount = m.Sum(o => o.Amount)});
+            string accNames = "[";
+            string values = "[";
+            var accounts = _dbRepository.GetList<Account>();
+            foreach (var tr in currentMonthSpenceTransactions)
+            {
+                accNames += "'" + accounts.FirstOrDefault(p => p.NidAccount == tr.acc).Title + "',";
+                values += "'" + tr.totalAmount + "',";
+            }
+            accNames = accNames.Remove(accNames.Length - 1, 1) + "]";
+            values = values.Remove(values.Length - 1, 1) + "]";
+            return new Tuple<string, string, decimal>(accNames,values,currentMonthSpenceTransactions.Max(p => p.totalAmount));
+        }
+        public Tuple<string, string, decimal> MonthlyIncomeBarCalc(int month)
+        {
+            var startofmonth = Helpers.Dates.GetStartAndEndOfMonth(month).Item1;
+            var currentMonthIncomeTransactions = _dbRepository.GetList<Transaction>(p => p.CreateDate >= startofmonth)
+                .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true).Select(r => r.NidAccount).Contains(q.PayerAccount))
+                .GroupBy(a => a.RecieverAccount).Select(m => new { acc = m.Key, totalAmount = m.Sum(o => o.Amount) });
+            string accNames = "[";
+            string values = "[";
+            var accounts = _dbRepository.GetList<Account>();
+            foreach (var tr in currentMonthIncomeTransactions)
+            {
+                accNames += "'" + accounts.FirstOrDefault(p => p.NidAccount == tr.acc).Title + "',";
+                values += "'" + tr.totalAmount + "',";
+            }
+            accNames = accNames.Remove(accNames.Length - 1, 1) + "]";
+            values = values.Remove(values.Length - 1, 1) + "]";
+            return new Tuple<string, string, decimal>(accNames, values, currentMonthIncomeTransactions.Max(p => p.totalAmount));
+        }
+        private Tuple<string, string, decimal> MonthSpencesBarCalc()
+        {
+            var months = Helpers.Dates.GetMonthsOfYear();
+            var accounts = _dbRepository.GetList<Account>();
+            var pc = new PersianCalendar();
+            string accNames = "[";
+            string values = "[";
+            decimal maxVal = 0;
+            foreach (var m in months)
+            {
+                var currentMonthSpenceTransactions = _dbRepository.GetList<Transaction>(p => p.CreateDate >= m.Item1 && p.CreateDate <= m.Item2)
+                .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true).Select(r => r.NidAccount).Contains(q.RecieverAccount))
+                .Sum(x => x.Amount);
+                accNames += "'" + GetMonthName(pc.GetMonth(m.Item1)) + "',";
+                values += "'" + currentMonthSpenceTransactions + "',";
+                if (currentMonthSpenceTransactions > maxVal)
+                    maxVal = currentMonthSpenceTransactions;
+            }
+            accNames = accNames.Remove(accNames.Length - 1, 1) + "]";
+            values = values.Remove(values.Length - 1, 1) + "]";
+            return new Tuple<string, string, decimal>(accNames, values, maxVal);
+        }
+        private Tuple<string, string, decimal> TopFiveGroupBarCalc()
+        {
+            var year = Helpers.Dates.GetStartOfYear();
+            var currentYearSpenceTransactions = _dbRepository.GetList<Transaction>(p => p.CreateDate >= year)
+                .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true).Select(r => r.NidAccount).Contains(q.RecieverAccount))
+                .GroupBy(a => a.TransactionGroupId).Select(m => new { acc = m.Key, totalAmount = m.Sum(o => o.Amount) })
+                .OrderByDescending(b => b.totalAmount).Take(5);
+            string accNames = "[";
+            string values = "[";
+            var groups = _dbRepository.GetList<TransactionGroup>();
+            foreach (var tr in currentYearSpenceTransactions)
+            {
+                accNames += "'" + groups.FirstOrDefault(p => p.NidTransactionGroup == tr.acc).Title + "',";
+                values += "'" + tr.totalAmount + "',";
+            }
+            accNames = accNames.Remove(accNames.Length - 1, 1) + "]";
+            values = values.Remove(values.Length - 1, 1) + "]";
+            return new Tuple<string, string, decimal>(accNames, values, currentYearSpenceTransactions.Max(p => p.totalAmount));
+        }
+        public Tuple<string, string, decimal> GroupSpenceBarCalc(Guid NidGroup)
+        {
+            var months = Helpers.Dates.GetMonthsOfYear();
+            var accounts = _dbRepository.GetList<Account>();
+            var pc = new PersianCalendar();
+            string accNames = "[";
+            string values = "[";
+            decimal maxVal = 0;
+            foreach (var m in months)
+            {
+                var currentMonthSpenceTransactions = _dbRepository.GetList<Transaction>(p => p.CreateDate >= m.Item1 && p.CreateDate <= m.Item2
+                && p.TransactionGroupId == NidGroup)
+                .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true).Select(r => r.NidAccount).Contains(q.RecieverAccount))
+                .Sum(x => x.Amount);
+                accNames += "'" + GetMonthName(pc.GetMonth(m.Item1)) + "',";
+                values += "'" + currentMonthSpenceTransactions + "',";
+                if (currentMonthSpenceTransactions > maxVal)
+                    maxVal = currentMonthSpenceTransactions;
+            }
+            accNames = accNames.Remove(accNames.Length - 1, 1) + "]";
+            values = values.Remove(values.Length - 1, 1) + "]";
+            return new Tuple<string, string, decimal>(accNames, values, maxVal);
+        }
+        public Tuple<string, string, decimal> GroupIncomeBarCalc(Guid NidGroup)
+        {
+            var months = Helpers.Dates.GetMonthsOfYear();
+            var accounts = _dbRepository.GetList<Account>();
+            var pc = new PersianCalendar();
+            string accNames = "[";
+            string values = "[";
+            decimal maxVal = 0;
+            foreach (var m in months)
+            {
+                var currentMonthIncomeTransactions = _dbRepository.GetList<Transaction>(p => p.CreateDate >= m.Item1 && p.CreateDate <= m.Item2
+                && p.TransactionGroupId == NidGroup)
+                .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true).Select(r => r.NidAccount).Contains(q.PayerAccount))
+                .Sum(x => x.Amount);
+                accNames += "'" + GetMonthName(pc.GetMonth(m.Item1)) + "',";
+                values += "'" + currentMonthIncomeTransactions + "',";
+                if (currentMonthIncomeTransactions > maxVal)
+                    maxVal = currentMonthIncomeTransactions;
+            }
+            accNames = accNames.Remove(accNames.Length - 1, 1) + "]";
+            values = values.Remove(values.Length - 1, 1) + "]";
+            return new Tuple<string, string, decimal>(accNames, values, maxVal);
+        }
+        private Tuple<string, string> FundDistributionPieCalc()
+        {
+            var months = Helpers.Dates.GetMonthsOfYear();
+            var accounts = _dbRepository.GetList<Account>(p => p.IsBackup == false);
+            var totalFund = accounts.Sum(p => p.Amount);
+            var pc = new PersianCalendar();
+            string accNames = "[";
+            string values = "[";
+            foreach (var m in accounts)
+            {
+                accNames += "'" + m.Title + "',";
+                values += "'" + Math.Round((m.Amount/totalFund)*100) + "',";
+            }
+            accNames = accNames.Remove(accNames.Length - 1, 1) + "]";
+            values = values.Remove(values.Length - 1, 1) + "]";
+            return new Tuple<string, string>(accNames, values);
+        }
+        private Tuple<string, string> FundAccumulationAreaCalc()
+        {
+            var months = Helpers.Dates.GetMonthsOfYear();
+            var accounts = _dbRepository.GetList<Account>(p => p.IsBackup == false);
+            var initialYearAccounts = GetInitialYearAmounts().Sum(o => o.Amount);
+            var pc = new PersianCalendar();
+            string accNames = "[";
+            string values = "[";
+            foreach (var m in months)
+            {
+                var spence = _dbRepository.GetList<Transaction>(p => p.CreateDate >= m.Item1 && p.CreateDate <= m.Item2)
+                .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true).Select(r => r.NidAccount).Contains(q.RecieverAccount))
+                .Sum(x => x.Amount);
+                var income = _dbRepository.GetList<Transaction>(p => p.CreateDate >= m.Item1 && p.CreateDate <= m.Item2)
+                .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true).Select(r => r.NidAccount).Contains(q.PayerAccount))
+                .Sum(x => x.Amount);
+                initialYearAccounts = initialYearAccounts + income - spence;
+                accNames += "'" + GetMonthName(pc.GetMonth(m.Item1)) + "',";
+                values += "'" + initialYearAccounts + "',";
+            }
+            accNames = accNames.Remove(accNames.Length - 1, 1) + "]";
+            values = values.Remove(values.Length - 1, 1) + "]";
+            return new Tuple<string, string>(accNames, values);
+        }
+        private List<Account> GetInitialYearAmounts()
+        {
+            var year = Helpers.Dates.GetStartOfYear();
+            var accounts = _dbRepository.GetList<Account>(p => p.IsBackup == false);
+            var result = new List<Account>();
+            foreach (var acc in accounts)
+            {
+                var spences = _dbRepository.GetList<Transaction>(p => p.CreateDate >= year)
+                .Where(q => q.PayerAccount == acc.NidAccount).Sum(u => u.Amount);
+                var Incomes = _dbRepository.GetList<Transaction>(p => p.CreateDate >= year)
+                .Where(q => q.RecieverAccount == acc.NidAccount).Sum(u => u.Amount);
+                result.Add(new Account() {  NidAccount = acc.NidAccount, Title = acc.Title, Amount = acc.Amount + spences - Incomes });
+            }
+            return result;
+        }
+        private decimal GetYearIncomeAmounts()
+        {
+            var year = Helpers.Dates.GetStartOfYear();
+            return _dbRepository.GetList<Transaction>(p => p.CreateDate >= year)
+            .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true).Select(r => r.NidAccount).Contains(q.PayerAccount))
+            .Sum(u => u.Amount);
+        }
+        private decimal GetYearSpenceAmounts()
+        {
+            var year = Helpers.Dates.GetStartOfYear();
+            return _dbRepository.GetList<Transaction>(p => p.CreateDate >= year)
+            .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true).Select(r => r.NidAccount).Contains(q.RecieverAccount))
+            .Sum(u => u.Amount);
+        }
+        private string GetMonthName(int month)
+        {
+            switch (month)
+            {
+                case 1:
+                    return "farvardin";
+                case 2:
+                    return "ordibehesht";
+                case 3:
+                    return "khordad";
+                case 4:
+                    return "tir";
+                case 5:
+                    return "mordad";
+                case 6:
+                    return "shahrivar";
+                case 7:
+                    return "mehr";
+                case 8:
+                    return "aban";
+                case 9:
+                    return "azar";
+                case 10:
+                    return "dey";
+                case 11:
+                    return "bahman";
+                case 12:
+                    return "esfand";
+                default:
+                    return "";
+            }
+        }
+
     }
 }

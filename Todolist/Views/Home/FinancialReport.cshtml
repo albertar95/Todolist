@@ -117,7 +117,7 @@
                                             <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
                                                 Current Fund
                                             </div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">@string.Format("{0:n0}", Model.YearlyCardStat.Item4) $</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">@string.Format("{0:n0}", Model.YearlyCardStat.Item1 + Model.YearlyCardStat.Item2 - Model.YearlyCardStat.Item3) $</div>
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
@@ -213,6 +213,27 @@
             SetBarChart('GroupIncomeBar', @Html.Raw(Model.GroupIncomeBarChart.Item1), @Html.Raw(Model.GroupIncomeBarChart.Item2), @Html.Raw(Model.GroupIncomeBarChart.Item3));
             SetPieChart('FundDistributionPie',@Html.Raw(Model.FundDistributionPieChart.Item1),@Html.Raw(Model.FundDistributionPieChart.Item2));
             SetAreaChart('FundAccumulationArea',@Html.Raw(Model.FundAccumulationAreaChart.Item1),@Html.Raw(Model.FundAccumulationAreaChart.Item2));
+            $("#sltCurrentMonth").change(function ()
+            {
+                $.ajax(
+                {
+                    url:'@Url.Action("MonthlySpenceAndIncomeReport", "Home")',
+                    type:'post',
+                    datatype:'json',
+                        data: { month : nid },
+                    success:function(result)
+                    {
+                        if(result.hasValue)
+                        {
+                            SetBarChart('MonthlySpenceBar', result.spenceLabels, result.spenceValues, result.spenceMax);
+                            SetBarChart('MonthlyIncomeBar', result.incomeLabels, result.incomeValues, result.incomeMax);
+                           SetBarChart('MonthlyIncomeBar', @Html.Raw(Model.MonthlyIncomeBarChart.Item1), @Html.Raw(Model.MonthlyIncomeBarChart.Item2), @Html.Raw(Model.MonthlyIncomeBarChart.Item3));
+                        }
+                    },
+                    error:function(){}
+                });
+                $("#PayerAccount").find(':selected').val();
+            });
         });
     </script>
 }

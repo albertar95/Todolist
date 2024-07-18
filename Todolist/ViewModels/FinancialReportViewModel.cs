@@ -11,7 +11,7 @@ namespace Todolist.ViewModels
         public int CurrentMonth { get; set; }
         public Tuple<string, string,decimal> MonthlySpenceBarChart { get; set; }
         public Tuple<string, string, decimal> MonthlyIncomeBarChart { get; set; }
-        public Tuple<decimal,decimal,decimal,decimal> YearlyCardStat { get; set; }
+        public Tuple<decimal,decimal,decimal> YearlyCardStat { get; set; }
         public Tuple<string, string, decimal> MonthSpencesBarChart { get; set; }
         public Tuple<string, string, decimal> TopFiveGroupBarChart { get; set; }
         public Tuple<string, string, decimal> GroupSpenceBarChart { get; set; }

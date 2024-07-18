@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 
 namespace Todolist.Helpers
@@ -29,6 +30,29 @@ namespace Todolist.Helpers
         {
             PersianCalendar pc = new PersianCalendar();
             return pc.GetMonth(DateTime.Now);
+        }
+        public static Tuple<DateTime, DateTime> GetStartAndEndOfMonth(int month)
+        {
+            PersianCalendar pc = new PersianCalendar();
+            var StartOfMonth = pc.ToDateTime(pc.GetYear(DateTime.Now), month, 1, 0, 0, 0, 0);
+            var EndOfMonth = pc.ToDateTime(pc.GetYear(StartOfMonth.AddMonths(1).AddDays(-1)), pc.GetMonth(StartOfMonth.AddMonths(1).AddDays(-1)), 1, 0, 0, 0, 0);
+            return new Tuple<DateTime, DateTime>(StartOfMonth,EndOfMonth);
+        }
+        public static DateTime GetStartOfYear()
+        {
+            PersianCalendar pc = new PersianCalendar();
+            return pc.ToDateTime(pc.GetYear(DateTime.Now), 1, 1, 0, 0, 0, 0);
+        }
+        public static List<Tuple<DateTime,DateTime>> GetMonthsOfYear()
+        {
+            var result = new List<Tuple<DateTime, DateTime>>();
+            var pc = new PersianCalendar();
+            var currentYear = pc.GetYear(DateTime.Now);
+            for (int i = 1; i <= CurrentMonth(); i++)
+            {
+                result.Add(new Tuple<DateTime, DateTime>(pc.ToDateTime(currentYear,i,1,0,0,0,0), pc.ToDateTime(currentYear, i+1, 1, 0, 0, 0, 0).AddDays(-1)));
+            }
+            return result;
         }
     }
 }

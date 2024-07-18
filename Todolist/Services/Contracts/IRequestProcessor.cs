@@ -81,5 +81,10 @@ namespace Todolist.Services.Contracts
         bool DeleteTransactionGroup(Guid nidTransactionGroup);
         EditTransactionViewModel GetEditTransaction(Guid nidTransaction, Guid nidUser);
         FinancialReportViewModel GetFinancialReport(Guid nidUser);
+        Tuple<string, string, decimal> MonthlySpenceBarCalc(int month);
+        Tuple<string, string, decimal> MonthlyIncomeBarCalc(int month);
+        Tuple<string, string, decimal> GroupSpenceBarCalc(Guid NidGroup);
+        Tuple<string, string, decimal> GroupIncomeBarCalc(Guid NidGroup);
+
     }
 }

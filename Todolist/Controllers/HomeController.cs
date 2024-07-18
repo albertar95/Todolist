@@ -644,6 +644,21 @@ namespace Todolist.Controllers
         {
             return View(_requestProcessor.GetFinancialReport(GetUserId()));
         }
+        [HttpPost]
+        public ActionResult MonthlySpenceAndIncomeReport(int month)
+        {
+            var spences = _requestProcessor.MonthlySpenceBarCalc(month);
+            var incomes = _requestProcessor.MonthlyIncomeBarCalc(month);
+            return Json(new {
+                hasValue = true,
+                spenceLabels = spences.Item1,
+                spenceValues = spences.Item2,
+                spenceMax = spences.Item3,
+                incomeLabels = incomes.Item1,
+                incomeValues = incomes.Item2,
+                incomeMax = incomes.Item3
+            });
+        }
     }
     public class JsonResults
     {
