@@ -2126,6 +2126,8 @@
     <Content Include="Views\Home\TransactionGroups.cshtml" />
     <Content Include="Views\Home\EditTransaction.cshtml" />
     <Content Include="Views\Home\FinancialReport.cshtml" />
+    <Content Include="Views\Home\_MonthlyReportPartialView.cshtml" />
+    <Content Include="Views\Home\_GroupDetailReportPartialView.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

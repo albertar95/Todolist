@@ -647,16 +647,26 @@ namespace Todolist.Controllers
         [HttpPost]
         public ActionResult MonthlySpenceAndIncomeReport(int month)
         {
-            var spences = _requestProcessor.MonthlySpenceBarCalc(month);
-            var incomes = _requestProcessor.MonthlyIncomeBarCalc(month);
-            return Json(new {
-                hasValue = true,
-                spenceLabels = spences.Item1,
-                spenceValues = spences.Item2,
-                spenceMax = spences.Item3,
-                incomeLabels = incomes.Item1,
-                incomeValues = incomes.Item2,
-                incomeMax = incomes.Item3
+            return Json(new JsonResults()
+            {
+                HasValue = true,
+                Html = Helpers.ViewHelper.RenderViewToString(this, "_MonthlyReportPartialView",
+                new FinancialReportViewModel() {  CurrentMonth = month, MonthlySpenceBarChart = _requestProcessor.MonthlySpenceBarCalc(month) ,
+                MonthlyIncomeBarChart = _requestProcessor.MonthlyIncomeBarCalc(month)
+                })
+            });
+        }
+        public ActionResult GroupDetailReport(Guid NidGroup)
+        {
+            return Json(new JsonResults()
+            {
+                HasValue = true,
+                Html = Helpers.ViewHelper.RenderViewToString(this, "_GroupDetailReportPartialView",
+                new FinancialReportViewModel()
+                {
+                    GroupSpenceBarChart = _requestProcessor.GroupSpenceBarCalc(NidGroup),
+                    GroupIncomeBarChart = _requestProcessor.GroupIncomeBarCalc(NidGroup)
+                })
             });
         }
     }

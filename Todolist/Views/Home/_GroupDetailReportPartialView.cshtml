@@ -1,0 +1,21 @@
+﻿@model Todolist.ViewModels.FinancialReportViewModel
+
+
+<label class="control-label col-md-2"><b id="grpName"></b> Spences : </label>
+<div class="chart-bar">
+    <canvas id="GroupSpenceBar"></canvas>
+</div>
+<label class="control-label col-md-2"><b id="grpName"></b> Incomes : </label>
+<div class="chart-bar">
+    <canvas id="GroupIncomeBar"></canvas>
+</div>
+
+<script src="@Url.Content("~/Contents/vendor/chart.js/Chart.min.js")"></script>
+<script src="@Url.Content("~/Contents/js/demo/chart-bar-demo.js")"></script>
+<script type="text/javascript">
+            $(function ()
+            {
+            SetBarChart('GroupSpenceBar', @Html.Raw(Model.GroupSpenceBarChart.Item1), @Html.Raw(Model.GroupSpenceBarChart.Item2), @Html.Raw(Model.GroupSpenceBarChart.Item3));
+            SetBarChart('GroupIncomeBar', @Html.Raw(Model.GroupIncomeBarChart.Item1), @Html.Raw(Model.GroupIncomeBarChart.Item2), @Html.Raw(Model.GroupIncomeBarChart.Item3));
+            });
+</script>

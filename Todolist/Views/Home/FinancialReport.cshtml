@@ -34,13 +34,15 @@
                             </select>
                         </div>
                     </div>
-                    <h4 class="header-control mb-4">spence report</h4>
-                    <div class="chart-bar">
-                        <canvas id="MonthlySpenceBar"></canvas>
-                    </div>
-                    <h4 class="header-control mb-4">income report</h4>
-                    <div class="chart-bar">
-                        <canvas id="MonthlyIncomeBar"></canvas>
+                    <div id="monthlyReports">
+                        <h4 class="header-control mb-4">spence report</h4>
+                        <div class="chart-bar">
+                            <canvas id="MonthlySpenceBar"></canvas>
+                        </div>
+                        <h4 class="header-control mb-4">income report</h4>
+                        <div class="chart-bar">
+                            <canvas id="MonthlyIncomeBar"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -168,7 +170,7 @@
                     <div class="form-group">
                         <label class="control-label col-md-2">group : </label>
                         <div class="col-md-10">
-                            <select id="TransactionGroup" class="form-control">
+                            <select id="sltTransactionGroup" class="form-control">
                                 <option value="0" disabled selected>select group</option>
                                 @foreach (var acc in Model.Groups.Where(p => p.IsActive).OrderBy(q => q.Title).ToList())
                                 {
@@ -177,13 +179,15 @@
                             </select>
                         </div>
                     </div>
-                    <label class="control-label col-md-2"><b id="grpName"></b> Spences : </label>
-                    <div class="chart-bar">
-                        <canvas id="GroupSpenceBar"></canvas>
-                    </div>
-                    <label class="control-label col-md-2"><b id="grpName"></b> Incomes : </label>
-                    <div class="chart-bar">
-                        <canvas id="GroupIncomeBar"></canvas>
+                    <div id="groupDetailReport">
+                        <label class="control-label col-md-2"><b id="grpName"></b> Spences : </label>
+                        <div class="chart-bar">
+                            <canvas id="GroupSpenceBar"></canvas>
+                        </div>
+                        <label class="control-label col-md-2"><b id="grpName"></b> Incomes : </label>
+                        <div class="chart-bar">
+                            <canvas id="GroupIncomeBar"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -220,19 +224,35 @@
                     url:'@Url.Action("MonthlySpenceAndIncomeReport", "Home")',
                     type:'post',
                     datatype:'json',
-                        data: { month : nid },
+                        data: { month: $("#sltCurrentMonth").find(':selected').val() },
                     success:function(result)
                     {
-                        if(result.hasValue)
+                        if (result.HasValue)
                         {
-                            SetBarChart('MonthlySpenceBar', result.spenceLabels, result.spenceValues, result.spenceMax);
-                            SetBarChart('MonthlyIncomeBar', result.incomeLabels, result.incomeValues, result.incomeMax);
-                           SetBarChart('MonthlyIncomeBar', @Html.Raw(Model.MonthlyIncomeBarChart.Item1), @Html.Raw(Model.MonthlyIncomeBarChart.Item2), @Html.Raw(Model.MonthlyIncomeBarChart.Item3));
+                            $("#monthlyReports").html(result.Html);
                         }
                     },
                     error:function(){}
                 });
                 $("#PayerAccount").find(':selected').val();
+            });
+            $("#sltTransactionGroup").change(function ()
+            {
+                $.ajax(
+                {
+                    url:'@Url.Action("GroupDetailReport", "Home")',
+                    type:'post',
+                    datatype:'json',
+                        data: { NidGroup: $("#sltTransactionGroup").find(':selected').val() },
+                    success:function(result)
+                    {
+                        if (result.HasValue)
+                        {
+                            $("#groupDetailReport").html(result.Html);
+                        }
+                    },
+                    error:function(){}
+                });
             });
         });
     </script>

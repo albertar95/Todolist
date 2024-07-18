@@ -1,0 +1,19 @@
+﻿@model Todolist.ViewModels.FinancialReportViewModel
+
+<h4 class="header-control mb-4">spence report</h4>
+<div class="chart-bar">
+    <canvas id="MonthlySpenceBar"></canvas>
+</div>
+<h4 class="header-control mb-4">income report</h4>
+<div class="chart-bar">
+    <canvas id="MonthlyIncomeBar"></canvas>
+</div>
+<script src="@Url.Content("~/Contents/vendor/chart.js/Chart.min.js")"></script>
+<script src="@Url.Content("~/Contents/js/demo/chart-bar-demo.js")"></script>
+<script type="text/javascript">
+            $(function ()
+            {
+            SetBarChart('MonthlySpenceBar', @Html.Raw(Model.MonthlySpenceBarChart.Item1), @Html.Raw(Model.MonthlySpenceBarChart.Item2), @Html.Raw(Model.MonthlySpenceBarChart.Item3));
+            SetBarChart('MonthlyIncomeBar', @Html.Raw(Model.MonthlyIncomeBarChart.Item1), @Html.Raw(Model.MonthlyIncomeBarChart.Item2), @Html.Raw(Model.MonthlyIncomeBarChart.Item3));
+            });
+</script>
