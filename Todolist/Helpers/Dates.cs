@@ -35,7 +35,7 @@ namespace Todolist.Helpers
         {
             PersianCalendar pc = new PersianCalendar();
             var StartOfMonth = pc.ToDateTime(pc.GetYear(DateTime.Now), month, 1, 0, 0, 0, 0);
-            var EndOfMonth = pc.ToDateTime(pc.GetYear(StartOfMonth.AddMonths(1).AddDays(-1)), pc.GetMonth(StartOfMonth.AddMonths(1).AddDays(-1)), 1, 0, 0, 0, 0);
+            var EndOfMonth = pc.ToDateTime(pc.GetYear(StartOfMonth.AddMonths(1).AddDays(-1)), pc.GetMonth(StartOfMonth.AddMonths(1).AddDays(-1)), pc.GetDayOfMonth(StartOfMonth.AddMonths(1).AddDays(-1)), 23, 59, 59, 999);
             return new Tuple<DateTime, DateTime>(StartOfMonth,EndOfMonth);
         }
         public static DateTime GetStartOfYear()
@@ -50,7 +50,7 @@ namespace Todolist.Helpers
             var currentYear = pc.GetYear(DateTime.Now);
             for (int i = 1; i <= CurrentMonth(); i++)
             {
-                result.Add(new Tuple<DateTime, DateTime>(pc.ToDateTime(currentYear,i,1,0,0,0,0), pc.ToDateTime(currentYear, i+1, 1, 0, 0, 0, 0).AddDays(-1)));
+                result.Add(new Tuple<DateTime, DateTime>(pc.ToDateTime(currentYear,i,1,0,0,0,0), pc.ToDateTime(currentYear, i+1, 1, 23, 59, 59, 999).AddDays(-1)));
             }
             return result;
         }

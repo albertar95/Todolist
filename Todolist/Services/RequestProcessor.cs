@@ -680,10 +680,10 @@ namespace Todolist.Services
         }
         public Tuple<string, string, decimal> MonthlySpenceBarCalc(int month)
         {
-            var startofmonth = Helpers.Dates.GetStartAndEndOfMonth(month).Item1;
-            var currentMonthSpenceTransactions = _dbRepository.GetList<Transaction>(p => p.CreateDate >= startofmonth)
+            var startofmonth = Helpers.Dates.GetStartAndEndOfMonth(month);
+            var currentMonthSpenceTransactions = _dbRepository.GetList<Transaction>(p => p.CreateDate >= startofmonth.Item1 && p.CreateDate <= startofmonth.Item2 )
                 .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true).Select(r => r.NidAccount).Contains(q.RecieverAccount))
-                .GroupBy(a => a.PayerAccount).Select(m => new { acc = m.Key,totalAmount = m.Sum(o => o.Amount)});
+                .GroupBy(a => a.PayerAccount).Select(m => new { acc = m.Key,totalAmount = m.Sum(o => o.Amount)}).ToList();
             string accNames = "[";
             string values = "[";
             var accounts = _dbRepository.GetList<Account>();
@@ -698,8 +698,8 @@ namespace Todolist.Services
         }
         public Tuple<string, string, decimal> MonthlyIncomeBarCalc(int month)
         {
-            var startofmonth = Helpers.Dates.GetStartAndEndOfMonth(month).Item1;
-            var currentMonthIncomeTransactions = _dbRepository.GetList<Transaction>(p => p.CreateDate >= startofmonth)
+            var startofmonth = Helpers.Dates.GetStartAndEndOfMonth(month);
+            var currentMonthIncomeTransactions = _dbRepository.GetList<Transaction>(p => p.CreateDate >= startofmonth.Item1 && p.CreateDate <= startofmonth.Item2)
                 .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true).Select(r => r.NidAccount).Contains(q.PayerAccount))
                 .GroupBy(a => a.RecieverAccount).Select(m => new { acc = m.Key, totalAmount = m.Sum(o => o.Amount) });
             string accNames = "[";
@@ -767,7 +767,7 @@ namespace Todolist.Services
             {
                 var currentMonthSpenceTransactions = _dbRepository.GetList<Transaction>(p => p.CreateDate >= m.Item1 && p.CreateDate <= m.Item2
                 && p.TransactionGroupId == NidGroup)
-                .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true).Select(r => r.NidAccount).Contains(q.RecieverAccount))
+                .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true && w.IsActive == true).Select(r => r.NidAccount).Contains(q.RecieverAccount))
                 .Sum(x => x.Amount);
                 accNames += "'" + GetMonthName(pc.GetMonth(m.Item1)) + "',";
                 values += "'" + currentMonthSpenceTransactions + "',";
@@ -790,7 +790,7 @@ namespace Todolist.Services
             {
                 var currentMonthIncomeTransactions = _dbRepository.GetList<Transaction>(p => p.CreateDate >= m.Item1 && p.CreateDate <= m.Item2
                 && p.TransactionGroupId == NidGroup)
-                .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true).Select(r => r.NidAccount).Contains(q.PayerAccount))
+                .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true && w.IsActive == true).Select(r => r.NidAccount).Contains(q.PayerAccount))
                 .Sum(x => x.Amount);
                 accNames += "'" + GetMonthName(pc.GetMonth(m.Item1)) + "',";
                 values += "'" + currentMonthIncomeTransactions + "',";
@@ -804,7 +804,7 @@ namespace Todolist.Services
         private Tuple<string, string> FundDistributionPieCalc()
         {
             var months = Helpers.Dates.GetMonthsOfYear();
-            var accounts = _dbRepository.GetList<Account>(p => p.IsBackup == false);
+            var accounts = _dbRepository.GetList<Account>(p => p.IsBackup == false && p.IsActive == true);
             var totalFund = accounts.Sum(p => p.Amount);
             var pc = new PersianCalendar();
             string accNames = "[";
@@ -821,7 +821,7 @@ namespace Todolist.Services
         private Tuple<string, string> FundAccumulationAreaCalc()
         {
             var months = Helpers.Dates.GetMonthsOfYear();
-            var accounts = _dbRepository.GetList<Account>(p => p.IsBackup == false);
+            var accounts = _dbRepository.GetList<Account>(p => p.IsBackup == false && p.IsActive == true);
             var initialYearAccounts = GetInitialYearAmounts().Sum(o => o.Amount);
             var pc = new PersianCalendar();
             string accNames = "[";
@@ -829,10 +829,10 @@ namespace Todolist.Services
             foreach (var m in months)
             {
                 var spence = _dbRepository.GetList<Transaction>(p => p.CreateDate >= m.Item1 && p.CreateDate <= m.Item2)
-                .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true).Select(r => r.NidAccount).Contains(q.RecieverAccount))
+                .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true && w.IsActive == true).Select(r => r.NidAccount).Contains(q.RecieverAccount))
                 .Sum(x => x.Amount);
                 var income = _dbRepository.GetList<Transaction>(p => p.CreateDate >= m.Item1 && p.CreateDate <= m.Item2)
-                .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true).Select(r => r.NidAccount).Contains(q.PayerAccount))
+                .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true && w.IsActive == true).Select(r => r.NidAccount).Contains(q.PayerAccount))
                 .Sum(x => x.Amount);
                 initialYearAccounts = initialYearAccounts + income - spence;
                 accNames += "'" + GetMonthName(pc.GetMonth(m.Item1)) + "',";
@@ -845,7 +845,7 @@ namespace Todolist.Services
         private List<Account> GetInitialYearAmounts()
         {
             var year = Helpers.Dates.GetStartOfYear();
-            var accounts = _dbRepository.GetList<Account>(p => p.IsBackup == false);
+            var accounts = _dbRepository.GetList<Account>(p => p.IsBackup == false && p.IsActive == true);
             var result = new List<Account>();
             foreach (var acc in accounts)
             {
@@ -861,14 +861,14 @@ namespace Todolist.Services
         {
             var year = Helpers.Dates.GetStartOfYear();
             return _dbRepository.GetList<Transaction>(p => p.CreateDate >= year)
-            .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true).Select(r => r.NidAccount).Contains(q.PayerAccount))
+            .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true && w.IsActive == true).Select(r => r.NidAccount).Contains(q.PayerAccount))
             .Sum(u => u.Amount);
         }
         private decimal GetYearSpenceAmounts()
         {
             var year = Helpers.Dates.GetStartOfYear();
             return _dbRepository.GetList<Transaction>(p => p.CreateDate >= year)
-            .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true).Select(r => r.NidAccount).Contains(q.RecieverAccount))
+            .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true && w.IsActive == true).Select(r => r.NidAccount).Contains(q.RecieverAccount))
             .Sum(u => u.Amount);
         }
         private string GetMonthName(int month)
