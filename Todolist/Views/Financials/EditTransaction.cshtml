@@ -26,7 +26,7 @@
     </div>
 </div>
 
-@using (Html.BeginForm("SubmitEditTransaction2", "Home", FormMethod.Post))
+@using (Html.BeginForm("SubmitEditTransaction2", "Financials", FormMethod.Post))
 {
     @Html.AntiForgeryToken()
 
@@ -167,7 +167,7 @@
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Save" class="btn btn-warning btn-user btn-block" />
                 <hr>
-                <a href="@Url.Action("EditTransaction",new { TrId = Model.NextTrId})" class="btn btn-outline-info btn-block" style="width:50%;margin:0 auto;">next Tr</a>
+                <a href="@Url.Action("EditTransaction","Financials",new { TrId = Model.NextTrId})" class="btn btn-outline-info btn-block" style="width:50%;margin:0 auto;">next Tr</a>
             </div>
         </div>
     </div>

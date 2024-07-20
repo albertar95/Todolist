@@ -8,7 +8,8 @@
 <hr />
 <div class="row">
     <div class="col-md-12">
-        <form action="SubmitEditNoteGroup">
+        @using (Html.BeginForm("", "Reminders", FormMethod.Post, new { }))
+        {
             <input name="NidGroup" value="@Model.NidGroup" hidden />
             <input name="CreateDate" value="@Model.CreateDate" hidden />
             <input name="ModifiedDate" value="@Model.ModifiedDate" hidden />
@@ -26,7 +27,7 @@
                     <div class="col-lg-4"></div>
                 </div>
             </div>
-        </form>
+        }
     </div>
 </div>
 

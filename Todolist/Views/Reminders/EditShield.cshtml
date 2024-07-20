@@ -8,7 +8,8 @@
 <hr />
 <div class="row">
     <div class="col-md-12">
-        <form action="SubmitEditShield">
+        @using (Html.BeginForm("SubmitEditShield", "Reminders", FormMethod.Post, new { }))
+        {
             <input type="text" name="Id" value="@Model.Id" hidden />
             <input type="text" name="UserId" value="@Model.UserId" hidden />
             <input type="text" name="CreateDate" value="@Model.CreateDate" hidden />
@@ -34,11 +35,11 @@
                     <div class="col-lg-4"></div>
                     <div class="col-lg-4 text-center">
                         <input type="submit" value="Update" class="btn btn-warning" />
-                        <a class="btn btn-outline-info" href="@Url.Action("Shields","Home")">Back to List</a>
+                        <a class="btn btn-outline-info" href="@Url.Action("Shields","Reminders")">Back to List</a>
                     </div>
                     <div class="col-lg-4"></div>
                 </div>
             </div>
-        </form>
+        }
     </div>
 </div>

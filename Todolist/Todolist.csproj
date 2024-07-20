@@ -1824,13 +1824,15 @@
       <LastGenOutput>Model.cs</LastGenOutput>
     </Content>
     <Content Include="robots.txt" />
-    <Content Include="tmp\SQLQuery1.sql" />
-    <Content Include="tmp\SQLQuery2.sql" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\FinancialsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\RemindersController.cs" />
+    <Compile Include="Controllers\SchedulesController.cs" />
+    <Compile Include="Controllers\UsersController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -2100,34 +2102,34 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
-    <Content Include="Views\Home\Account.cshtml" />
-    <Content Include="Views\Home\AddGoal.cshtml" />
-    <Content Include="Views\Home\AddNote.cshtml" />
-    <Content Include="Views\Home\AddNoteGroup.cshtml" />
-    <Content Include="Views\Home\AddShield.cshtml" />
-    <Content Include="Views\Home\EditGoal.cshtml" />
-    <Content Include="Views\Home\EditNoteGroup.cshtml" />
-    <Content Include="Views\Home\EditShield.cshtml" />
-    <Content Include="Views\Home\FinancialRecords.cshtml" />
-    <Content Include="Views\Home\Goal.cshtml" />
-    <Content Include="Views\Home\Goals.cshtml" />
-    <Content Include="Views\Home\Login.cshtml" />
-    <Content Include="Views\Home\Note.cshtml" />
-    <Content Include="Views\Home\NoteGroup.cshtml" />
-    <Content Include="Views\Home\NoteGroups.cshtml" />
-    <Content Include="Views\Home\RoutineCalendar.cshtml" />
-    <Content Include="Views\Home\Routines.cshtml" />
-    <Content Include="Views\Home\ShieldDetail.cshtml" />
-    <Content Include="Views\Home\Shields.cshtml" />
-    <Content Include="Views\Home\Users.cshtml" />
+    <Content Include="Views\Financials\Account.cshtml" />
+    <Content Include="Views\Schedules\AddGoal.cshtml" />
+    <Content Include="Views\Reminders\AddNote.cshtml" />
+    <Content Include="Views\Reminders\AddNoteGroup.cshtml" />
+    <Content Include="Views\Reminders\AddShield.cshtml" />
+    <Content Include="Views\Schedules\EditGoal.cshtml" />
+    <Content Include="Views\Reminders\EditNoteGroup.cshtml" />
+    <Content Include="Views\Reminders\EditShield.cshtml" />
+    <Content Include="Views\Financials\FinancialRecords.cshtml" />
+    <Content Include="Views\Schedules\Goal.cshtml" />
+    <Content Include="Views\Schedules\Goals.cshtml" />
+    <Content Include="Views\Users\Login.cshtml" />
+    <Content Include="Views\Reminders\Note.cshtml" />
+    <Content Include="Views\Reminders\NoteGroup.cshtml" />
+    <Content Include="Views\Reminders\NoteGroups.cshtml" />
+    <Content Include="Views\Schedules\RoutineCalendar.cshtml" />
+    <Content Include="Views\Schedules\Routines.cshtml" />
+    <Content Include="Views\Reminders\ShieldDetail.cshtml" />
+    <Content Include="Views\Reminders\Shields.cshtml" />
+    <Content Include="Views\Users\Users.cshtml" />
     <Content Include="Views\Home\_IndexPartialView.cshtml" />
-    <Content Include="Views\Home\_RoutineCalendarPartialView.cshtml" />
-    <Content Include="Views\Home\_LendDetailPartialView.cshtml" />
-    <Content Include="Views\Home\TransactionGroups.cshtml" />
-    <Content Include="Views\Home\EditTransaction.cshtml" />
-    <Content Include="Views\Home\FinancialReport.cshtml" />
-    <Content Include="Views\Home\_MonthlyReportPartialView.cshtml" />
-    <Content Include="Views\Home\_GroupDetailReportPartialView.cshtml" />
+    <Content Include="Views\Schedules\_RoutineCalendarPartialView.cshtml" />
+    <Content Include="Views\Financials\_LendDetailPartialView.cshtml" />
+    <Content Include="Views\Financials\TransactionGroups.cshtml" />
+    <Content Include="Views\Financials\EditTransaction.cshtml" />
+    <Content Include="Views\Financials\FinancialReport.cshtml" />
+    <Content Include="Views\Financials\_MonthlyReportPartialView.cshtml" />
+    <Content Include="Views\Financials\_GroupDetailReportPartialView.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

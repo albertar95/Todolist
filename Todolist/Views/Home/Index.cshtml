@@ -314,7 +314,8 @@
                 </div>
                 <div class="modal-body">
                     <div id="AddScheduleSection" hidden>
-                        <form action="SubmitAddSchedule" enctype="multipart/form-data">
+                        @using (Html.BeginForm("SubmitAddSchedule", "Schedules", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                        {
                             <input name="Direction" value="@string.Format("{0}",int.Parse(Model.DatePeriodInfo[1]) + 1)" hidden />
                             <div class="form-group">
                                 <select id="GoalId" class="form-control" onchange="SetTasks(this)" required>
@@ -355,10 +356,11 @@
                                     <div class="col-lg-4"></div>
                                 </div>
                             </div>
-                        </form>
+                        }
                     </div>
                     <div id="AddProgressSection" hidden>
-                        <form action="SubmitAddProgress" enctype="multipart/form-data">
+                        @using (Html.BeginForm("SubmitAddProgress", "Schedules", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                        {
                             <input name="Direction" value="@string.Format("{0}",int.Parse(Model.DatePeriodInfo[1]) + 1)" hidden />
                             <div class="form-group">
                                 <select id="sltScheduleDate2" class="form-control" onchange="SetSchedule(this)" required>
@@ -396,7 +398,7 @@
                                     <div class="col-lg-4"></div>
                                 </div>
                             </div>
-                        </form>
+                        }
                     </div>
                     <div id="DeleteScheduleSection" hidden>
                         <input name="Direction" value="@string.Format("{0}",int.Parse(Model.DatePeriodInfo[1]) + 1)" hidden />
@@ -429,7 +431,8 @@
                         </div>
                     </div>
                     <div id="EditProgressSection" hidden>
-                        <form action="SubmitEditProgress" enctype="multipart/form-data">
+                        @using (Html.BeginForm("SubmitEditProgress", "Schedules", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                        {
                             <input name="Direction" value="@string.Format("{0}",int.Parse(Model.DatePeriodInfo[1]) + 1)" hidden />
                             <input type="text" id="txtNidProgress" name="NidProgress" hidden />
                             <input type="datetime" id="txtCreateDate" name="CreateDate" hidden />
@@ -458,7 +461,7 @@
                                     <div class="col-lg-4"></div>
                                 </div>
                             </div>
-                        </form>
+                        }
                     </div>
                 </div>
                 <div class="modal-footer">

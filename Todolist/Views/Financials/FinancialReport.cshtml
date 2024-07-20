@@ -221,7 +221,7 @@
             {
                 $.ajax(
                 {
-                    url:'@Url.Action("MonthlySpenceAndIncomeReport", "Home")',
+                    url:'@Url.Action("MonthlySpenceAndIncomeReport", "Financials")',
                     type:'post',
                     datatype:'json',
                         data: { month: $("#sltCurrentMonth").find(':selected').val() },
@@ -240,7 +240,7 @@
             {
                 $.ajax(
                 {
-                    url:'@Url.Action("GroupDetailReport", "Home")',
+                    url:'@Url.Action("GroupDetailReport", "Financials")',
                     type:'post',
                     datatype:'json',
                         data: { NidGroup: $("#sltTransactionGroup").find(':selected').val() },

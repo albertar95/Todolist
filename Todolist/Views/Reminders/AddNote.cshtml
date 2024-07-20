@@ -8,7 +8,8 @@
 <hr />
 <div class="row">
     <div class="col-md-12">
-        <form action="SubmitAddNote">
+        @using (Html.BeginForm("SubmitAddNote", "Reminders", FormMethod.Post, new { }))
+        {
             <input name="NidNote" hidden />
             <input name="CreateDate" hidden />
             <input name="ModifiedDate" hidden />
@@ -29,7 +30,7 @@
                     <div class="col-lg-4"></div>
                 </div>
             </div>
-        </form>
+        }
     </div>
 </div>
 
@@ -49,7 +50,7 @@
         function DeleteNote(e, nid, title) {
             e.preventDefault();
             $("#txtDeleteNote").text('are you sure to delete note ' + title + ' ?');
-            $("#btnSubmitDeleteNote").attr('href', '@Url.Action("SubmitDeleteNote","Home")' + '?NidNote=' + nid);
+            $("#btnSubmitDeleteNote").attr('href', '@Url.Action("SubmitDeleteNote", "Reminders")' + '?NidNote=' + nid);
             $("#noteModal").modal();
         }
     </script>

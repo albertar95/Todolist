@@ -148,14 +148,14 @@
         function SubmitAddGroup(e)
         {
             e.preventDefault();
-            window.location.href = '@Url.Action("SubmitAddTransactionGroup", "Home")' + '?Title=' + $("#txtTitle").val()
+            window.location.href = '@Url.Action("SubmitAddTransactionGroup", "Financials")' + '?Title=' + $("#txtTitle").val()
                 + '&PaymentType=' + $("#PaymentType").val();
         }
         function DeleteTransactionGroup(e,nid)
         {
             e.preventDefault();
             $("#txtDelete").text('are you sure to delete this transaction group?');
-            $("#btnSubmitDelete").attr('href','@Url.Action("SubmitDeactiveTransactionGroup", "Home")' + '?NidTr=' + nid);
+            $("#btnSubmitDelete").attr('href','@Url.Action("SubmitDeactiveTransactionGroup", "Financials")' + '?NidTr=' + nid);
             $("#DeleteSection").removeAttr('hidden');
             $("#TransactionGroupSection").attr('hidden', 'hidden');
             $("#btnSubmitDelete").removeAttr('hidden');

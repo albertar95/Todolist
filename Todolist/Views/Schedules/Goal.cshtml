@@ -18,7 +18,7 @@
             <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
                  aria-labelledby="dropdownMenuLink">
                 <div class="dropdown-header"></div>
-                <a class="dropdown-item" href="@Url.Action("EditGoal","Home",new {NidGoal = Model.Goal.NidGoal})">Edit Goal</a>
+                <a class="dropdown-item" href="@Url.Action("EditGoal","Schedules",new {NidGoal = Model.Goal.NidGoal})">Edit Goal</a>
                 <a class="dropdown-item" id="btnDeleteGoal" href="#">Delete Goal</a>
                 @if (Model.Goal.GoalStatus == 0)
                 {
@@ -26,7 +26,7 @@
                 }
                 @if (Model.Goal.GoalStatus == 1)
                 {
-                    <a class="dropdown-item" href="@Url.Action("OpenGoal","Home",new { NidGoal = Model.Goal.NidGoal})">Reopen Goal</a>
+                    <a class="dropdown-item" href="@Url.Action("OpenGoal","Schedules",new { NidGoal = Model.Goal.NidGoal})">Reopen Goal</a>
                 }
             </div>
         </div>
@@ -295,7 +295,7 @@
                 e.preventDefault();
                 $.ajax(
                     {
-                        url: '@Url.Action("SubmitAddTask","Home")',
+                        url: '@Url.Action("SubmitAddTask", "Schedules")',
                         type: 'post',
                         datatype: 'json',
                         data: { NidGoal: '@Model.Goal.NidGoal', Title: $("#txtTaskTitle").val(), TWeight : $("#txtTaskWeight").val(), Description: $("#txtTaskDescription").val() },
@@ -335,7 +335,7 @@
         function DeleteTask(nidtask,Title) {
             $("#goalModalLabel").text('Delete Task');
             $("#txtDeleteTask").text('are you sure? deleting task : ' + Title);
-            $("#btnSubmitDeleteTask").attr('href', '@Url.Action("DeleteTask","Home")' + '?NidTask=' + nidtask + '&NidGoal=' + '@Model.Goal.NidGoal');
+            $("#btnSubmitDeleteTask").attr('href', '@Url.Action("DeleteTask", "Schedules")' + '?NidTask=' + nidtask + '&NidGoal=' + '@Model.Goal.NidGoal');
             $("#DeleteTaskSection").removeAttr('hidden');
             $("#AddTaskSection").attr('hidden', 'hidden');
             $("#DoneTaskSection").attr('hidden', 'hidden');
@@ -348,7 +348,7 @@
         function DoneTask(nidtask, Title) {
             $("#goalModalLabel").text('Done Task');
             $("#txtDoneTask").text('are you sure? done task : ' + Title);
-            $("#btnSubmitDoneTask").attr('href', '@Url.Action("DoneTask","Home")' + '?NidTask=' + nidtask + '&NidGoal=' + '@Model.Goal.NidGoal');
+            $("#btnSubmitDoneTask").attr('href', '@Url.Action("DoneTask", "Schedules")' + '?NidTask=' + nidtask + '&NidGoal=' + '@Model.Goal.NidGoal');
             $("#DoneTaskSection").removeAttr('hidden');
             $("#AddTaskSection").attr('hidden', 'hidden');
             $("#DeleteTaskSection").attr('hidden', 'hidden');
@@ -361,7 +361,7 @@
         function UndoTask(nidtask, Title) {
             $("#goalModalLabel").text('Undo Task');
             $("#txtUndoTask").text('are you sure? undo task : ' + Title);
-            $("#btnSubmitUndoTask").attr('href', '@Url.Action("UndoTask","Home")' + '?NidTask=' + nidtask + '&NidGoal=' + '@Model.Goal.NidGoal');
+            $("#btnSubmitUndoTask").attr('href', '@Url.Action("UndoTask", "Schedules")' + '?NidTask=' + nidtask + '&NidGoal=' + '@Model.Goal.NidGoal');
             $("#UndoTaskSection").removeAttr('hidden');
             $("#AddTaskSection").attr('hidden', 'hidden');
             $("#DeleteTaskSection").attr('hidden', 'hidden');
@@ -375,12 +375,12 @@
         {
             $.ajax(
                 {
-                    url: '@Url.Action("SubmitDeleteGoal","Home")',
+                    url: '@Url.Action("SubmitDeleteGoal", "Schedules")',
                     type: 'post',
                     datatype: 'json',
                     data: { NidGoal: nidgoal },
                     success: function (result) {
-                        window.location = '@Url.Action("Goals","Home")';
+                        window.location = '@Url.Action("Goals", "Schedules")';
                     },
                     error: function () {
                         alert("error occured while deleing goal!")
@@ -391,7 +391,7 @@
         {
             $.ajax(
                 {
-                    url: '@Url.Action("SubmitEditTask","Home")',
+                    url: '@Url.Action("SubmitEditTask", "Schedules")',
                     type: 'post',
                     datatype: 'json',
                     data: { NidGoal: '@Model.Goal.NidGoal', NidTask: nidtask, Title: title, TWeight: estimate },
@@ -420,7 +420,7 @@
         function UpdateTaskDescription(nidtask) {
             $.ajax(
                 {
-                    url: '@Url.Action("SubmitEditTaskDescription","Home")',
+                    url: '@Url.Action("SubmitEditTaskDescription", "Schedules")',
                     type: 'post',
                     datatype: 'json',
                     data: { NidGoal: '@Model.Goal.NidGoal', NidTask: nidtask, Description:$("#TaskDescArea").val() },

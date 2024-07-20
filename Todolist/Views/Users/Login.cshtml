@@ -44,8 +44,9 @@
                                     <div class="text-center">
                                         <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
                                     </div>
-                                    <form class="user" action="SubmitLogin" enctype="multipart/form-data" method="post">
-                                        @if (!string.IsNullOrWhiteSpace(Model.ToString()))
+                                    @using (Html.BeginForm("SubmitLogin", "Users", FormMethod.Post, new { enctype = "multipart/form-data",@class = "user" }))
+                                    {
+                                        if (!string.IsNullOrWhiteSpace(Model.ToString()))
                                         {
                                             <input type="text" class="form-control form-control-user"
                                                    id="returnUrl" name="returnUrl" value="@Model.ToString()" hidden>
@@ -75,7 +76,7 @@
                                                 </button>
                                             </div>
                                         </div>
-                                    </form>
+                                    }
                                 </div>
                             </div>
                         </div>

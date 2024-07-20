@@ -27,59 +27,60 @@
                     <div class="text-center">
                         <h1 class="h4 text-gray-900 mb-4">Account : @Model.Title </h1>
                     </div>
-                    <form class="user" style="padding:25px;" action="SubmitEditAccount" enctype="multipart/form-data">
+                    @using (Html.BeginForm("SubmitEditAccount", "Financials", FormMethod.Post, new { enctype = "multipart/form-data", style = "padding:25px;", @class = "user" }))
+                    {
+                    <div class="form-group">
+                        <input type="text" class="form-control form-control-user" id="NidAccount" name="NidAccount"
+                               value="@Model.NidAccount" hidden>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control form-control-user" id="UserId" name="UserId"
+                               value="@Model.UserId" hidden>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control form-control-user" id="Title" name="Title" placeholder="Title"
+                               value="@Model.Title" autofocus>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control form-control-user" id="CreateDate" name="CreateDate" placeholder="CreateDate"
+                               value="@Model.CreateDate" readonly>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control form-control-user" id="LastModified" name="LastModified" placeholder="LastModified"
+                               value="@Model.LastModified" readonly>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control form-control-user" id="Amount" name="Amount" placeholder="Amount"
+                               value="@Model.Amount" readonly>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control form-control-user" id="LendAmount" name="LendAmount" placeholder="LendAmount"
+                               value="@Model.LendAmount" readonly>
+                    </div>
+                    if (Model.IsActive)
+                    {
                         <div class="form-group">
-                            <input type="text" class="form-control form-control-user" id="NidAccount" name="NidAccount"
-                                   value="@Model.NidAccount" hidden>
-                        </div>
-                        <div class="form-group">
-                            <input type="text" class="form-control form-control-user" id="UserId" name="UserId"
-                                   value="@Model.UserId" hidden>
-                        </div>
-                        <div class="form-group">
-                            <input type="text" class="form-control form-control-user" id="Title" name="Title" placeholder="Title"
-                                   value="@Model.Title" autofocus>
-                        </div>
-                        <div class="form-group">
-                            <input type="text" class="form-control form-control-user" id="CreateDate" name="CreateDate" placeholder="CreateDate"
-                                   value="@Model.CreateDate" readonly>
-                        </div>
-                        <div class="form-group">
-                            <input type="text" class="form-control form-control-user" id="LastModified" name="LastModified" placeholder="LastModified"
-                                   value="@Model.LastModified" readonly>
-                        </div>
-                        <div class="form-group">
-                            <input type="text" class="form-control form-control-user" id="Amount" name="Amount" placeholder="Amount"
-                                   value="@Model.Amount" readonly>
-                        </div>
-                        <div class="form-group">
-                            <input type="text" class="form-control form-control-user" id="LendAmount" name="LendAmount" placeholder="LendAmount"
-                                   value="@Model.LendAmount" readonly>
-                        </div>
-                        @if (Model.IsActive)
-                        {
-                            <div class="form-group">
-                                <div class="custom-control custom-checkbox small">
-                                    <input type="checkbox" class="custom-control-input" id="IsActive" name="IsActive" value="true" onclick="$(this).attr('value', this.checked ? 'true' : 'false')" checked>
-                                    <label class="custom-control-label" for="IsActive">
-                                        Is Active
-                                    </label>
-                                </div>
+                            <div class="custom-control custom-checkbox small">
+                                <input type="checkbox" class="custom-control-input" id="IsActive" name="IsActive" value="true" onclick="$(this).attr('value', this.checked ? 'true' : 'false')" checked>
+                                <label class="custom-control-label" for="IsActive">
+                                    Is Active
+                                </label>
                             </div>
-                        }
-                        else
-                        {
-                            <div class="form-group">
-                                <div class="custom-control custom-checkbox small">
-                                    <input type="checkbox" class="custom-control-input" id="IsActive" name="IsActive" value="false" onclick="$(this).attr('value', this.checked ? 'true' : 'false')">
-                                    <label class="custom-control-label" for="IsActive">
-                                        Is Active
-                                    </label>
-                                </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="form-group">
+                            <div class="custom-control custom-checkbox small">
+                                <input type="checkbox" class="custom-control-input" id="IsActive" name="IsActive" value="false" onclick="$(this).attr('value', this.checked ? 'true' : 'false')">
+                                <label class="custom-control-label" for="IsActive">
+                                    Is Active
+                                </label>
                             </div>
-                        }
-                        @if (Model.IsBackup != null && Model.IsBackup == true)
-                        {
+                        </div>
+                    }
+                    if (Model.IsBackup != null && Model.IsBackup == true)
+                    {
                         <div class="form-group">
                             <div class="custom-control custom-checkbox small">
                                 <input type="checkbox" class="custom-control-input" id="IsBackup" name="IsBackup" value="true" onclick="$(this).attr('value', this.checked ? 'true' : 'false')" checked>
@@ -88,9 +89,9 @@
                                 </label>
                             </div>
                         </div>
-                        }
-                        else
-                        {
+                    }
+                    else
+                    {
                         <div class="form-group">
                             <div class="custom-control custom-checkbox small">
                                 <input type="checkbox" class="custom-control-input" id="IsBackup" name="IsBackup" value="false" onclick="$(this).attr('value', this.checked ? 'true' : 'false')">
@@ -99,13 +100,13 @@
                                 </label>
                             </div>
                         </div>
-                        }
-                        <button type="submit" class="btn btn-warning btn-user btn-block" style="width:50%;margin:0 auto;">
-                            edit account
-                        </button>
-                        <hr>
-                        <a href="#" onclick="DeleteAccount(event,'@Model.NidAccount')" class="btn btn-danger btn-user btn-block" style="width:50%;margin:0 auto;">delete</a>
-                    </form>
+                    }
+                    <button type="submit" class="btn btn-warning btn-user btn-block" style="width:50%;margin:0 auto;">
+                        edit account
+                    </button>
+                    <hr>
+                    <a href="#" onclick="DeleteAccount(event,'@Model.NidAccount')" class="btn btn-danger btn-user btn-block" style="width:50%;margin:0 auto;">delete</a>
+                    }
                 </div>
             </div>
         </div>
@@ -157,7 +158,7 @@
         function DeleteAccount(e, nid) {
             e.preventDefault();
             $("#txtmodalBody").text('@Model.Title');
-            $("#btnMDelete").attr('href', '@Url.Action("SubmitDeleteAccount","Home")' + '?NidAccount=' + nid);
+            $("#btnMDelete").attr('href', '@Url.Action("SubmitDeleteAccount","Financials")' + '?NidAccount=' + nid);
             $("#deleteModal").modal();
         }
     </script>

@@ -6,7 +6,8 @@
 <h1>@Model.Title</h1>
 <div class="row">
     <div class="col-md-12">
-        <form method="post" action="SubmitEditNote">
+        @using (Html.BeginForm("SubmitEditNote", "Reminders", FormMethod.Post, new { }))
+        {
             <input name="NidNote" value="@Model.NidNote" hidden />
             <input name="CreateDate" value="@Model.CreateDate" hidden />
             <input name="ModifiedDate" value="@Model.ModifiedDate" hidden />
@@ -30,7 +31,7 @@
                     <div class="col-lg-4"></div>
                 </div>
             </div>
-        </form>
+        }
     </div>
 </div>
 <div class="modal fade" id="noteModal" tabindex="-1" role="dialog" aria-labelledby="routineModalLabel"
@@ -81,7 +82,7 @@
         function DeleteNote(e, nid, title) {
             e.preventDefault();
             $("#txtDeleteNote").text('are you sure to delete note ' + title + ' ?');
-            $("#btnSubmitDeleteNote").attr('href', '@Url.Action("SubmitDeleteNote","Home")' + '?NidNote=' + nid);
+            $("#btnSubmitDeleteNote").attr('href', '@Url.Action("SubmitDeleteNote","Reminders")' + '?NidNote=' + nid);
             $("#noteModal").modal();
         }
     </script>

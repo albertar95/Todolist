@@ -5,7 +5,7 @@
 }
 <div class="row" style="padding:25px;">
     <div class="col-lg-6 d-flex">
-        <a href="@Url.Action("AddNote","Home",new { NidGroup = Model.Group.NidGroup })" class="btn btn-block btn-outline-success" style="width:200px;justify-content:right;height:38px;overflow:hidden;">add new note</a>
+        <a href="@Url.Action("AddNote","Reminders",new { NidGroup = Model.Group.NidGroup })" class="btn btn-block btn-outline-success" style="width:200px;justify-content:right;height:38px;overflow:hidden;">add new note</a>
     </div>
     <div class="col-lg-6">
         <div class="alert alert-success alert-dismissible fade show" style="width:fit-content;float:right;" role="alert" id="successDiv" hidden>
@@ -34,7 +34,7 @@
             <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
                  aria-labelledby="dropdownMenuLink">
                 <div class="dropdown-header"></div>
-                <a class="dropdown-item" href="@Url.Action("EditNoteGroup","Home",new {NidGroup = Model.Group.NidGroup})">Edit Folder</a>
+                <a class="dropdown-item" href="@Url.Action("EditNoteGroup","Reminders",new {NidGroup = Model.Group.NidGroup})">Edit Folder</a>
                 <a class="dropdown-item" href="#" onclick="DeleteNoteGroup(event,'@Model.Group.NidGroup','@Model.Group.Title')">Delete Folder</a>
             </div>
         </div>
@@ -114,13 +114,13 @@
         function DeleteNote(e, nid, title) {
             e.preventDefault();
             $("#txtDeleteNote").text('are you sure to delete note ' + title + ' ?');
-            $("#btnSubmitDeleteNote").attr('href', '@Url.Action("SubmitDeleteNote","Home")' + '?NidNote=' + nid);
+            $("#btnSubmitDeleteNote").attr('href', '@Url.Action("SubmitDeleteNote", "Reminders")' + '?NidNote=' + nid);
             $("#noteModal").modal();
         }
             function DeleteNoteGroup(e, nid, title) {
                 e.preventDefault();
                 $("#txtDeleteNoteGroup").text('are you sure to delete group ' + title + ' ?');
-                $("#btnSubmitDeleteNoteGroup").attr('href', '@Url.Action("SubmitDeleteNoteGroup","Home")' + '?NidGroup=' + nid);
+                $("#btnSubmitDeleteNoteGroup").attr('href', '@Url.Action("SubmitDeleteNoteGroup", "Reminders")' + '?NidGroup=' + nid);
                 $("#noteGroupModal").modal();
             }
     </script>

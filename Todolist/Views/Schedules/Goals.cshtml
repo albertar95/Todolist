@@ -5,7 +5,7 @@
 }
 <div class="row" style="padding:25px;">
     <div class="col-lg-6 d-flex">
-    <a href="@Url.Action("AddGoal","Home")" class="btn btn-block btn-outline-success" style="width:200px;justify-content:right;height:38px;overflow:hidden;">add new goal</a>
+    <a href="@Url.Action("AddGoal","Schedules")" class="btn btn-block btn-outline-success" style="width:200px;justify-content:right;height:38px;overflow:hidden;">add new goal</a>
     <a href="#" onclick="ShowClosed(event)" class="btn btn-outline-info" style="width:200px;justify-content:right;margin-left:1rem;height:38px;overflow:hidden;">closed goals</a>
     </div>
     <div class="col-lg-6">
@@ -31,7 +31,7 @@
             <div class="col-xl-4">
                 <div class="card shadow mb-4 d-flex">
                     <!-- Card Header - Accordion -->
-                    <a href="@Url.Action("Goal","Home",new {NidGoal = goal.NidGoal})" class="d-block card-header py-3"  style="background-color:@Model.bgColor[Todolist.Helpers.Calc.genRandomNumber()];">
+                    <a href="@Url.Action("Goal","Schedules",new {NidGoal = goal.NidGoal})" class="d-block card-header py-3"  style="background-color:@Model.bgColor[Todolist.Helpers.Calc.genRandomNumber()];">
                         <h6 class="font-weight-bold text-primary" style="margin:0 auto;">@goal.Title</h6>
                         <p style="justify-content:right;display:contents;">
                             Period : @Todolist.Helpers.Dates.ToPersianDate2(goal.FromDate) - @Todolist.Helpers.Dates.ToPersianDate2(goal.ToDate)
@@ -95,7 +95,7 @@
             <div class="col-xl-4">
                 <div class="card shadow mb-4 d-flex" style="opacity:60%;">
                     <!-- Card Header - Accordion -->
-                    <a href="@Url.Action("Goal","Home",new {NidGoal = goal.NidGoal})" class="d-block card-header py-3" style="background-color:@Model.bgColor[Todolist.Helpers.Calc.genRandomNumber()];">
+                    <a href="@Url.Action("Goal","Schedules",new {NidGoal = goal.NidGoal})" class="d-block card-header py-3" style="background-color:@Model.bgColor[Todolist.Helpers.Calc.genRandomNumber()];">
                         <h6 class="font-weight-bold text-primary" style="margin:0 auto;">@goal.Title</h6>
                         <p style="justify-content:right;display:contents;">
                                 Period : @Todolist.Helpers.Dates.ToPersianDate2(goal.FromDate) - @Todolist.Helpers.Dates.ToPersianDate2(goal.ToDate)

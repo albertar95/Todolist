@@ -5,7 +5,7 @@
 }
 <div class="row" style="padding:25px;">
     <div class="col-lg-6 d-flex">
-    <a href="@Url.Action("RoutineCalendar","Home")" class="btn btn-outline-info" style="width:200px;justify-content:right;height:38px;overflow:hidden;">Calendar</a>
+    <a href="@Url.Action("RoutineCalendar","Schedules")" class="btn btn-outline-info" style="width:200px;justify-content:right;height:38px;overflow:hidden;">Calendar</a>
     </div>
     <div class="col-lg-6">
         <div class="alert alert-success alert-dismissible fade show" style="width:fit-content;float:right;" role="alert" id="successDiv" hidden>
@@ -142,7 +142,8 @@
             </div>
             <div class="modal-body">
                 <div id="AddDailySection" hidden>
-                    <form action="SubmitAddRoutine" enctype="multipart/form-data" method="post">
+                    @using (Html.BeginForm("SubmitAddRoutine", "Schedules", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                    {
                         <input type="number" id="RepeatType1" name="RepeatType" value="1" hidden />
                         <input type="text" id="RepeatDays1" name="RepeatDays" value="0" hidden />
                         <div class="form-group">
@@ -167,10 +168,11 @@
                                 <div class="col-lg-4"></div>
                             </div>
                         </div>
-                    </form>
+                    }
                 </div>
                 <div id="AddWeeklySection" hidden>
-                    <form action="SubmitAddRoutine" enctype="multipart/form-data" method="post">
+                    @using (Html.BeginForm("SubmitAddRoutine", "Schedules", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                    {
                         <input type="number" id="RepeatType2" name="RepeatType" value="2" hidden />
                         <input type="text" id="RepeatDays2" name="RepeatDays" hidden />
                         <div class="form-group">
@@ -244,7 +246,7 @@
                                 <div class="col-lg-4"></div>
                             </div>
                         </div>
-                    </form>
+                    }
                 </div>
                 <div id="DeleteDailySection" hidden>
                     <div class="form-group">
@@ -261,7 +263,8 @@
                     </div>
                 </div>
                 <div id="DoneRoutineSection" hidden>
-                    <form action="SubmitDoneRoutine" enctype="multipart/form-data" method="post">
+                    @using (Html.BeginForm("SubmitDoneRoutine", "Schedules", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                    {
                         <input name="NidRoutineProgress" type="text" hidden />
                         <input name="RoutineId" id="RoutineId1" type="text" hidden />
                         <div class="form-group">
@@ -279,10 +282,11 @@
                                 <div class="col-lg-4"></div>
                             </div>
                         </div>
-                    </form>
+                    }
                 </div>
                 <div id="UnDoneRoutineSection" hidden>
-                    <form action="SubmitUnDoneRoutine" enctype="multipart/form-data" method="post">
+                    @using (Html.BeginForm("SubmitUnDoneRoutine", "Schedules", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                    {
                         <input name="NidRoutineProgress" type="text" hidden />
                         <input name="RoutineId" id="RoutineId2" type="text" hidden />
                         <div class="form-group">
@@ -300,7 +304,7 @@
                                 <div class="col-lg-4"></div>
                             </div>
                         </div>
-                    </form>
+                    }
                 </div>
             </div>
             <div class="modal-footer">
@@ -401,7 +405,7 @@
                 $("#UnDoneRoutineSection").attr('hidden', 'hidden');
                 $("#txtDeleteRoutine").text('are you sure to delete weekly routine ' + title + ' ?');
             }
-            $("#btnSubmitDeleteRoutine").attr('href', '@Url.Action("SubmitDeleteRoutine","Home")' + '?NidRoutine=' + nid);
+            $("#btnSubmitDeleteRoutine").attr('href', '@Url.Action("SubmitDeleteRoutine", "Schedules")' + '?NidRoutine=' + nid);
             $("#routineModal").modal();
         }
         function AddModal(e,type)

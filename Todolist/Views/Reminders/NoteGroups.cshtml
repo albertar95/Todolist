@@ -7,7 +7,7 @@
 
 <div class="row" style="padding:25px;">
     <div class="col-lg-6 d-flex">
-        <a href="@Url.Action("AddNoteGroup","Home")" class="btn btn-block btn-outline-success" style="width:200px;justify-content:right;height:38px;overflow:hidden;">add new folder</a>
+        <a href="@Url.Action("AddNoteGroup","Reminders")" class="btn btn-block btn-outline-success" style="width:200px;justify-content:right;height:38px;overflow:hidden;">add new folder</a>
     </div>
     <div class="col-lg-6">
         <div class="alert alert-success alert-dismissible fade show" style="width:fit-content;float:right;" role="alert" id="successDiv" hidden>
@@ -30,7 +30,7 @@
         @foreach (var grp in Model.OrderByDescending(p => p.ModifiedDate).Skip(i * 6).Take(6))
         {
             <div class="col-xl-2 col-sm-2" style="padding:10px;">
-                <a href="@Url.Action("NoteGroup","Home",new {NidGroup = grp.NidGroup})" class="btn btn-block btn-outline-warning">
+                <a href="@Url.Action("NoteGroup","Reminders",new {NidGroup = grp.NidGroup})" class="btn btn-block btn-outline-warning">
                     <span class="fa fa-2x fa-folder">&nbsp;@grp.Title&nbsp;</span>
                 </a>
             </div>

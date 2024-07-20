@@ -28,7 +28,7 @@
                     <div class="text-center">
                         <h1 class="h4 text-gray-900 mb-4">User Information</h1>
                     </div>
-                    <a href="@Url.Action("AddShield","Home")" style="width:120px;margin:15px;" class="btn btn-block btn-outline-success">add shield</a>
+                    <a href="@Url.Action("AddShield","Reminders")" style="width:120px;margin:15px;" class="btn btn-block btn-outline-success">add shield</a>
                     @*<a href="@Url.Action("ConvertShields","Home")" style="width:120px;margin:15px;" class="btn btn-block btn-outline-success">Convert shield</a>*@
                 </div>
             </div>
@@ -52,8 +52,8 @@
                                 <td>@sh.TargetUrl</td>
                                 <td>@sh.Username</td>
                                 <td>
-                                    <a href="@Url.Action("EditShield","Home",new { NidShield = sh.Id })" onclick="ShowMasterPasswordForm(event,1,'@sh.Id')" class="btn btn-outline-warning"><i class="fa fa-pen"></i></a>
-                                    <a href="@Url.Action("ShieldDetail","Home",new { NidShield = sh.Id })" onclick="ShowMasterPasswordForm(event,2,'@sh.Id')" class="btn btn-outline-info"><i class="fa fa-info"></i></a>
+                                    <a href="@Url.Action("EditShield","Reminders",new { NidShield = sh.Id })" onclick="ShowMasterPasswordForm(event,1,'@sh.Id')" class="btn btn-outline-warning"><i class="fa fa-pen"></i></a>
+                                    <a href="@Url.Action("ShieldDetail","Reminders",new { NidShield = sh.Id })" onclick="ShowMasterPasswordForm(event,2,'@sh.Id')" class="btn btn-outline-info"><i class="fa fa-info"></i></a>
                                     <a href="#" onclick="DeleteShield(event,'@sh.Id','@sh.Title')" class="btn btn-outline-danger"><i class="fa fa-trash"></i></a>
                                 </td>
                             </tr>
@@ -135,7 +135,7 @@
         function DeleteShield(e,nidshield, title) {
             e.preventDefault();
             $("#txtmodalBody").text('title : ' + title);
-            $("#btnMDelete").attr('href', '@Url.Action("SubmitDeleteShield","Home")' + '?NidShield=' + nidshield);
+            $("#btnMDelete").attr('href', '@Url.Action("SubmitDeleteShield", "Reminders")' + '?NidShield=' + nidshield);
             $("#deleteModal").modal();
         }
         function ShowMasterPasswordForm(e, action, nid)
@@ -150,10 +150,10 @@
         {
             e.preventDefault();
             if ($("#txtActionType").val() == "1") {
-                window.location = '@Url.Action("EditShield","Home")' + '?NidShield=' + $("#txtNidShield").val() + '&masterPassword=' + $("#txtMasterPass").val();
+                window.location = '@Url.Action("EditShield", "Reminders")' + '?NidShield=' + $("#txtNidShield").val() + '&masterPassword=' + $("#txtMasterPass").val();
             }
             if ($("#txtActionType").val() == "2") {
-                window.location = '@Url.Action("ShieldDetail", "Home")' + '?NidShield=' + $("#txtNidShield").val() + '&masterPassword=' + $("#txtMasterPass").val();
+                window.location = '@Url.Action("ShieldDetail", "Reminders")' + '?NidShield=' + $("#txtNidShield").val() + '&masterPassword=' + $("#txtMasterPass").val();
             }
         }
     </script>

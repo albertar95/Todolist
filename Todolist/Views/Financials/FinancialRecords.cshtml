@@ -32,7 +32,7 @@
             <div class="col-xl-2">
                 <div class="card shadow mb-2 d-flex">
                     <!-- Card Header - Accordion -->
-                    <a href="@Url.Action("Account","Home",new {NidAccount = acc.NidAccount})" class="d-block card-header py-3" style="text-align:center;background-color:@Model.bgColor[Todolist.Helpers.Calc.genRandomNumber()];">
+                    <a href="@Url.Action("Account","Financials",new {NidAccount = acc.NidAccount})" class="d-block card-header py-3" style="text-align:center;background-color:@Model.bgColor[Todolist.Helpers.Calc.genRandomNumber()];">
                         <h6 class="font-weight-bold text-primary" style="margin:0 auto;">@acc.Title</h6>
                     </a>
                     <!-- Card Content - Collapse -->
@@ -57,7 +57,7 @@
             <div class="col-xl-2">
                 <div class="card shadow mb-2 d-flex" style="opacity:60%;">
                     <!-- Card Header - Accordion -->
-                    <a href="@Url.Action("Account","Home",new {NidAccount = acc.NidAccount})" class="d-block card-header py-3" style="text-align:center;background-color:@Model.bgColor[Todolist.Helpers.Calc.genRandomNumber()];">
+                    <a href="@Url.Action("Account","Financials",new {NidAccount = acc.NidAccount})" class="d-block card-header py-3" style="text-align:center;background-color:@Model.bgColor[Todolist.Helpers.Calc.genRandomNumber()];">
                         <h6 class="font-weight-bold text-primary" style="margin:0 auto;">@acc.Title</h6>
                     </a>
                     <!-- Card Content - Collapse -->
@@ -73,10 +73,10 @@
     </div>
 }
     <div class="row mt-5 mb-5 d-flex">
-        <a href="@Url.Action("TransactionGroups","Home",new { IncludeAll = false })" class="btn btn-block btn-outline-danger" style="width:200px;justify-content:right;height:38px;overflow:hidden;margin-right:5px;margin-top:8px;">transaction group</a>
+        <a href="@Url.Action("TransactionGroups","Financials",new { IncludeAll = false })" class="btn btn-block btn-outline-danger" style="width:200px;justify-content:right;height:38px;overflow:hidden;margin-right:5px;margin-top:8px;">transaction group</a>
         @if (!Model.AllTransactions)
         {
-            <a href="@Url.Action("FinancialRecords","Home",new { IncludeAll = true })" class="btn btn-block btn-outline-info" style="width:200px;justify-content:right;height:38px;overflow:hidden;">all Tr</a>
+            <a href="@Url.Action("FinancialRecords","Financials",new { IncludeAll = true })" class="btn btn-block btn-outline-info" style="width:200px;justify-content:right;height:38px;overflow:hidden;">all Tr</a>
         }
     </div>
 <div class="row">
@@ -113,7 +113,7 @@
                     <td>@Todolist.Helpers.Dates.ToPersianDate2(tr.CreateDate, true)</td>
                     <td>@tr.TransactionReason</td>
                     <td>
-                        <a href="@Url.Action("EditTransaction","Home",new { TrId = tr.NidTransaction})" class="btn btn-outline-warning"><i class="fa fa-pen"></i></a>
+                        <a href="@Url.Action("EditTransaction","Financials",new { TrId = tr.NidTransaction})" class="btn btn-outline-warning"><i class="fa fa-pen"></i></a>
                         <a href="#" onclick="DeleteTransaction(event,'@tr.NidTransaction')" class="btn btn-outline-danger"><i class="fa fa-trash"></i></a>
                     </td>
                 </tr>
@@ -293,7 +293,7 @@
         function SubmitAddAccount(e)
         {
             e.preventDefault();
-            window.location.href = '@Url.Action("SubmitAddAccount","Home")' + '?Title=' + $("#txtAccountTitle").val()
+            window.location.href = '@Url.Action("SubmitAddAccount", "Financials")' + '?Title=' + $("#txtAccountTitle").val()
                 + '&Amount=' + $("#txtAccountAmount").val() + '&IsActive=' + $("#AccountIsActive").val() + '&IsBackup=' + $("#AccountIsBackup").val();
         }
         function ShowLendDetail(e,nidAcc)
@@ -301,7 +301,7 @@
             e.preventDefault();
             $.ajax(
                 {
-                    url: '@Url.Action("LendDetail","Home")',
+                    url: '@Url.Action("LendDetail", "Financials")',
                     type:'post',
                     datatype:'json',
                     data: { NidAccount: nidAcc },
@@ -342,7 +342,7 @@
         }
         function SubmitAddTransaction(e) {
             e.preventDefault();
-            window.location.href = '@Url.Action("SubmitAddTransaction","Home")' + '?TrType=' + $("#TransactionType").find(':selected').val()
+            window.location.href = '@Url.Action("SubmitAddTransaction", "Financials")' + '?TrType=' + $("#TransactionType").find(':selected').val()
                 + '&Amount=' + $("#txtTransactionAmount").val() + '&PayerAccount=' + $("#PayerAccount").find(':selected').val()
                 + '&RecieverAccount=' + $("#RecieverAccount").find(':selected').val() + '&Reason=' + $("#txtTransactionReason").val()
                 + '&TransactionGroupId=' + $("#TransactionGroupId").find(':selected').val();
@@ -352,7 +352,7 @@
             e.preventDefault();
             $.ajax(
                 {
-                    url:'@Url.Action("GetTrById","Home")',
+                    url:'@Url.Action("GetTrById", "Financials")',
                     type:'post',
                     datatype:'json',
                     data:{NidTransaction : nid },
@@ -382,7 +382,7 @@
         }
         function SubmitEditTransaction(e) {
             e.preventDefault();
-            window.location.href = '@Url.Action("SubmitEditTransaction","Home")' + '?TrType=' + $("#TransactionType").find(':selected').val()
+            window.location.href = '@Url.Action("SubmitEditTransaction", "Financials")' + '?TrType=' + $("#TransactionType").find(':selected').val()
                 + '&Amount=' + $("#txtTransactionAmount").val() + '&PayerAccount=' + $("#PayerAccount").find(':selected').val()
                 + '&RecieverAccount=' + $("#RecieverAccount").find(':selected').val() + '&Reason=' + $("#txtTransactionReason").val()
                 + '&NidTr=' + $("#txtNidTransaction").val();
@@ -391,7 +391,7 @@
         {
             e.preventDefault();
             $("#txtDelete").text('are you sure to delete this transaction?');
-            $("#btnSubmitDelete").attr('href','@Url.Action("SubmitDeleteTransaction","Home")' + '?NidTr=' + nid);
+            $("#btnSubmitDelete").attr('href','@Url.Action("SubmitDeleteTransaction", "Financials")' + '?NidTr=' + nid);
             $("#DeleteSection").removeAttr('hidden');
             $("#TransactionSection").attr('hidden', 'hidden');
             $("#AccountSection").attr('hidden', 'hidden');

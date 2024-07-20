@@ -29,44 +29,48 @@
                 <div class="sidebar-brand-text mx-3">Todolist</div>
             </a>
             <hr class="sidebar-divider my-0">
+
             <li class="nav-item">
-                <a class="nav-link" href="@Url.Action("Goals","Home")">
-                    <i class="fas fa-fw fa-bullseye"></i>
-                    <span>Goals</span>
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseSchedule"
+                   aria-expanded="true" aria-controls="collapseSchedule">
+                    <i class="fas fa-fw fa-calendar"></i>
+                    <span>Schedules</span>
                 </a>
+                <div id="collapseSchedule" class="collapse" aria-labelledby="headingSchedule" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <a class="collapse-item" href="@Url.Action("Goals","Schedules")">Goals</a>
+                        <a class="collapse-item" href="@Url.Action("Routines","Schedules")">Routines</a>
+                    </div>
+                </div>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="@Url.Action("Routines","Home")">
-                    <i class="fas fa-fw fa-bed"></i>
-                    <span>Routines</span>
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseReminder"
+                   aria-expanded="true" aria-controls="collapseReminder">
+                    <i class="fas fa-fw fa-bell"></i>
+                    <span>Reminders</span>
                 </a>
+                <div id="collapseReminder" class="collapse" aria-labelledby="headingReminder" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <a class="collapse-item" href="@Url.Action("NoteGroups","Reminders")">Notes</a>
+                        <a class="collapse-item" href="@Url.Action("Shields","Reminders")">Shields</a>
+                    </div>
+                </div>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="@Url.Action("NoteGroups","Home")">
-                    <i class="fas fa-fw fa-sticky-note"></i>
-                    <span>Notes</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="@Url.Action("FinancialRecords","Home")">
-                    <i class="fas fa-fw fa-dollar-sign"></i>
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseFinancial"
+                   aria-expanded="true" aria-controls="collapseFinancial">
+                    <i class="fas fa-fw fa-coins"></i>
                     <span>Financials</span>
                 </a>
+                <div id="collapseFinancial" class="collapse" aria-labelledby="headingFinancial" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <a class="collapse-item" href="@Url.Action("FinancialRecords","Financials")">Financials</a>
+                        <a class="collapse-item" href="@Url.Action("FinancialReport","Financials")">Financial Reports</a>
+                    </div>
+                </div>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="@Url.Action("FinancialReport","Home")">
-                    <i class="fas fa-fw fa-chart-area"></i>
-                    <span>Financial Reports</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="@Url.Action("Shields","Home")">
-                    <i class="fas fa-fw fa-shield-alt"></i>
-                    <span>Shields</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="@Url.Action("Users","Home")">
+                <a class="nav-link" href="@Url.Action("Users","Users")">
                     <i class="fas fa-fw fa-user"></i>
                     <span>Users</span>
                 </a>
@@ -125,7 +129,7 @@
                 <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary" href="@Url.Action("Logout","Home")">Logout</a>
+                    <a class="btn btn-primary" href="@Url.Action("Logout","Users")">Logout</a>
                 </div>
             </div>
         </div>

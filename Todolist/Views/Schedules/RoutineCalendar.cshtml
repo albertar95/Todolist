@@ -280,7 +280,8 @@
                 </div>
                 <div class="modal-body">
                     <div id="EditSection" hidden>
-                        <form action="SubmitEditRoutine" enctype="multipart/form-data" method="post">
+                        @using (Html.BeginForm("SubmitEditRoutine", "Schedules", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                        {
                             <input name="Direction" value="@string.Format("{0}",int.Parse(Model.DatePeriodInfo[1]) + 1)" hidden />
                             <input type="text" id="NidRoutine" name="NidRoutine" hidden />
                             <div class="form-group">
@@ -305,7 +306,7 @@
                                     <div class="col-lg-4"></div>
                                 </div>
                             </div>
-                        </form>
+                        }
                     </div>
                     <div id="DeleteSection" hidden>
                         <div class="form-group">
@@ -336,7 +337,8 @@
                         </div>
                     </div>
                     <div id="AddProgressSection" hidden>
-                        <form action="SubmitAddRoutineProgress" enctype="multipart/form-data">
+                        @using (Html.BeginForm("SubmitAddRoutineProgress", "Schedules", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                        {
                             <input name="Direction" value="@string.Format("{0}",int.Parse(Model.DatePeriodInfo[1]) + 1)" hidden />
                             <div class="form-group">
                                 <select id="ScheduleId" name="RoutineId" class="form-control" required>
@@ -368,7 +370,7 @@
                                     <div class="col-lg-4"></div>
                                 </div>
                             </div>
-                        </form>
+                        }
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -385,7 +387,7 @@
             var innerHtml = "";
             $.ajax(
                 {
-                    url: '@Url.Action("IndexPagination2","Home")' + '?Direction=' + direction,
+                    url: '@Url.Action("IndexPagination2", "Schedules")' + '?Direction=' + direction,
                     type: 'post',
                     datatype: 'json',
                     contentType: 'application/json; charset=utf-8',
@@ -422,7 +424,7 @@
             $("#DeleteProgressSection").attr('hidden', 'hidden');
             $("#AddProgressSection").attr('hidden', 'hidden');
             $("#txtDeleteRoutine").text('are you sure to delete daily routine ' + title + ' ?');
-            $("#btnSubmitDeleteRoutine").attr('href', '@Url.Action("SubmitDeleteRoutine2","Home")' + '?NidRoutine=' + nid + '&Direction=' + $("#CurrentDirection").val());
+            $("#btnSubmitDeleteRoutine").attr('href', '@Url.Action("SubmitDeleteRoutine2", "Schedules")' + '?NidRoutine=' + nid + '&Direction=' + $("#CurrentDirection").val());
             $("#routineModal1").modal();
         }
         function DeleteProgress(e, nid) {
@@ -433,7 +435,7 @@
             $("#EditSection").attr('hidden', 'hidden');
             $("#AddProgressSection").attr('hidden', 'hidden');
             $("#txtDeleteProgress").text('are you sure to delete progress ?');
-            $("#btnSubmitDeleteProgress").attr('href', '@Url.Action("SubmitDeleteRoutineProgress","Home")' + '?NidRoutineProgress=' + nid + '&Direction=' + $("#CurrentDirection").val());
+            $("#btnSubmitDeleteProgress").attr('href', '@Url.Action("SubmitDeleteRoutineProgress", "Schedules")' + '?NidRoutineProgress=' + nid + '&Direction=' + $("#CurrentDirection").val());
             $("#routineModal1").modal();
         }
         function AddModal(e)

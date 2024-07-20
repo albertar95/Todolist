@@ -9,7 +9,8 @@
 <hr />
 <div class="row">
     <div class="col-md-12">
-        <form action="SubmitEditGoal">
+        @using (Html.BeginForm("SubmitEditGoal", "Schedules", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="NidGoal" name="NidGoal" value="@Model.NidGoal" />
             <input type="hidden" asp-for="UserId" name="UserId" value="@Model.UserId" />
@@ -59,12 +60,12 @@
                     <div class="col-lg-4"></div>
                     <div class="col-lg-4 text-center">
                         <input type="submit" value="edit" class="btn btn-warning" />
-                        <a class="btn btn-outline-info" href="@Url.Action("Goals","Home")">Back to List</a>
+                        <a class="btn btn-outline-info" href="@Url.Action("Goals","Schedules")">Back to List</a>
                     </div>
                     <div class="col-lg-4"></div>
                 </div>
             </div>
-        </form>
+        }
     </div>
 </div>
 
