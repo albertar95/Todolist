@@ -57,6 +57,9 @@
       <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.1.1.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data.Entity" />
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -1832,19 +1835,29 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\RemindersController.cs" />
     <Compile Include="Controllers\SchedulesController.cs" />
+    <Compile Include="Controllers\TradesController.cs" />
     <Compile Include="Controllers\UsersController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\Calc.cs" />
+    <Compile Include="Helpers\CommonTradeOperations.cs" />
     <Compile Include="Helpers\Dates.cs" />
     <Compile Include="Helpers\Encryption.cs" />
     <Compile Include="Helpers\ViewHelper.cs" />
     <Compile Include="Models\Account.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\AugmentedCandle.cs">
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Dto\SignalDto.cs" />
+    <Compile Include="Models\Dto\SignalResultDto.cs" />
     <Compile Include="Models\Dto\UserLoginDto.cs" />
     <Compile Include="Models\Goal.cs">
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\MarketDataCredential.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Model.Context.cs">
@@ -1883,6 +1896,7 @@
     <Compile Include="Models\Shield.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\StaticModels\TradeModels.cs" />
     <Compile Include="Models\Task.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
@@ -1897,8 +1911,10 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Contracts\IDbRepository.cs" />
+    <Compile Include="Services\Contracts\IHistoricalDataGrabber.cs" />
     <Compile Include="Services\Contracts\IRequestProcessor.cs" />
     <Compile Include="Services\DbRepository.cs" />
+    <Compile Include="Services\HistoricalDataGrabber.cs" />
     <Compile Include="Services\RequestProcessor.cs" />
     <Compile Include="ViewModels\EditTransactionViewModel.cs" />
     <Compile Include="ViewModels\FinanceViewModel.cs" />
@@ -1910,6 +1926,7 @@
     <Compile Include="ViewModels\NotesViewModel.cs" />
     <Compile Include="ViewModels\ProgressViewModel.cs" />
     <Compile Include="ViewModels\RoutineViewModel.cs" />
+    <Compile Include="ViewModels\TradeDashboardViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\web.config" />
@@ -2130,6 +2147,7 @@
     <Content Include="Views\Financials\FinancialReport.cshtml" />
     <Content Include="Views\Financials\_MonthlyReportPartialView.cshtml" />
     <Content Include="Views\Financials\_GroupDetailReportPartialView.cshtml" />
+    <Content Include="Views\Trades\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

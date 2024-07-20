@@ -19,6 +19,28 @@
           <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
           <Property Name="IsBackup" Type="bit" Nullable="false" />
         </EntityType>
+        <EntityType Name="AugmentedCandles">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Symbol" Type="int" Nullable="false" />
+          <Property Name="Timeframe" Type="int" Nullable="false" />
+          <Property Name="Time" Type="datetime" Nullable="false" />
+          <Property Name="Open" Type="float" Nullable="false" />
+          <Property Name="High" Type="float" Nullable="false" />
+          <Property Name="Low" Type="float" Nullable="false" />
+          <Property Name="Close" Type="float" Nullable="false" />
+          <Property Name="Volume" Type="int" Nullable="false" />
+          <Property Name="Sma50" Type="float" Nullable="false" />
+          <Property Name="Sma100" Type="float" Nullable="false" />
+          <Property Name="Ema12" Type="float" Nullable="false" />
+          <Property Name="Ema26" Type="float" Nullable="false" />
+          <Property Name="MACDLine" Type="float" Nullable="false" />
+          <Property Name="SignalLine" Type="float" Nullable="false" />
+          <Property Name="Histogram" Type="float" Nullable="false" />
+          <Property Name="RSI" Type="float" Nullable="false" />
+        </EntityType>
         <EntityType Name="Goals">
           <Key>
             <PropertyRef Name="NidGoal" />
@@ -32,6 +54,19 @@
           <Property Name="CreateDate" Type="datetime" Nullable="false" />
           <Property Name="LastModifiedDate" Type="datetime" />
           <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
+        <EntityType Name="MarketDataCredentials">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Symbol" Type="int" Nullable="false" />
+          <Property Name="Timeframe" Type="int" Nullable="false" />
+          <Property Name="ApiKey" Type="nvarchar" MaxLength="1000" Nullable="false" />
+          <Property Name="Username" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Password" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="CallCounter" Type="int" Nullable="false" />
+          <Property Name="RefreshDate" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="NoteGroups">
           <Key>
@@ -333,7 +368,9 @@
         </Association>
         <EntityContainer Name="ToDoListDbModelStoreContainer">
           <EntitySet Name="Accounts" EntityType="Self.Accounts" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AugmentedCandles" EntityType="Self.AugmentedCandles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Goals" EntityType="Self.Goals" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MarketDataCredentials" EntityType="Self.MarketDataCredentials" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="NoteGroups" EntityType="Self.NoteGroups" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Notes" EntityType="Self.Notes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Progresses" EntityType="Self.Progresses" Schema="dbo" store:Type="Tables" />
@@ -659,6 +696,8 @@
             <End Role="User" EntitySet="Users" />
             <End Role="Transaction" EntitySet="Transactions" />
           </AssociationSet>
+          <EntitySet Name="MarketDataCredentials" EntityType="ToDoListDbModel.MarketDataCredential" />
+          <EntitySet Name="AugmentedCandles" EntityType="ToDoListDbModel.AugmentedCandle" />
           </EntityContainer>
         <EntityType Name="User">
           <Key>
@@ -831,6 +870,41 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="MarketDataCredential">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Guid" Nullable="false" />
+          <Property Name="Symbol" Type="Int32" Nullable="false" />
+          <Property Name="Timeframe" Type="Int32" Nullable="false" />
+          <Property Name="ApiKey" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="true" />
+          <Property Name="Username" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Password" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CallCounter" Type="Int32" Nullable="false" />
+          <Property Name="RefreshDate" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="AugmentedCandle">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Guid" Nullable="false" />
+          <Property Name="Symbol" Type="Int32" Nullable="false" />
+          <Property Name="Timeframe" Type="Int32" Nullable="false" />
+          <Property Name="Time" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Open" Type="Double" Nullable="false" />
+          <Property Name="High" Type="Double" Nullable="false" />
+          <Property Name="Low" Type="Double" Nullable="false" />
+          <Property Name="Close" Type="Double" Nullable="false" />
+          <Property Name="Volume" Type="Int32" Nullable="false" />
+          <Property Name="Sma50" Type="Double" Nullable="false" />
+          <Property Name="Sma100" Type="Double" Nullable="false" />
+          <Property Name="Ema12" Type="Double" Nullable="false" />
+          <Property Name="Ema26" Type="Double" Nullable="false" />
+          <Property Name="MACDLine" Type="Double" Nullable="false" />
+          <Property Name="SignalLine" Type="Double" Nullable="false" />
+          <Property Name="Histogram" Type="Double" Nullable="false" />
+          <Property Name="RSI" Type="Double" Nullable="false" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1005,6 +1079,43 @@
                 <ScalarProperty Name="PayerAccount" ColumnName="PayerAccount" />
                 <ScalarProperty Name="TransactionType" ColumnName="TransactionType" />
                 <ScalarProperty Name="NidTransaction" ColumnName="NidTransaction" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MarketDataCredentials">
+            <EntityTypeMapping TypeName="ToDoListDbModel.MarketDataCredential">
+              <MappingFragment StoreEntitySet="MarketDataCredentials">
+                <ScalarProperty Name="RefreshDate" ColumnName="RefreshDate" />
+                <ScalarProperty Name="CallCounter" ColumnName="CallCounter" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="ApiKey" ColumnName="ApiKey" />
+                <ScalarProperty Name="Timeframe" ColumnName="Timeframe" />
+                <ScalarProperty Name="Symbol" ColumnName="Symbol" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AugmentedCandles">
+            <EntityTypeMapping TypeName="ToDoListDbModel.AugmentedCandle">
+              <MappingFragment StoreEntitySet="AugmentedCandles">
+                <ScalarProperty Name="RSI" ColumnName="RSI" />
+                <ScalarProperty Name="Histogram" ColumnName="Histogram" />
+                <ScalarProperty Name="SignalLine" ColumnName="SignalLine" />
+                <ScalarProperty Name="MACDLine" ColumnName="MACDLine" />
+                <ScalarProperty Name="Ema26" ColumnName="Ema26" />
+                <ScalarProperty Name="Ema12" ColumnName="Ema12" />
+                <ScalarProperty Name="Sma100" ColumnName="Sma100" />
+                <ScalarProperty Name="Sma50" ColumnName="Sma50" />
+                <ScalarProperty Name="Volume" ColumnName="Volume" />
+                <ScalarProperty Name="Close" ColumnName="Close" />
+                <ScalarProperty Name="Low" ColumnName="Low" />
+                <ScalarProperty Name="High" ColumnName="High" />
+                <ScalarProperty Name="Open" ColumnName="Open" />
+                <ScalarProperty Name="Time" ColumnName="Time" />
+                <ScalarProperty Name="Timeframe" ColumnName="Timeframe" />
+                <ScalarProperty Name="Symbol" ColumnName="Symbol" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

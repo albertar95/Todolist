@@ -85,6 +85,6 @@ namespace Todolist.Services.Contracts
         Tuple<string, string, decimal> MonthlyIncomeBarCalc(int month);
         Tuple<string, string, decimal> GroupSpenceBarCalc(Guid NidGroup);
         Tuple<string, string, decimal> GroupIncomeBarCalc(Guid NidGroup);
-
+        TradeDashboardViewModel GetTradeDashboard();
     }
 }

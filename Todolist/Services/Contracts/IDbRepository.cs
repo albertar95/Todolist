@@ -15,5 +15,7 @@ namespace Todolist.Services.Contracts
         List<T> GetList<T>(int pageSize = 1000) where T : class;
         List<T> GetList<T>(Expression<Func<T, bool>> predicate, int pageSize = 1000) where T : class;
         T Get<T>(Expression<Func<T, bool>> predicate) where T : class;
+        T GetMax<T>(Expression<Func<T, bool>> predicate) where T : class;
+        T GetMax<T,TKEY>(Expression<Func<T, TKEY>> predicate, Expression<Func<T, bool>> condition) where T : class;
     }
 }

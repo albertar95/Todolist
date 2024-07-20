@@ -903,6 +903,12 @@ namespace Todolist.Services
                     return "";
             }
         }
+        public TradeDashboardViewModel GetTradeDashboard()
+        {
+            TradeDashboardViewModel result = new TradeDashboardViewModel();
+            result.LastCandle = DateTime.Now;
+            return result;
+        }
 
     }
 }

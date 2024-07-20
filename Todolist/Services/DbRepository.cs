@@ -74,5 +74,14 @@ namespace Todolist.Services
         {
             return _context.Set<T>().Where(predicate).Take(pageSize).ToList();
         }
+        public T GetMax<T>(Expression<Func<T, bool>> predicate) where T : class
+        {
+            return _context.Set<T>().OrderByDescending(predicate).FirstOrDefault();
+        }
+
+        public T GetMax<T,TKEY>(Expression<Func<T, TKEY>> predicate, Expression<Func<T, bool>> condition) where T : class
+        {
+            return _context.Set<T>().Where(condition).OrderByDescending(predicate).FirstOrDefault();
+        }
     }
 }

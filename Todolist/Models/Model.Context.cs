@@ -38,5 +38,7 @@ namespace Todolist.Models
         public DbSet<Account> Accounts { get; set; }
         public DbSet<TransactionGroup> TransactionGroups { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<MarketDataCredential> MarketDataCredentials { get; set; }
+        public DbSet<AugmentedCandle> AugmentedCandles { get; set; }
     }
 }

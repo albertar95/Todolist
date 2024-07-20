@@ -70,6 +70,19 @@
                 </div>
             </li>
             <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTrade"
+                   aria-expanded="true" aria-controls="collapseTrade">
+                    <i class="fas fa-fw fa-chart-area"></i>
+                    <span>Trades</span>
+                </a>
+                <div id="collapseTrade" class="collapse" aria-labelledby="headingTrade" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <a class="collapse-item" href="@Url.Action("Index","Trades")">Trade Dashboard</a>
+                        @*<a class="collapse-item" href="@Url.Action("FinancialReport","Financials")">Financial Reports</a>*@
+                    </div>
+                </div>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" href="@Url.Action("Users","Users")">
                     <i class="fas fa-fw fa-user"></i>
                     <span>Users</span>
