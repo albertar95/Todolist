@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Todolist.Models;
 using Todolist.Services.Contracts;
 using static Todolist.Models.TradeModels;
 
@@ -25,6 +26,27 @@ namespace Todolist.Controllers
         {
             _historicalDataGrabber.RefreshCandles(symbol,timeframe);
             return Json(new { });
+        }
+        public ActionResult MarketDataCredentials(Symbol symbol = Symbol.EURUSD, Timeframe timeframe = Timeframe.M5)
+        {
+            return View(_requestProcessor.GetMarketDataCredentials(symbol, timeframe));
+        }
+        [HttpPost]
+        public ActionResult AddCredential(MarketDataCredential credential)
+        {
+            if (_requestProcessor.PostMarketDataCredential(credential))
+                TempData["CredentialSuccess"] = "credential created successfully";
+            else
+                TempData["CredentialError"] = "error occured in creating credential.try again later";
+            return RedirectToAction("MarketDataCredentials", "Trades");
+        }
+        public ActionResult DeleteCredential(Guid id)
+        {
+            if (_requestProcessor.DeleteMarketDataCredential(id))
+                TempData["CredentialSuccess"] = "credential deleted successfully";
+            else
+                TempData["CredentialError"] = "error occured in deleted credential.try again later";
+            return RedirectToAction("MarketDataCredentials","Trades");
         }
     }
 }

@@ -6,6 +6,8 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using System.Web;
 using Todolist.Helpers;
@@ -19,8 +21,8 @@ namespace Todolist.Services
     {
         #region Variables
         private readonly int keepDataInterval = int.Parse(ConfigurationManager.AppSettings["keepDataInterval"]);
-        private readonly AugmentedCandle InitCandle = new AugmentedCandle()
-        {
+        private readonly List<AugmentedCandle> InitCandle = new List<AugmentedCandle>(){
+            new AugmentedCandle(){
             Id = new Guid(),
             Sma50 = 1.09065F,
             Sma100 = 1.09006F,
@@ -30,7 +32,7 @@ namespace Todolist.Services
             SignalLine = -0.00017F,
             Histogram = -0.00003F,
             Timeframe = (int)Timeframe.M5,
-            Symbol = (int)TradeModels.Symbol.SOLUSDT,
+            Symbol = (int)TradeModels.Symbol.EURUSD,
             Close = 1.09527F,
             High = 1.09052F,
             Low = 1.09011F,
@@ -38,6 +40,25 @@ namespace Todolist.Services
             Time = new DateTime(2023, 11, 20, 1, 0, 0),
             Volume = 0,
             RSI = 54.11F
+        },new AugmentedCandle(){
+            Id = new Guid(),
+            Sma50 = 147.97F,
+            Sma100 = 147.30F,
+            Ema12 = 146.50F,
+            Ema26 = 146.59F,
+            MACDLine = -0.09F,
+            SignalLine = -0.16F,
+            Histogram = 0.07F,
+            Timeframe = (int)Timeframe.M5,
+            Symbol = (int)TradeModels.Symbol.SOLUSDT,
+            Close = 146.88F,
+            High = 146.94F,
+            Low = 146.71F,
+            Open = 146.71F,
+            Time = new DateTime(2024, 07, 02, 4, 0, 0),
+            Volume = 0,
+            RSI = 55.42F
+        }
         };
         private readonly IDbRepository _dbRepository;
         private readonly List<Timeframe> Timeframes;
@@ -62,7 +83,7 @@ namespace Todolist.Services
                     else
                         SeedData(sym, tf);
 
-                    GetLastHourData(sym, tf).GetAwaiter().GetResult();
+                    //GetLastHourData(sym, tf).GetAwaiter().GetResult();
                 }
             }
         }
@@ -74,24 +95,24 @@ namespace Todolist.Services
             else
                 SeedData(sym, tf);
 
-            GetLastHourData(sym, tf).GetAwaiter().GetResult();
+            //GetLastHourData(sym, tf).GetAwaiter().GetResult();
         }
         public void UpdateData(Symbol symbol, Timeframe tf)
         {
             AugmentedCandle lastCandle = _dbRepository.GetMax<AugmentedCandle, DateTime>(p => p.Time, q => q.Timeframe == (int)tf && q.Symbol == (int)symbol);
             var candles = GetCandlesFromHost(tf, symbol);
             var convertedCandles = CandlesAugmentation(candles.Where(p => p.Time >= lastCandle.Time).OrderBy(q => q.Time).ToArray(), lastCandle, symbol, tf);
-            convertedCandles.ForEach(x => { _dbRepository.Add<AugmentedCandle>(x); });
+            _dbRepository.AddBatch(convertedCandles);
             DeleteKeepIntervalOverflowCandles(symbol, tf);
         }
         public void SeedData(Symbol symbol, Timeframe tf)
         {
             var candles = GetCandlesFromHost(tf, symbol);
-            if (candles.Min(p => p.Time) <= InitCandle.Time)
+            if (candles.Min(p => p.Time) <= InitCandle.FirstOrDefault(q => q.Symbol == (int)symbol && q.Timeframe == (int)tf).Time)
             {
-                var convertedCandles = CandlesAugmentation(candles.Where(p => p.Time >= InitCandle.Time).OrderBy(q => q.Time).ToArray(), InitCandle, symbol, tf);
-                convertedCandles.OrderBy(p => p.Time).Skip(150).ToList().ForEach(x => { _dbRepository.Add<AugmentedCandle>(x); });
-                DeleteKeepIntervalOverflowCandles(symbol, tf);
+                var convertedCandles = CandlesAugmentation(candles.Where(p => p.Time >= InitCandle.FirstOrDefault(q => q.Symbol == (int)symbol && q.Timeframe == (int)tf).Time).OrderBy(q => q.Time).ToArray(), InitCandle.FirstOrDefault(q => q.Symbol == (int)symbol && q.Timeframe == (int)tf), symbol, tf);
+                _dbRepository.AddBatch<AugmentedCandle>(convertedCandles.OrderBy(p => p.Time).Skip(150).ToList().Where(q => q.Time >= DateTime.Now.Date.AddDays(keepDataInterval * -1)).ToList());
+                //DeleteKeepIntervalOverflowCandles(symbol, tf);
             }
         }
         public async Task<bool> GetLastHourData(Symbol symbol, Timeframe timeframe)
@@ -136,7 +157,9 @@ namespace Todolist.Services
         {
             var hostResponse = callSourceUrl(symbol.ToString(), ((int)tf).ToString());
             var bins = overallReadbin(hostResponse);
-            return parseResponse(bins);
+            List<Candle> result = new List<Candle>();
+            result = symbol.ToString().ToLower().EndsWith("usdt") ? parseResponse(bins,100) : parseResponse(bins);
+            return result;
         }
         private byte[] callSourceUrl(string symbol, string timeframe)
         {
@@ -148,7 +171,20 @@ namespace Todolist.Services
                 //client.DefaultRequestHeaders.Add("If-None-Match", "64fef899-838");
                 ServicePointManager.Expect100Continue = true;
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                var response = client.GetAsync($"https://pinegen.com/datafeed/data/premium/{symbol}{timeframe}.lb.gz").GetAwaiter().GetResult();
+                ServicePointManager.ServerCertificateValidationCallback =
+                delegate (
+                    object s,
+                    X509Certificate certificate,
+                    X509Chain chain,
+                    SslPolicyErrors sslPolicyErrors
+                ) {
+                    return true;
+                };
+                HttpResponseMessage response = new HttpResponseMessage();
+                if (!symbol.ToLower().EndsWith("usdt"))
+                    response = client.GetAsync($"https://data.forexsb.com/datafeed/data/dukascopy/{symbol}{timeframe}.lb.gz").GetAwaiter().GetResult();
+                else
+                    response = client.GetAsync($"https://data.forexsb.com/datafeed/data/binance/{symbol}{timeframe}.lb.gz").GetAwaiter().GetResult();
                 var cont = response.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult();
                 var decomp = Decompress(cont);
                 return decomp;
@@ -186,13 +222,14 @@ namespace Todolist.Services
             }
             return binValues;
         }
-        private List<Candle> parseResponse(List<int> Bins)
+        private List<Candle> parseResponse(List<int> Bins,float priceScale = 100000F)
         {
             List<Candle> ds = new List<Candle>();
             var dt2000 = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
             var millennium = ((DateTimeOffset)dt2000).ToUnixTimeMilliseconds();
-            var priceScale = 100000F;
-            for (var offset = 0; offset < Bins.Count; offset += 6)
+            int chunkSize = CommonTradeOperations.UnixTimeStampToLocalDateTime(millennium + (Convert.ToInt64(Bins[6]) * Convert.ToInt64(60000))) >
+                CommonTradeOperations.UnixTimeStampToLocalDateTime(millennium + (Convert.ToInt64(Bins[6]) * Convert.ToInt64(60000))) ? 6 : 7;
+            for (var offset = 0; offset < Bins.Count; offset += chunkSize)
             {
                 ds.Add(
                     new Candle
@@ -368,11 +405,8 @@ namespace Todolist.Services
         {
             try
             {
-                foreach (var item in _dbRepository.GetList<AugmentedCandle>
-                    (p => p.Symbol == (int)symbol && p.Timeframe == (int)timeframe && p.Time > DateTime.Now.Date.AddDays(keepDataInterval * -1)))
-                {
-                    _dbRepository.Delete<AugmentedCandle>(item);
-                }
+                _dbRepository.DeleteBatch(_dbRepository.GetList<AugmentedCandle>
+                    (p => p.Symbol == (int)symbol && p.Timeframe == (int)timeframe && p.Time > DateTime.Now.Date.AddDays(keepDataInterval * -1)));
             }
             catch (Exception)
             {

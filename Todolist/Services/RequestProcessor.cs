@@ -7,6 +7,7 @@ using Todolist.Models;
 using Todolist.Models.Dto;
 using Todolist.Services.Contracts;
 using Todolist.ViewModels;
+using static Todolist.Models.TradeModels;
 
 namespace Todolist.Services
 {
@@ -909,6 +910,24 @@ namespace Todolist.Services
             result.LastCandle = DateTime.Now;
             return result;
         }
-
+        public List<MarketDataCredential> GetMarketDataCredentials(Symbol symbol,Timeframe timeframe)
+        {
+            return _dbRepository.GetList<MarketDataCredential>(p => p.Symbol == (int)symbol && p.Timeframe == (int)timeframe);
+        }
+        public bool PostMarketDataCredential(MarketDataCredential credential)
+        {
+            credential.Id = Guid.NewGuid();
+            credential.CallCounter = 0;
+            credential.RefreshDate = DateTime.Now;
+            return _dbRepository.Add(credential);
+        }
+        public bool DeleteMarketDataCredential(Guid nidCredential)
+        {
+            var credential = _dbRepository.Get<MarketDataCredential>(p => p.Id == nidCredential);
+            if (credential != null)
+                return _dbRepository.Delete<MarketDataCredential>(credential);
+            else
+                return false;
+        }
     }
 }

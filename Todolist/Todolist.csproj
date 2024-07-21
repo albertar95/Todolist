@@ -124,6 +124,8 @@
     <Content Include="App_Data\privatekey\7.txt" />
     <Content Include="App_Data\privatekey\8.txt" />
     <Content Include="App_Data\privatekey\9.txt" />
+    <Content Include="App_Data\tmp\candles.sql" />
+    <Content Include="App_Data\tmp\credential.sql" />
     <Content Include="Contents\css\fonts.css" />
     <Content Include="Contents\css\sb-admin-2.min.css" />
     <Content Include="Contents\js\demo\chart-area-demo.js" />
@@ -2114,7 +2116,6 @@
     <Content Include="Models\Model.edmx.diagram">
       <DependentUpon>Model.edmx</DependentUpon>
     </Content>
-    <Content Include="App_Data\up.zip" />
     <None Include="packages.config" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
@@ -2148,6 +2149,7 @@
     <Content Include="Views\Financials\_MonthlyReportPartialView.cshtml" />
     <Content Include="Views\Financials\_GroupDetailReportPartialView.cshtml" />
     <Content Include="Views\Trades\Index.cshtml" />
+    <Content Include="Views\Trades\MarketDataCredentials.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -17,5 +17,8 @@ namespace Todolist.Services.Contracts
         T Get<T>(Expression<Func<T, bool>> predicate) where T : class;
         T GetMax<T>(Expression<Func<T, bool>> predicate) where T : class;
         T GetMax<T,TKEY>(Expression<Func<T, TKEY>> predicate, Expression<Func<T, bool>> condition) where T : class;
+        bool AddBatch<T>(List<T> entities, int batchSize = 1000) where T : class;
+        bool DeleteBatch<T>(List<T> entities, int batchSize = 1000) where T : class;
+        bool UpdateBatch<T>(List<T> entities, int batchSize = 1000) where T : class;
     }
 }

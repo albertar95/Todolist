@@ -83,5 +83,119 @@ namespace Todolist.Services
         {
             return _context.Set<T>().Where(condition).OrderByDescending(predicate).FirstOrDefault();
         }
+        public bool AddBatch<T>(List<T> entities,int batchSize = 1000) where T : class
+        {
+            try
+            {
+                bool result = true;
+                int to = 0;
+                if(entities.Count >= batchSize)
+                {
+                    for (int i = 0; i <= entities.Count / 1000; i++)
+                    {
+                        if ((i + 1) * 1000 > entities.Count)
+                            to = entities.Count;
+                        else
+                            to = (i + 1) * 1000;
+                        for (int j = i * 1000; j < to; j++)
+                        {
+                            _context.Entry(entities[j]).State = System.Data.EntityState.Added;
+                        }
+                        if (!(_context.SaveChanges() >= to))
+                            result = false;
+                    }
+                }
+                else
+                {
+                    for (int j = 0; j < entities.Count; j++)
+                    {
+                        _context.Entry(entities[j]).State = System.Data.EntityState.Added;
+                    }
+                    if (!(_context.SaveChanges() >= entities.Count))
+                        result = false;
+                }
+                return result;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+        public bool DeleteBatch<T>(List<T> entities, int batchSize = 1000) where T : class
+        {
+            try
+            {
+                bool result = true;
+                int to = 0;
+                if (entities.Count >= batchSize)
+                {
+                    for (int i = 0; i <= entities.Count / 1000; i++)
+                    {
+                        if ((i + 1) * 1000 > entities.Count)
+                            to = entities.Count;
+                        else
+                            to = (i + 1) * 1000;
+                        for (int j = i * 1000; j < to; j++)
+                        {
+                            _context.Entry(entities[j]).State = System.Data.EntityState.Deleted;
+                        }
+                        if (!(_context.SaveChanges() >= to))
+                            result = false;
+                    }
+                }
+                else
+                {
+                    for (int j = 0; j < entities.Count; j++)
+                    {
+                        _context.Entry(entities[j]).State = System.Data.EntityState.Deleted;
+                    }
+                    if (!(_context.SaveChanges() >= entities.Count))
+                        result = false;
+                }
+                return result;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+        public bool UpdateBatch<T>(List<T> entities, int batchSize = 1000) where T : class
+        {
+            try
+            {
+                bool result = true;
+                int to = 0;
+                if (entities.Count >= batchSize)
+                {
+                    for (int i = 0; i <= entities.Count / 1000; i++)
+                    {
+                        if ((i + 1) * 1000 > entities.Count)
+                            to = entities.Count;
+                        else
+                            to = (i + 1) * 1000;
+                        for (int j = i * 1000; j < to; j++)
+                        {
+                            _context.Entry(entities[j]).State = System.Data.EntityState.Modified;
+                        }
+                        if (!(_context.SaveChanges() >= to))
+                            result = false;
+                    }
+                }
+                else
+                {
+                    for (int j = 0; j < entities.Count; j++)
+                    {
+                        _context.Entry(entities[j]).State = System.Data.EntityState.Modified;
+                    }
+                    if (!(_context.SaveChanges() >= entities.Count))
+                        result = false;
+                }
+                return result;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
     }
 }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Todolist.Models;
 using Todolist.Models.Dto;
 using Todolist.ViewModels;
+using static Todolist.Models.TradeModels;
 
 namespace Todolist.Services.Contracts
 {
@@ -86,5 +87,8 @@ namespace Todolist.Services.Contracts
         Tuple<string, string, decimal> GroupSpenceBarCalc(Guid NidGroup);
         Tuple<string, string, decimal> GroupIncomeBarCalc(Guid NidGroup);
         TradeDashboardViewModel GetTradeDashboard();
+        List<MarketDataCredential> GetMarketDataCredentials(Symbol symbol, Timeframe timeframe);
+        bool PostMarketDataCredential(MarketDataCredential credential);
+        bool DeleteMarketDataCredential(Guid nidCredential);
     }
 }
