@@ -83,7 +83,7 @@ namespace Todolist.Services
                     else
                         SeedData(sym, tf);
 
-                    //GetLastHourData(sym, tf).GetAwaiter().GetResult();
+                    GetLastHourData(sym, tf).GetAwaiter().GetResult();
                 }
             }
         }
@@ -95,7 +95,7 @@ namespace Todolist.Services
             else
                 SeedData(sym, tf);
 
-            //GetLastHourData(sym, tf).GetAwaiter().GetResult();
+            GetLastHourData(sym, tf).GetAwaiter().GetResult();
         }
         public void UpdateData(Symbol symbol, Timeframe tf)
         {
@@ -134,10 +134,13 @@ namespace Todolist.Services
                         {
                             UpdateCredentialCounter(apikey.Id);
                             MarketDataCandle candle = ApiHelper.Deserialize<MarketDataCandle>(response.Content);
-                            if (candle.message.ToLower() == "1000 per 1 month")
+                            if(candle != null)
                             {
-                                UpdateCredentialCounter(apikey.Id, true);
-                                return false;
+                                if (candle.message.ToLower() == "1000 per 1 month")
+                                {
+                                    UpdateCredentialCounter(apikey.Id, true);
+                                    return false;
+                                }
                             }
                             if (candle.open == 0 || candle.high == 0 || candle.low == 0 || candle.close == 0)
                                 return false;
@@ -338,7 +341,8 @@ namespace Todolist.Services
         }
         private string GetMarketDataUrl(Symbol symbol, Timeframe timeframe, string time, string key)
         {
-            return $"https://marketdata.tradermade.com/api/v1/minute_historical?currency={symbol.ToString()}&date_time={time}&api_key={key}";
+            var symbolName = symbol.ToString().ToLower().Replace("usdt", "usd");
+            return $"https://marketdata.tradermade.com/api/v1/minute_historical?currency={symbolName}&date_time={time}&api_key={key}";
         }
         private Candle castMarketDataToCandle(MarketDataCandle marketData, Symbol symbol, Timeframe timeframe)
         {
