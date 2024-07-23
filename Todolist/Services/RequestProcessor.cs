@@ -21,520 +21,912 @@ namespace Todolist.Services
 
         public bool ConvertShields()
         {
-            bool result = true;
-            var users = _dbRepository.GetList<User>();
-            var decryptedUsers = users;
-            users.ForEach(x => { decryptedUsers.FirstOrDefault(p => p.NidUser == x.NidUser).Password = Helpers.Encryption.DecryptString(x.Password); });
-            var newUsers = decryptedUsers;
-            decryptedUsers.ForEach(x => { newUsers.FirstOrDefault(p => p.NidUser == x.NidUser).Password = Helpers.Encryption.Sha256Hash(x.Password); });
-            newUsers.ForEach(x => { if (!_dbRepository.Update(x)) result = false; });
-            return result;
+            try
+            {
+                bool result = true;
+                var users = _dbRepository.GetList<User>();
+                var decryptedUsers = users;
+                users.ForEach(x => { decryptedUsers.FirstOrDefault(p => p.NidUser == x.NidUser).Password = Helpers.Encryption.DecryptString(x.Password); });
+                var newUsers = decryptedUsers;
+                decryptedUsers.ForEach(x => { newUsers.FirstOrDefault(p => p.NidUser == x.NidUser).Password = Helpers.Encryption.Sha256Hash(x.Password); });
+                newUsers.ForEach(x => { if (!_dbRepository.Update(x)) result = false; });
+                return result;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public bool DeleteAccount(Guid nidAccount)
         {
-            var account = _dbRepository.Get<Account>(p => p.NidAccount == nidAccount);
-            if (account != null)
-                return _dbRepository.Delete<Account>(account);
-            else
+            try
+            {
+                var account = _dbRepository.Get<Account>(p => p.NidAccount == nidAccount);
+                if (account != null)
+                    return _dbRepository.Delete<Account>(account);
+                else
+                    return false;
+            }
+            catch (Exception)
+            {
                 return false;
+            }
         }
 
         public bool DeleteGoal(Guid nidGoal)
         {
-            var goal = _dbRepository.Get<Goal>(p => p.NidGoal == nidGoal);
-            if (goal != null)
-                return _dbRepository.Delete<Goal>(goal);
-            else
+            try
+            {
+                var goal = _dbRepository.Get<Goal>(p => p.NidGoal == nidGoal);
+                if (goal != null)
+                    return _dbRepository.Delete<Goal>(goal);
+                else
+                    return false;
+            }
+            catch (Exception)
+            {
                 return false;
+            }
         }
 
         public bool DeleteNote(Guid nidNote)
         {
-            var note = _dbRepository.Get<Note>(p => p.NidNote == nidNote);
-            if (note != null)
-                return _dbRepository.Delete<Note>(note);
-            else
+            try
+            {
+                var note = _dbRepository.Get<Note>(p => p.NidNote == nidNote);
+                if (note != null)
+                    return _dbRepository.Delete<Note>(note);
+                else
+                    return false;
+            }
+            catch (Exception)
+            {
                 return false;
+            }
         }
 
         public bool DeleteNoteGroup(Guid nidNoteGroup)
         {
-            var noteGroup = _dbRepository.Get<NoteGroup>(p => p.NidGroup == nidNoteGroup);
-            if (noteGroup != null)
-                return _dbRepository.Delete<NoteGroup>(noteGroup);
-            else
+            try
+            {
+                var noteGroup = _dbRepository.Get<NoteGroup>(p => p.NidGroup == nidNoteGroup);
+                if (noteGroup != null)
+                    return _dbRepository.Delete<NoteGroup>(noteGroup);
+                else
+                    return false;
+            }
+            catch (Exception)
+            {
                 return false;
+            }
         }
 
         public bool DeleteProgress(Guid nidProgress)
         {
-            var progress = _dbRepository.Get<Progress>(p => p.NidProgress == nidProgress);
-            if (progress != null)
-                return _dbRepository.Delete<Progress>(progress);
-            else
+            try
+            {
+                var progress = _dbRepository.Get<Progress>(p => p.NidProgress == nidProgress);
+                if (progress != null)
+                    return _dbRepository.Delete<Progress>(progress);
+                else
+                    return false;
+            }
+            catch (Exception)
+            {
                 return false;
+            }
         }
 
         public bool DeleteRoutine(Guid nidRoutine)
         {
-            var routine = _dbRepository.Get<Routine>(p => p.NidRoutine == nidRoutine);
-            if (routine != null)
-                return _dbRepository.Delete<Routine>(routine);
-            else
+            try
+            {
+                var routine = _dbRepository.Get<Routine>(p => p.NidRoutine == nidRoutine);
+                if (routine != null)
+                    return _dbRepository.Delete<Routine>(routine);
+                else
+                    return false;
+            }
+            catch (Exception)
+            {
                 return false;
+            }
         }
 
         public bool DeleteRoutineProgress(Guid nidRoutineProgress)
         {
-            var routineProg = _dbRepository.Get<RoutineProgress>(p => p.NidRoutineProgress == nidRoutineProgress);
-            if (routineProg != null)
-                return _dbRepository.Delete<RoutineProgress>(routineProg);
-            else
+            try
+            {
+                var routineProg = _dbRepository.Get<RoutineProgress>(p => p.NidRoutineProgress == nidRoutineProgress);
+                if (routineProg != null)
+                    return _dbRepository.Delete<RoutineProgress>(routineProg);
+                else
+                    return false;
+            }
+            catch (Exception)
+            {
                 return false;
+            }
         }
 
         public bool DeleteSchedule(Guid nidSchedule)
         {
-            var schedule = _dbRepository.Get<Schedule>(p => p.NidSchedule == nidSchedule);
-            if (schedule != null)
-                return _dbRepository.Delete<Schedule>(schedule);
-            else
+            try
+            {
+                var schedule = _dbRepository.Get<Schedule>(p => p.NidSchedule == nidSchedule);
+                if (schedule != null)
+                    return _dbRepository.Delete<Schedule>(schedule);
+                else
+                    return false;
+            }
+            catch (Exception)
+            {
                 return false;
+            }
         }
 
         public bool DeleteShield(Guid nidShield)
         {
-            var shield = _dbRepository.Get<Shield>(p => p.Id == nidShield);
-            if (shield != null)
-                return _dbRepository.Delete<Shield>(shield);
-            else
+            try
+            {
+                var shield = _dbRepository.Get<Shield>(p => p.Id == nidShield);
+                if (shield != null)
+                    return _dbRepository.Delete<Shield>(shield);
+                else
+                    return false;
+            }
+            catch (Exception)
+            {
                 return false;
+            }
         }
 
         public bool DeleteTask(Guid nidTask)
         {
-            var task = _dbRepository.Get<Task>(p => p.NidTask == nidTask);
-            if (task != null)
-                return _dbRepository.Delete<Task>(task);
-            else
+            try
+            {
+                var task = _dbRepository.Get<Task>(p => p.NidTask == nidTask);
+                if (task != null)
+                    return _dbRepository.Delete<Task>(task);
+                else
+                    return false;
+            }
+            catch (Exception)
+            {
                 return false;
+            }
         }
 
         public bool DeleteTransaction(Guid nidTransaction)
         {
-            var tran = _dbRepository.Get<Transaction>(p => p.NidTransaction == nidTransaction);
-            if (tran != null)
+            try
             {
-                if (UndoTransaction(tran))
-                    return _dbRepository.Delete<Transaction>(tran);
+                var tran = _dbRepository.Get<Transaction>(p => p.NidTransaction == nidTransaction);
+                if (tran != null)
+                {
+                    if (UndoTransaction(tran))
+                        return _dbRepository.Delete<Transaction>(tran);
+                    else
+                        return false;
+                }
                 else
                     return false;
             }
-            else
+            catch (Exception)
+            {
                 return false;
+            }
         }
 
         public bool DeleteUser(Guid nidUser)
         {
-            var user = _dbRepository.Get<User>(p => p.NidUser == nidUser);
-            if (user != null)
-                return _dbRepository.Delete<User>(user);
-            else
+            try
+            {
+                var user = _dbRepository.Get<User>(p => p.NidUser == nidUser);
+                if (user != null)
+                    return _dbRepository.Delete<User>(user);
+                else
+                    return false;
+            }
+            catch (Exception)
+            {
                 return false;
+            }
         }
 
         public bool DoneTask(Guid nidTask)
         {
-            var task = _dbRepository.Get<Task>(p => p.NidTask == nidTask);
-            task.TaskStatus = true;
-            task.ClosureDate = DateTime.Now;
-            task.LastModifiedDate = DateTime.Now;
-            return _dbRepository.Update<Task>(task);
+            try
+            {
+                var task = _dbRepository.Get<Task>(p => p.NidTask == nidTask);
+                task.TaskStatus = true;
+                task.ClosureDate = DateTime.Now;
+                task.LastModifiedDate = DateTime.Now;
+                return _dbRepository.Update<Task>(task);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public Account GetAccount(Guid nidAccount)
         {
-            return _dbRepository.Get<Account>(p => p.NidAccount == nidAccount);
+            try
+            {
+                return _dbRepository.Get<Account>(p => p.NidAccount == nidAccount);
+            }
+            catch (Exception)
+            {
+                return new Account();
+            }
         }
 
         public FinanceViewModel GetFinacialRecords(Guid nidUser,bool includeAll = false)
         {
             var result = new FinanceViewModel();
-            result.Accounts = _dbRepository.GetList<Account>(p => p.UserId == nidUser);
-            result.AllTransactions = includeAll;
-            PersianCalendar pc = new PersianCalendar();
-            var StartOfMonth = pc.ToDateTime(pc.GetYear(DateTime.Now), pc.GetMonth(DateTime.Now), 1, 0, 0, 0, 0);
-            var EndOfMonth = pc.ToDateTime(pc.GetYear(StartOfMonth.AddMonths(1).AddDays(3)), pc.GetMonth(StartOfMonth.AddMonths(1).AddDays(3)), 1, 0, 0, 0, 0);
-            if (includeAll)
-                result.Transactions = _dbRepository.GetList<Transaction>(p => p.UserId == nidUser);
-            else
-                result.Transactions = _dbRepository.GetList<Transaction>(p => p.UserId == nidUser).Where(q => q.CreateDate >= StartOfMonth && q.CreateDate < EndOfMonth).ToList();
-            var externalAccounts = _dbRepository.GetList<Account>(p => p.IsBackup == true && p.IsActive == true).GroupBy(p => p.NidAccount).Select(q => q.Key).ToList();
-            result.ExternalTransactions = _dbRepository.GetList<Transaction>(p => p.UserId == nidUser)
-                .Where(q => q.CreateDate >= StartOfMonth && q.CreateDate < EndOfMonth && (externalAccounts.Contains(q.PayerAccount) || externalAccounts.Contains(q.RecieverAccount))).ToList();
-            result.StartOfMonth = StartOfMonth.Date;
-            result.Groups = _dbRepository.GetList<TransactionGroup>();
+            try
+            {
+                result.Accounts = _dbRepository.GetList<Account>(p => p.UserId == nidUser);
+                result.AllTransactions = includeAll;
+                PersianCalendar pc = new PersianCalendar();
+                var StartOfMonth = pc.ToDateTime(pc.GetYear(DateTime.Now), pc.GetMonth(DateTime.Now), 1, 0, 0, 0, 0);
+                var EndOfMonth = pc.ToDateTime(pc.GetYear(StartOfMonth.AddMonths(1).AddDays(3)), pc.GetMonth(StartOfMonth.AddMonths(1).AddDays(3)), 1, 0, 0, 0, 0);
+                if (includeAll)
+                    result.Transactions = _dbRepository.GetList<Transaction>(p => p.UserId == nidUser);
+                else
+                    result.Transactions = _dbRepository.GetList<Transaction>(p => p.UserId == nidUser).Where(q => q.CreateDate >= StartOfMonth && q.CreateDate < EndOfMonth).ToList();
+                var externalAccounts = _dbRepository.GetList<Account>(p => p.IsBackup == true && p.IsActive == true).GroupBy(p => p.NidAccount).Select(q => q.Key).ToList();
+                result.ExternalTransactions = _dbRepository.GetList<Transaction>(p => p.UserId == nidUser)
+                    .Where(q => q.CreateDate >= StartOfMonth && q.CreateDate < EndOfMonth && (externalAccounts.Contains(q.PayerAccount) || externalAccounts.Contains(q.RecieverAccount))).ToList();
+                result.StartOfMonth = StartOfMonth.Date;
+                result.Groups = _dbRepository.GetList<TransactionGroup>();
+            }
+            catch (Exception)
+            {
+            }
             return result;
         }
 
         public GoalPageViewModel GetGoal(Guid nidGoal)
         {
             var result = new GoalPageViewModel() { Tasks = new List<Task>(), Goal = new Goal(), Progresses = new List<Progress>() };
-            result.Goal = _dbRepository.Get<Goal>(p => p.NidGoal == nidGoal);
-            result.Tasks = _dbRepository.GetList<Task>(p => p.GoalId == nidGoal);
-            result.Progresses = _dbRepository.GetList<Progress>(p => p.Schedule.Task.GoalId == nidGoal);
+            try
+            {
+                result.Goal = _dbRepository.Get<Goal>(p => p.NidGoal == nidGoal);
+                result.Tasks = _dbRepository.GetList<Task>(p => p.GoalId == nidGoal);
+                result.Progresses = _dbRepository.GetList<Progress>(p => p.Schedule.Task.GoalId == nidGoal);
+            }
+            catch (Exception)
+            {
+            }
             return result;
         }
 
         public GoalViewModel GetGoals(Guid nidUser)
         {
             var result = new GoalViewModel() { Tasks = new List<Task>(), Goals = new List<Goal>() };
-            result.Goals = _dbRepository.GetList<Goal>(p => p.UserId == nidUser);
-            result.Goals.ToList().ForEach(x => { result.Tasks.AddRange(_dbRepository.GetList<Task>(p => p.GoalId == x.NidGoal)); });
+            try
+            {
+                result.Goals = _dbRepository.GetList<Goal>(p => p.UserId == nidUser);
+                result.Goals.ToList().ForEach(x => { result.Tasks.AddRange(_dbRepository.GetList<Task>(p => p.GoalId == x.NidGoal)); });
+            }
+            catch (Exception)
+            {
+            }
             return result;
         }
 
         public Goal GetGoalWithoutDependancy(Guid nidGoal)
         {
-            return _dbRepository.Get<Goal>(p => p.NidGoal == nidGoal);
+            try
+            {
+                return _dbRepository.Get<Goal>(p => p.NidGoal == nidGoal);
+            }
+            catch (Exception)
+            {
+                return new Goal();
+            }
         }
 
         public IndexViewModel GetIndex(Guid nidUser, int Direction = 0)
         {
             var result = new IndexViewModel() { AllTasks = new List<Task>(), Schedules = new List<Schedule>(), Progresses = new List<Progress>() };
-            string[] DatePeriod = new string[3];
-            var weekDates = Helpers.Dates.GetWeekPeriod(Direction);
-            DatePeriod[0] = $"{weekDates.Item1.ToString("dd/MM/yyyy")} - {weekDates.Item2.ToString("dd/MM/yyyy")}";
-            DatePeriod[1] = $"{Direction - 1}";
-            DatePeriod[2] = $"{Direction + 1}";
-            var persianDates = Helpers.Dates.ToPersianDate(weekDates);
-            result.AllGoals = _dbRepository.GetList<Goal>(p => p.UserId == nidUser);
-            result.Goals = result.AllGoals.Where(p => p.GoalStatus == 0).ToList();
-            result.AllGoals.ForEach(x => { result.AllTasks.AddRange(_dbRepository.GetList<Task>(p => p.GoalId == x.NidGoal)); });
-            result.Tasks = result.AllTasks.Where(p => p.TaskStatus == false && result.Goals.GroupBy(x => x.NidGoal).Select(q => q.Key).ToList()
-            .Contains(p.GoalId)).ToList() ?? new List<Models.Task>();
-            result.AllTasks.ForEach(x => { result.Schedules.AddRange(_dbRepository.GetList<Schedule>(p => p.TaskId == x.NidTask).Where(p => p.ScheduleDate >= weekDates.Item1 && p.ScheduleDate <= weekDates.Item2)); });
-            result.Schedules.ForEach(x => { result.Progresses.AddRange(_dbRepository.GetList<Progress>(p => p.ScheduleId == x.NidSchedule)); });
-            result.DatePeriodInfo = DatePeriod;
-            result.PersianDatePeriodInfo = new string[] { persianDates.Item1, persianDates.Item2 };
-            result.StartDate = weekDates.Item1;
-            result.EndDate = weekDates.Item2;
+            try
+            {
+                string[] DatePeriod = new string[3];
+                var weekDates = Helpers.Dates.GetWeekPeriod(Direction);
+                DatePeriod[0] = $"{weekDates.Item1.ToString("dd/MM/yyyy")} - {weekDates.Item2.ToString("dd/MM/yyyy")}";
+                DatePeriod[1] = $"{Direction - 1}";
+                DatePeriod[2] = $"{Direction + 1}";
+                var persianDates = Helpers.Dates.ToPersianDate(weekDates);
+                result.AllGoals = _dbRepository.GetList<Goal>(p => p.UserId == nidUser);
+                result.Goals = result.AllGoals.Where(p => p.GoalStatus == 0).ToList();
+                result.AllGoals.ForEach(x => { result.AllTasks.AddRange(_dbRepository.GetList<Task>(p => p.GoalId == x.NidGoal)); });
+                result.Tasks = result.AllTasks.Where(p => p.TaskStatus == false && result.Goals.GroupBy(x => x.NidGoal).Select(q => q.Key).ToList()
+                .Contains(p.GoalId)).ToList() ?? new List<Models.Task>();
+                result.AllTasks.ForEach(x => { result.Schedules.AddRange(_dbRepository.GetList<Schedule>(p => p.TaskId == x.NidTask).Where(p => p.ScheduleDate >= weekDates.Item1 && p.ScheduleDate <= weekDates.Item2)); });
+                result.Schedules.ForEach(x => { result.Progresses.AddRange(_dbRepository.GetList<Progress>(p => p.ScheduleId == x.NidSchedule)); });
+                result.DatePeriodInfo = DatePeriod;
+                result.PersianDatePeriodInfo = new string[] { persianDates.Item1, persianDates.Item2 };
+                result.StartDate = weekDates.Item1;
+                result.EndDate = weekDates.Item2;
+            }
+            catch (Exception)
+            {
+            }
             return result;
         }
 
         public Note GetNote(Guid nidNote)
         {
-            return _dbRepository.Get<Note>(p => p.NidNote == nidNote);
+            try
+            {
+                return _dbRepository.Get<Note>(p => p.NidNote == nidNote);
+            }
+            catch (Exception)
+            {
+                return new Note();
+            }
         }
 
         public NotesViewModel GetNoteGroup(Guid nidNoteGroup)
         {
             var result = new NotesViewModel();
-            result.Group = _dbRepository.Get<NoteGroup>(p => p.NidGroup == nidNoteGroup);
-            result.Notes = _dbRepository.GetList<Note>(p => p.GroupId == nidNoteGroup);
+            try
+            {
+                result.Group = _dbRepository.Get<NoteGroup>(p => p.NidGroup == nidNoteGroup);
+                result.Notes = _dbRepository.GetList<Note>(p => p.GroupId == nidNoteGroup);
+            }
+            catch (Exception)
+            {
+            }
             return result;
         }
 
         public List<NoteGroup> GetNoteGroups(Guid nidUser)
         {
-            return _dbRepository.GetList<NoteGroup>(p => p.UserId == nidUser);
+            try
+            {
+                return _dbRepository.GetList<NoteGroup>(p => p.UserId == nidUser);
+            }
+            catch (Exception)
+            {
+                return new List<NoteGroup>();
+            }
         }
 
         public List<Note> GetNotes(Guid nidGroup)
         {
-            return _dbRepository.GetList<Note>(p => p.GroupId == nidGroup);
+            try
+            {
+                return _dbRepository.GetList<Note>(p => p.GroupId == nidGroup);
+            }
+            catch (Exception)
+            {
+                return new List<Note>();
+            }
         }
 
         public Routine GetRoutine(Guid nidRoutine)
         {
-            return _dbRepository.Get<Routine>(p => p.NidRoutine == nidRoutine);
+            try
+            {
+                return _dbRepository.Get<Routine>(p => p.NidRoutine == nidRoutine);
+            }
+            catch (Exception)
+            {
+                return new Routine();
+            }
         }
 
         public List<RoutineProgress> GetRoutineProgresses(Guid nidRoutine)
         {
-            return _dbRepository.GetList<RoutineProgress>(p => p.RoutineId == nidRoutine);
+            try
+            {
+                return _dbRepository.GetList<RoutineProgress>(p => p.RoutineId == nidRoutine);
+            }
+            catch (Exception)
+            {
+                return new List<RoutineProgress>();
+            }
         }
 
         public RoutineViewModel GetRoutines(Guid nidUser, int Direction = 0)
         {
             var result = new RoutineViewModel() {  RoutineProgresses = new List<RoutineProgress>() };
-            result.Routines = _dbRepository.GetList<Routine>(p => p.UserId == nidUser);
-            string[] DatePeriod = new string[3];
-            var weekDates = Helpers.Dates.GetWeekPeriod(Direction);
-            DatePeriod[0] = $"{weekDates.Item1.ToString("dd/MM/yyyy")} - {weekDates.Item2.ToString("dd/MM/yyyy")}";
-            DatePeriod[1] = $"{Direction - 1}";
-            DatePeriod[2] = $"{Direction + 1}";
-            var persianDates = Helpers.Dates.ToPersianDate(weekDates);
-            result.Routines.ForEach(x => { result.RoutineProgresses.AddRange(_dbRepository.GetList<RoutineProgress>(p => p.RoutineId == x.NidRoutine)); });
-            result.PersianDatePeriodInfo = new string[] { persianDates.Item1, persianDates.Item2 };
-            result.DatePeriodInfo = DatePeriod;
-            result.StartDate = weekDates.Item1;
-            result.EndDate = weekDates.Item2;
+            try
+            {
+                result.Routines = _dbRepository.GetList<Routine>(p => p.UserId == nidUser);
+                string[] DatePeriod = new string[3];
+                var weekDates = Helpers.Dates.GetWeekPeriod(Direction);
+                DatePeriod[0] = $"{weekDates.Item1.ToString("dd/MM/yyyy")} - {weekDates.Item2.ToString("dd/MM/yyyy")}";
+                DatePeriod[1] = $"{Direction - 1}";
+                DatePeriod[2] = $"{Direction + 1}";
+                var persianDates = Helpers.Dates.ToPersianDate(weekDates);
+                result.Routines.ForEach(x => { result.RoutineProgresses.AddRange(_dbRepository.GetList<RoutineProgress>(p => p.RoutineId == x.NidRoutine)); });
+                result.PersianDatePeriodInfo = new string[] { persianDates.Item1, persianDates.Item2 };
+                result.DatePeriodInfo = DatePeriod;
+                result.StartDate = weekDates.Item1;
+                result.EndDate = weekDates.Item2;
+            }
+            catch (Exception)
+            {
+            }
             return result;
         }
 
         public Shield GetShield(Guid nidShield)
         {
-            return _dbRepository.Get<Shield>(p => p.Id == nidShield);
+            try
+            {
+                return _dbRepository.Get<Shield>(p => p.Id == nidShield);
+            }
+            catch (Exception)
+            {
+                return new Shield();
+            }
         }
 
         public List<Shield> GetShields(Guid nidUser)
         {
-            return _dbRepository.GetList<Shield>(p => p.UserId == nidUser);
+            try
+            {
+                return _dbRepository.GetList<Shield>(p => p.UserId == nidUser);
+            }
+            catch (Exception)
+            {
+                return new List<Shield>();
+            }
         }
 
         public Task GetTask(Guid nidTask)
         {
-            return _dbRepository.Get<Task>(p => p.NidTask == nidTask);
+            try
+            {
+                return _dbRepository.Get<Task>(p => p.NidTask == nidTask);
+            }
+            catch (Exception)
+            {
+                return new Task();
+            }
         }
 
         public Transaction GetTransaction(Guid nidTransaction)
         {
-            return _dbRepository.Get<Transaction>(p => p.NidTransaction == nidTransaction);
+            try
+            {
+                return _dbRepository.Get<Transaction>(p => p.NidTransaction == nidTransaction);
+            }
+            catch (Exception)
+            {
+                return new Transaction();
+            }
         }
 
         public List<User> GetUsers()
         {
-            return _dbRepository.GetList<User>();
+            try
+            {
+                return _dbRepository.GetList<User>();
+            }
+            catch (Exception)
+            {
+                return new List<User>();
+            }
         }
 
         public List<LendDetailViewModel> LendDetails(Guid nidAccount)
         {
-            var lendTrs = _dbRepository.GetList<Transaction>(p => p.PayerAccount == nidAccount && p.TransactionType == 2)
-                .GroupBy(q => q.RecieverAccount).Select(w => new { nidAcc = w.Key,amount = w.Sum(x => x.Amount)}).ToList();
-            var lendBackTrs = _dbRepository.GetList<Transaction>(p => p.RecieverAccount == nidAccount && p.TransactionType == 3)
-                .GroupBy(q => q.PayerAccount).Select(w => new { nidAcc = w.Key, amount = w.Sum(x => x.Amount) }).ToList();
-            var result = new List<LendDetailViewModel>();
-            lendTrs.ForEach(x => { result.Add(new LendDetailViewModel() {  NidAccount = x.nidAcc, Amount = x.amount }); });
-            foreach (var lb in lendBackTrs)
+            var result2 = new List<LendDetailViewModel>();
+            try
             {
-                if(lendTrs.Any(p => p.nidAcc == lb.nidAcc))
+                var lendTrs = _dbRepository.GetList<Transaction>(p => p.PayerAccount == nidAccount && p.TransactionType == 2)
+                .GroupBy(q => q.RecieverAccount).Select(w => new { nidAcc = w.Key, amount = w.Sum(x => x.Amount) }).ToList();
+                var lendBackTrs = _dbRepository.GetList<Transaction>(p => p.RecieverAccount == nidAccount && p.TransactionType == 3)
+                    .GroupBy(q => q.PayerAccount).Select(w => new { nidAcc = w.Key, amount = w.Sum(x => x.Amount) }).ToList();
+                var result = new List<LendDetailViewModel>();
+                lendTrs.ForEach(x => { result.Add(new LendDetailViewModel() { NidAccount = x.nidAcc, Amount = x.amount }); });
+                foreach (var lb in lendBackTrs)
                 {
-                    if(lb.amount <= lendTrs.FirstOrDefault(p => p.nidAcc == lb.nidAcc).amount)
+                    if (lendTrs.Any(p => p.nidAcc == lb.nidAcc))
                     {
-                        var oldAmount = result.FirstOrDefault(p => p.NidAccount == lb.nidAcc).Amount;
-                        result.Remove(result.FirstOrDefault(p => p.NidAccount == lb.nidAcc));
-                        result.Add(new LendDetailViewModel() {  NidAccount = lb.nidAcc, Amount = oldAmount - lb.amount});
+                        if (lb.amount <= lendTrs.FirstOrDefault(p => p.nidAcc == lb.nidAcc).amount)
+                        {
+                            var oldAmount = result.FirstOrDefault(p => p.NidAccount == lb.nidAcc).Amount;
+                            result.Remove(result.FirstOrDefault(p => p.NidAccount == lb.nidAcc));
+                            result.Add(new LendDetailViewModel() { NidAccount = lb.nidAcc, Amount = oldAmount - lb.amount });
+                        }
+                    }
+                }
+                foreach (var ln in result)
+                {
+                    if (ln.Amount != 0)
+                    {
+                        if (_dbRepository.Get<Account>(p => p.NidAccount == ln.NidAccount).IsActive)
+                            result2.Add(new LendDetailViewModel() { NidAccount = ln.NidAccount, Amount = ln.Amount, AccountName = _dbRepository.Get<Account>(p => p.NidAccount == ln.NidAccount).Title });
                     }
                 }
             }
-            var result2 = new List<LendDetailViewModel>();
-            foreach (var ln in result)
+            catch (Exception)
             {
-                if (ln.Amount != 0)
-                {
-                    if(_dbRepository.Get<Account>(p => p.NidAccount == ln.NidAccount).IsActive)
-                        result2.Add(new LendDetailViewModel() { NidAccount = ln.NidAccount, Amount = ln.Amount, AccountName = _dbRepository.Get<Account>(p => p.NidAccount == ln.NidAccount).Title });
-                }
             }
             return result2;
         }
 
         public UserLoginDto LoginUser(string username, string password)
         {
-            password = Helpers.Encryption.Sha256Hash(password.Trim());
-            var user = _dbRepository.Get<User>(p => p.Username == username.Trim() && p.Password == password);
-            if (user != null)
-                return new UserLoginDto() {  IsSuccessful = true, IsAdmin = user.IsAdmin, NidUser = user.NidUser, Username = user.Username };
-            else
+            try
+            {
+                password = Helpers.Encryption.Sha256Hash(password.Trim());
+                var user = _dbRepository.Get<User>(p => p.Username == username.Trim() && p.Password == password);
+                if (user != null)
+                    return new UserLoginDto() { IsSuccessful = true, IsAdmin = user.IsAdmin, NidUser = user.NidUser, Username = user.Username };
+                else
+                    return new UserLoginDto() { IsSuccessful = false };
+            }
+            catch (Exception)
+            {
                 return new UserLoginDto() { IsSuccessful = false };
+            }
         }
 
         public bool PatchAccount(Account account)
         {
-            account.LastModified = DateTime.Now;
-            return _dbRepository.Update<Account>(account);
+            try
+            {
+                account.LastModified = DateTime.Now;
+                return _dbRepository.Update<Account>(account);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public bool PatchGoal(Goal goal)
         {
-            goal.LastModifiedDate = DateTime.Now;
-            return _dbRepository.Update<Goal>(goal);
+            try
+            {
+                goal.LastModifiedDate = DateTime.Now;
+                return _dbRepository.Update<Goal>(goal);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public bool PatchNote(Note note)
         {
-            note.ModifiedDate = DateTime.Now;
-            return _dbRepository.Update<Note>(note);
+            try
+            {
+                note.ModifiedDate = DateTime.Now;
+                return _dbRepository.Update<Note>(note);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public bool PatchNoteGroup(NoteGroup noteGroup)
         {
-            noteGroup.ModifiedDate = DateTime.Now;
-            return _dbRepository.Update<NoteGroup>(noteGroup);
+            try
+            {
+                noteGroup.ModifiedDate = DateTime.Now;
+                return _dbRepository.Update<NoteGroup>(noteGroup);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public bool PatchProgress(Progress progress)
         {
-            return _dbRepository.Update<Progress>(progress);
+            try
+            {
+                return _dbRepository.Update<Progress>(progress);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public bool PatchRoutine(Routine routine)
         {
-            return _dbRepository.Update<Routine>(routine);
+            try
+            {
+                return _dbRepository.Update<Routine>(routine);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public bool PatchShield(Shield shield)
         {
-            shield.LastModified = DateTime.Now;
-            shield.Password = Helpers.Encryption.RSAEncrypt(shield.Password);
-            return _dbRepository.Update<Shield>(shield);
+            try
+            {
+                shield.LastModified = DateTime.Now;
+                shield.Password = Helpers.Encryption.RSAEncrypt(shield.Password);
+                return _dbRepository.Update<Shield>(shield);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public bool PatchTask(Task task)
         {
-            return _dbRepository.Update<Task>(task);
+            try
+            {
+                return _dbRepository.Update<Task>(task);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public bool PatchTransaction(Transaction transaction)
         {
-            return _dbRepository.Update<Transaction>(transaction);
+            try
+            {
+                return _dbRepository.Update<Transaction>(transaction);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public bool PostAccount(Account account)
         {
-            account.NidAccount = Guid.NewGuid();
-            account.CreateDate = DateTime.Now;
-            account.LastModified = DateTime.Now;
-            return _dbRepository.Add<Account>(account);
+            try
+            {
+                account.NidAccount = Guid.NewGuid();
+                account.CreateDate = DateTime.Now;
+                account.LastModified = DateTime.Now;
+                return _dbRepository.Add<Account>(account);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public bool PostGoal(Goal goal)
         {
-            goal.NidGoal = Guid.NewGuid();
-            goal.CreateDate = DateTime.Now;
-            goal.GoalStatus = 0;
-            goal.LastModifiedDate = DateTime.Now;
-            return _dbRepository.Add<Goal>(goal);
+            try
+            {
+                goal.NidGoal = Guid.NewGuid();
+                goal.CreateDate = DateTime.Now;
+                goal.GoalStatus = 0;
+                goal.LastModifiedDate = DateTime.Now;
+                return _dbRepository.Add<Goal>(goal);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public bool PostNote(Note note)
         {
-            note.NidNote = Guid.NewGuid();
-            note.CreateDate = DateTime.Now;
-            note.ModifiedDate = DateTime.Now;
-            return _dbRepository.Add<Note>(note);
+            try
+            {
+                note.NidNote = Guid.NewGuid();
+                note.CreateDate = DateTime.Now;
+                note.ModifiedDate = DateTime.Now;
+                return _dbRepository.Add<Note>(note);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public bool PostNoteGroup(NoteGroup noteGroup)
         {
-            noteGroup.NidGroup = Guid.NewGuid();
-            noteGroup.CreateDate = DateTime.Now;
-            noteGroup.ModifiedDate = DateTime.Now;
-            return _dbRepository.Add<NoteGroup>(noteGroup);
+            try
+            {
+                noteGroup.NidGroup = Guid.NewGuid();
+                noteGroup.CreateDate = DateTime.Now;
+                noteGroup.ModifiedDate = DateTime.Now;
+                return _dbRepository.Add<NoteGroup>(noteGroup);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public bool PostProgress(Progress progress)
         {
-            progress.NidProgress = Guid.NewGuid();
-            progress.CreateDate = DateTime.Now;
-            return _dbRepository.Add<Progress>(progress);
+            try
+            {
+                progress.NidProgress = Guid.NewGuid();
+                progress.CreateDate = DateTime.Now;
+                return _dbRepository.Add<Progress>(progress);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public bool PostRoutine(Routine routine)
         {
-            routine.NidRoutine = Guid.NewGuid();
-            routine.CreateDate = DateTime.Now;
-            routine.Status = false;
-            return _dbRepository.Add<Routine>(routine);
+            try
+            {
+                routine.NidRoutine = Guid.NewGuid();
+                routine.CreateDate = DateTime.Now;
+                routine.Status = false;
+                return _dbRepository.Add<Routine>(routine);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public bool PostRoutineProgress(RoutineProgress routineProgress)
         {
-            routineProgress.NidRoutineProgress = Guid.NewGuid();
-            routineProgress.CreateDate = DateTime.Now;
-            return _dbRepository.Add<RoutineProgress>(routineProgress);
+            try
+            {
+                routineProgress.NidRoutineProgress = Guid.NewGuid();
+                routineProgress.CreateDate = DateTime.Now;
+                return _dbRepository.Add<RoutineProgress>(routineProgress);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public bool PostSchedule(Schedule schedule)
         {
-            schedule.NidSchedule = Guid.NewGuid();
-            schedule.CreateDate = DateTime.Now;
-            return _dbRepository.Add<Schedule>(schedule);
+            try
+            {
+                schedule.NidSchedule = Guid.NewGuid();
+                schedule.CreateDate = DateTime.Now;
+                return _dbRepository.Add<Schedule>(schedule);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public bool PostShield(Shield shield)
         {
-            shield.Id = Guid.NewGuid();
-            shield.CreateDate = DateTime.Now;
-            shield.Password = Helpers.Encryption.RSAEncrypt(shield.Password);
-            return _dbRepository.Add<Shield>(shield);
+            try
+            {
+                shield.Id = Guid.NewGuid();
+                shield.CreateDate = DateTime.Now;
+                shield.Password = Helpers.Encryption.RSAEncrypt(shield.Password);
+                return _dbRepository.Add<Shield>(shield);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public bool PostTask(Task task)
         {
-            task.NidTask = Guid.NewGuid();
-            task.CreateDate = DateTime.Now;
-            task.TaskStatus = false;
-            task.LastModifiedDate = DateTime.Now;
-            return _dbRepository.Add<Task>(task);
+            try
+            {
+                task.NidTask = Guid.NewGuid();
+                task.CreateDate = DateTime.Now;
+                task.TaskStatus = false;
+                task.LastModifiedDate = DateTime.Now;
+                return _dbRepository.Add<Task>(task);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public bool PostTransaction(Transaction transaction)
         {
-            if (PerformTransaction(transaction))
+            try
             {
-                transaction.NidTransaction = Guid.NewGuid();
-                transaction.CreateDate = DateTime.Now;
-                return _dbRepository.Add<Transaction>(transaction);
+                if (PerformTransaction(transaction))
+                {
+                    transaction.NidTransaction = Guid.NewGuid();
+                    transaction.CreateDate = DateTime.Now;
+                    return _dbRepository.Add<Transaction>(transaction);
+                }
+                else
+                    return false;
             }
-            else
+            catch (Exception)
+            {
                 return false;
+            }
         }
 
         public bool PostUser(User user)
         {
-            user.NidUser = Guid.NewGuid();
-            user.CreateDate = DateTime.Now;
-            user.Password = Helpers.Encryption.Sha256Hash(user.Password);
-            return _dbRepository.Add<User>(user);
+            try
+            {
+                user.NidUser = Guid.NewGuid();
+                user.CreateDate = DateTime.Now;
+                user.Password = Helpers.Encryption.Sha256Hash(user.Password);
+                return _dbRepository.Add<User>(user);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public bool UndoTask(Guid nidTask)
         {
-            var task = _dbRepository.Get<Task>(p => p.NidTask == nidTask);
-            task.TaskStatus = false;
-            task.ClosureDate = null;
-            task.LastModifiedDate = DateTime.Now;
-            return _dbRepository.Update<Task>(task);
+            try
+            {
+                var task = _dbRepository.Get<Task>(p => p.NidTask == nidTask);
+                task.TaskStatus = false;
+                task.ClosureDate = null;
+                task.LastModifiedDate = DateTime.Now;
+                return _dbRepository.Update<Task>(task);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
         private bool PerformTransaction(Transaction Transaction)
         {
-            bool IsAccUpdate = false;
-            bool IsConditionOk = false;
-            var payer = _dbRepository.Get<Account>(p => p.NidAccount == Transaction.PayerAccount);
-            var reciever = _dbRepository.Get<Account>(p => p.NidAccount == Transaction.RecieverAccount);
-            if (payer != null)
+            try
             {
-                if (Transaction.Amount <= payer.Amount)
+                bool IsAccUpdate = false;
+                bool IsConditionOk = false;
+                var payer = _dbRepository.Get<Account>(p => p.NidAccount == Transaction.PayerAccount);
+                var reciever = _dbRepository.Get<Account>(p => p.NidAccount == Transaction.RecieverAccount);
+                if (payer != null)
                 {
-                    payer.Amount = payer.Amount - Transaction.Amount;
-                    payer.LastModified = DateTime.Now;
-                    if (Transaction.TransactionType == 2)
-                        payer.LendAmount = payer.LendAmount + Transaction.Amount;
-                    if (reciever != null)
+                    if (Transaction.Amount <= payer.Amount)
                     {
-                        reciever.Amount = reciever.Amount + Transaction.Amount;
-                        if (Transaction.TransactionType == 3)
+                        payer.Amount = payer.Amount - Transaction.Amount;
+                        payer.LastModified = DateTime.Now;
+                        if (Transaction.TransactionType == 2)
+                            payer.LendAmount = payer.LendAmount + Transaction.Amount;
+                        if (reciever != null)
                         {
-                            if (Transaction.Amount <= reciever.LendAmount)
+                            reciever.Amount = reciever.Amount + Transaction.Amount;
+                            if (Transaction.TransactionType == 3)
                             {
-                                reciever.LendAmount = reciever.LendAmount - Transaction.Amount;
-                                IsConditionOk = true;
+                                if (Transaction.Amount <= reciever.LendAmount)
+                                {
+                                    reciever.LendAmount = reciever.LendAmount - Transaction.Amount;
+                                    IsConditionOk = true;
+                                }
                             }
+                            else
+                                IsConditionOk = true;
                         }
-                        else
-                            IsConditionOk = true;
-                    }
-                    if (IsConditionOk)
-                    {
-                        if (_dbRepository.Update<Account>(payer))
-                            IsAccUpdate = _dbRepository.Update<Account>(reciever);
+                        if (IsConditionOk)
+                        {
+                            if (_dbRepository.Update<Account>(payer))
+                                IsAccUpdate = _dbRepository.Update<Account>(reciever);
+                        }
                     }
                 }
+                return IsAccUpdate;
             }
-            return IsAccUpdate;
+            catch (Exception)
+            {
+                return false;
+            }
         }
         private bool UndoTransaction(Transaction Transaction)
         {
@@ -614,263 +1006,379 @@ namespace Todolist.Services
 
         public List<TransactionGroup> GetTransactionGroups(Guid nidUser, bool includeAll = false)
         {
-            if(!includeAll)
-                return _dbRepository.GetList<TransactionGroup>(p => p.UserId == nidUser && p.IsActive == true);
-            else
-                return _dbRepository.GetList<TransactionGroup>(p => p.UserId == nidUser);
+            try
+            {
+                if (!includeAll)
+                    return _dbRepository.GetList<TransactionGroup>(p => p.UserId == nidUser && p.IsActive == true);
+                else
+                    return _dbRepository.GetList<TransactionGroup>(p => p.UserId == nidUser);
+            }
+            catch (Exception)
+            {
+                return new List<TransactionGroup>();
+            }
         }
         public bool PostTransactionGroups(TransactionGroup transactionGroup)
         {
-            transactionGroup.NidTransactionGroup = Guid.NewGuid();
-            transactionGroup.CreateDate = DateTime.Now;
-            return _dbRepository.Add<TransactionGroup>(transactionGroup);
+            try
+            {
+                transactionGroup.NidTransactionGroup = Guid.NewGuid();
+                transactionGroup.CreateDate = DateTime.Now;
+                return _dbRepository.Add<TransactionGroup>(transactionGroup);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
         public TransactionGroup GetTransactionGroup(Guid nidTransactionGroup)
         {
-            return _dbRepository.Get<TransactionGroup>(p => p.NidTransactionGroup == nidTransactionGroup);
+            try
+            {
+                return _dbRepository.Get<TransactionGroup>(p => p.NidTransactionGroup == nidTransactionGroup);
+            }
+            catch (Exception)
+            {
+                return new TransactionGroup();
+            }
         }
         public bool DeleteTransactionGroup(Guid nidTransactionGroup)
         {
-            var transactionGroup = _dbRepository.Get<TransactionGroup>(p => p.NidTransactionGroup == nidTransactionGroup);
-            if (transactionGroup != null)
+            try
             {
-                if (!_dbRepository.GetList<Transaction>(p => p.TransactionGroupId == nidTransactionGroup).Any())
-                    return _dbRepository.Delete<TransactionGroup>(transactionGroup);
-                else
+                var transactionGroup = _dbRepository.Get<TransactionGroup>(p => p.NidTransactionGroup == nidTransactionGroup);
+                if (transactionGroup != null)
                 {
-                    transactionGroup.IsActive = false;
-                    return _dbRepository.Update(transactionGroup);
+                    if (!_dbRepository.GetList<Transaction>(p => p.TransactionGroupId == nidTransactionGroup).Any())
+                        return _dbRepository.Delete<TransactionGroup>(transactionGroup);
+                    else
+                    {
+                        transactionGroup.IsActive = false;
+                        return _dbRepository.Update(transactionGroup);
+                    }
                 }
+                else
+                    return false;
             }
-            else
+            catch (Exception)
+            {
                 return false;
+            }
         }
         public EditTransactionViewModel GetEditTransaction(Guid nidTransaction,Guid nidUser)
         {
             var result = new EditTransactionViewModel();
-            result.Accounts = _dbRepository.GetList<Account>(p => p.UserId == nidUser);
-            PersianCalendar pc = new PersianCalendar();
-            var StartOfMonth = pc.ToDateTime(pc.GetYear(DateTime.Now), pc.GetMonth(DateTime.Now), 1, 0, 0, 0, 0);
-            var EndOfMonth = pc.ToDateTime(pc.GetYear(StartOfMonth.AddMonths(1).AddDays(3)), pc.GetMonth(StartOfMonth.AddMonths(1).AddDays(3)), 1, 0, 0, 0, 0);
-            result.Groups = _dbRepository.GetList<TransactionGroup>(p => p.IsActive == true);
-            result.Transaction = _dbRepository.Get<Transaction>(p => p.NidTransaction == nidTransaction);
-            var trIds = _dbRepository.GetList<Transaction>().OrderBy(p => p.CreateDate).ToArray();
-            var nextSelected = Array.FindIndex(trIds, p => p.NidTransaction == nidTransaction) + 1;
-            result.NextTrId = trIds.Count() > nextSelected ? trIds[nextSelected].NidTransaction : trIds[0].NidTransaction;
-            result.StartOfMonth = StartOfMonth.Date;
+            try
+            {
+                result.Accounts = _dbRepository.GetList<Account>(p => p.UserId == nidUser);
+                PersianCalendar pc = new PersianCalendar();
+                var StartOfMonth = pc.ToDateTime(pc.GetYear(DateTime.Now), pc.GetMonth(DateTime.Now), 1, 0, 0, 0, 0);
+                var EndOfMonth = pc.ToDateTime(pc.GetYear(StartOfMonth.AddMonths(1).AddDays(3)), pc.GetMonth(StartOfMonth.AddMonths(1).AddDays(3)), 1, 0, 0, 0, 0);
+                result.Groups = _dbRepository.GetList<TransactionGroup>(p => p.IsActive == true);
+                result.Transaction = _dbRepository.Get<Transaction>(p => p.NidTransaction == nidTransaction);
+                var trIds = _dbRepository.GetList<Transaction>().OrderBy(p => p.CreateDate).ToArray();
+                var nextSelected = Array.FindIndex(trIds, p => p.NidTransaction == nidTransaction) + 1;
+                result.NextTrId = trIds.Count() > nextSelected ? trIds[nextSelected].NidTransaction : trIds[0].NidTransaction;
+                result.StartOfMonth = StartOfMonth.Date;
+            }
+            catch (Exception)
+            {
+            }
             return result;
         }
         public FinancialReportViewModel GetFinancialReport(Guid nidUser)
         {
             var result = new FinancialReportViewModel();
-            result.CurrentMonth = Helpers.Dates.CurrentMonth();
-            result.MonthlySpenceBarChart = MonthlySpenceBarCalc(Helpers.Dates.CurrentMonth());
-            result.MonthlyIncomeBarChart = MonthlyIncomeBarCalc(Helpers.Dates.CurrentMonth());
-            result.MonthSpencesBarChart = MonthSpencesBarCalc();
-            result.TopFiveGroupBarChart = TopFiveGroupBarCalc();
-            result.GroupSpenceBarChart = new Tuple<string, string, decimal>("[]", "[]", 0);
-            result.GroupIncomeBarChart = new Tuple<string, string, decimal>("[]", "[]", 0);
-            result.FundDistributionPieChart = FundDistributionPieCalc();
-            result.FundAccumulationAreaChart = FundAccumulationAreaCalc();
-            result.YearlyCardStat = new Tuple<decimal, decimal, decimal>(
-            GetInitialYearAmounts().Sum(o => o.Amount)/*initial fund*/,
-            GetYearIncomeAmounts()/*total in fund*/,
-            GetYearSpenceAmounts()/*total out fund*/);
-            result.Groups = _dbRepository.GetList<TransactionGroup>();
+            try
+            {
+                result.CurrentMonth = Helpers.Dates.CurrentMonth();
+                result.MonthlySpenceBarChart = MonthlySpenceBarCalc(Helpers.Dates.CurrentMonth());
+                result.MonthlyIncomeBarChart = MonthlyIncomeBarCalc(Helpers.Dates.CurrentMonth());
+                result.MonthSpencesBarChart = MonthSpencesBarCalc();
+                result.TopFiveGroupBarChart = TopFiveGroupBarCalc();
+                result.GroupSpenceBarChart = new Tuple<string, string, decimal>("[]", "[]", 0);
+                result.GroupIncomeBarChart = new Tuple<string, string, decimal>("[]", "[]", 0);
+                result.FundDistributionPieChart = FundDistributionPieCalc();
+                result.FundAccumulationAreaChart = FundAccumulationAreaCalc();
+                result.YearlyCardStat = new Tuple<decimal, decimal, decimal>(
+                GetInitialYearAmounts().Sum(o => o.Amount)/*initial fund*/,
+                GetYearIncomeAmounts()/*total in fund*/,
+                GetYearSpenceAmounts()/*total out fund*/);
+                result.Groups = _dbRepository.GetList<TransactionGroup>();
+            }
+            catch (Exception)
+            {
+            }
             return result;
         }
         public Tuple<string, string, decimal> MonthlySpenceBarCalc(int month)
         {
-            var startofmonth = Helpers.Dates.GetStartAndEndOfMonth(month);
-            var currentMonthSpenceTransactions = _dbRepository.GetList<Transaction>(p => p.CreateDate >= startofmonth.Item1 && p.CreateDate <= startofmonth.Item2 )
-                .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true).Select(r => r.NidAccount).Contains(q.RecieverAccount))
-                .GroupBy(a => a.PayerAccount).Select(m => new { acc = m.Key,totalAmount = m.Sum(o => o.Amount)}).ToList();
-            string accNames = "[";
-            string values = "[";
-            var accounts = _dbRepository.GetList<Account>();
-            foreach (var tr in currentMonthSpenceTransactions)
+            try
             {
-                accNames += "'" + accounts.FirstOrDefault(p => p.NidAccount == tr.acc).Title + "',";
-                values += "'" + tr.totalAmount + "',";
+                var startofmonth = Helpers.Dates.GetStartAndEndOfMonth(month);
+                var currentMonthSpenceTransactions = _dbRepository.GetList<Transaction>(p => p.CreateDate >= startofmonth.Item1 && p.CreateDate <= startofmonth.Item2)
+                    .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true).Select(r => r.NidAccount).Contains(q.RecieverAccount))
+                    .GroupBy(a => a.PayerAccount).Select(m => new { acc = m.Key, totalAmount = m.Sum(o => o.Amount) }).ToList();
+                string accNames = "[";
+                string values = "[";
+                var accounts = _dbRepository.GetList<Account>();
+                foreach (var tr in currentMonthSpenceTransactions)
+                {
+                    accNames += "'" + accounts.FirstOrDefault(p => p.NidAccount == tr.acc).Title + "',";
+                    values += "'" + tr.totalAmount + "',";
+                }
+                accNames = accNames.Remove(accNames.Length - 1, 1) + "]";
+                values = values.Remove(values.Length - 1, 1) + "]";
+                return new Tuple<string, string, decimal>(accNames, values, currentMonthSpenceTransactions.Max(p => p.totalAmount));
             }
-            accNames = accNames.Remove(accNames.Length - 1, 1) + "]";
-            values = values.Remove(values.Length - 1, 1) + "]";
-            return new Tuple<string, string, decimal>(accNames,values,currentMonthSpenceTransactions.Max(p => p.totalAmount));
+            catch (Exception)
+            {
+                return new Tuple<string, string, decimal>("","",0);
+            }
         }
         public Tuple<string, string, decimal> MonthlyIncomeBarCalc(int month)
         {
-            var startofmonth = Helpers.Dates.GetStartAndEndOfMonth(month);
-            var currentMonthIncomeTransactions = _dbRepository.GetList<Transaction>(p => p.CreateDate >= startofmonth.Item1 && p.CreateDate <= startofmonth.Item2)
-                .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true).Select(r => r.NidAccount).Contains(q.PayerAccount))
-                .GroupBy(a => a.RecieverAccount).Select(m => new { acc = m.Key, totalAmount = m.Sum(o => o.Amount) });
-            string accNames = "[";
-            string values = "[";
-            var accounts = _dbRepository.GetList<Account>();
-            foreach (var tr in currentMonthIncomeTransactions)
+            try
             {
-                accNames += "'" + accounts.FirstOrDefault(p => p.NidAccount == tr.acc).Title + "',";
-                values += "'" + tr.totalAmount + "',";
+                var startofmonth = Helpers.Dates.GetStartAndEndOfMonth(month);
+                var currentMonthIncomeTransactions = _dbRepository.GetList<Transaction>(p => p.CreateDate >= startofmonth.Item1 && p.CreateDate <= startofmonth.Item2)
+                    .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true).Select(r => r.NidAccount).Contains(q.PayerAccount))
+                    .GroupBy(a => a.RecieverAccount).Select(m => new { acc = m.Key, totalAmount = m.Sum(o => o.Amount) });
+                string accNames = "[";
+                string values = "[";
+                var accounts = _dbRepository.GetList<Account>();
+                foreach (var tr in currentMonthIncomeTransactions)
+                {
+                    accNames += "'" + accounts.FirstOrDefault(p => p.NidAccount == tr.acc).Title + "',";
+                    values += "'" + tr.totalAmount + "',";
+                }
+                accNames = accNames.Remove(accNames.Length - 1, 1) + "]";
+                values = values.Remove(values.Length - 1, 1) + "]";
+                return new Tuple<string, string, decimal>(accNames, values, currentMonthIncomeTransactions.Max(p => p.totalAmount));
             }
-            accNames = accNames.Remove(accNames.Length - 1, 1) + "]";
-            values = values.Remove(values.Length - 1, 1) + "]";
-            return new Tuple<string, string, decimal>(accNames, values, currentMonthIncomeTransactions.Max(p => p.totalAmount));
+            catch (Exception)
+            {
+                return new Tuple<string, string, decimal>("","",0);
+            }
         }
         private Tuple<string, string, decimal> MonthSpencesBarCalc()
         {
-            var months = Helpers.Dates.GetMonthsOfYear();
-            var accounts = _dbRepository.GetList<Account>();
-            var pc = new PersianCalendar();
-            string accNames = "[";
-            string values = "[";
-            decimal maxVal = 0;
-            foreach (var m in months)
+            try
             {
-                var currentMonthSpenceTransactions = _dbRepository.GetList<Transaction>(p => p.CreateDate >= m.Item1 && p.CreateDate <= m.Item2)
-                .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true).Select(r => r.NidAccount).Contains(q.RecieverAccount))
-                .Sum(x => x.Amount);
-                accNames += "'" + GetMonthName(pc.GetMonth(m.Item1)) + "',";
-                values += "'" + currentMonthSpenceTransactions + "',";
-                if (currentMonthSpenceTransactions > maxVal)
-                    maxVal = currentMonthSpenceTransactions;
+                var months = Helpers.Dates.GetMonthsOfYear();
+                var accounts = _dbRepository.GetList<Account>();
+                var pc = new PersianCalendar();
+                string accNames = "[";
+                string values = "[";
+                decimal maxVal = 0;
+                foreach (var m in months)
+                {
+                    var currentMonthSpenceTransactions = _dbRepository.GetList<Transaction>(p => p.CreateDate >= m.Item1 && p.CreateDate <= m.Item2)
+                    .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true).Select(r => r.NidAccount).Contains(q.RecieverAccount))
+                    .Sum(x => x.Amount);
+                    accNames += "'" + GetMonthName(pc.GetMonth(m.Item1)) + "',";
+                    values += "'" + currentMonthSpenceTransactions + "',";
+                    if (currentMonthSpenceTransactions > maxVal)
+                        maxVal = currentMonthSpenceTransactions;
+                }
+                accNames = accNames.Remove(accNames.Length - 1, 1) + "]";
+                values = values.Remove(values.Length - 1, 1) + "]";
+                return new Tuple<string, string, decimal>(accNames, values, maxVal);
             }
-            accNames = accNames.Remove(accNames.Length - 1, 1) + "]";
-            values = values.Remove(values.Length - 1, 1) + "]";
-            return new Tuple<string, string, decimal>(accNames, values, maxVal);
+            catch (Exception)
+            {
+                return new Tuple<string, string, decimal>("","",0);
+            }
         }
         private Tuple<string, string, decimal> TopFiveGroupBarCalc()
         {
-            var year = Helpers.Dates.GetStartOfYear();
-            var currentYearSpenceTransactions = _dbRepository.GetList<Transaction>(p => p.CreateDate >= year)
-                .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true).Select(r => r.NidAccount).Contains(q.RecieverAccount))
-                .GroupBy(a => a.TransactionGroupId).Select(m => new { acc = m.Key, totalAmount = m.Sum(o => o.Amount) })
-                .OrderByDescending(b => b.totalAmount).Take(5);
-            string accNames = "[";
-            string values = "[";
-            var groups = _dbRepository.GetList<TransactionGroup>();
-            foreach (var tr in currentYearSpenceTransactions)
+            try
             {
-                accNames += "'" + groups.FirstOrDefault(p => p.NidTransactionGroup == tr.acc).Title + "',";
-                values += "'" + tr.totalAmount + "',";
+                var year = Helpers.Dates.GetStartOfYear();
+                var currentYearSpenceTransactions = _dbRepository.GetList<Transaction>(p => p.CreateDate >= year)
+                    .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true).Select(r => r.NidAccount).Contains(q.RecieverAccount))
+                    .GroupBy(a => a.TransactionGroupId).Select(m => new { acc = m.Key, totalAmount = m.Sum(o => o.Amount) })
+                    .OrderByDescending(b => b.totalAmount).Take(5);
+                string accNames = "[";
+                string values = "[";
+                var groups = _dbRepository.GetList<TransactionGroup>();
+                foreach (var tr in currentYearSpenceTransactions)
+                {
+                    accNames += "'" + groups.FirstOrDefault(p => p.NidTransactionGroup == tr.acc).Title + "',";
+                    values += "'" + tr.totalAmount + "',";
+                }
+                accNames = accNames.Remove(accNames.Length - 1, 1) + "]";
+                values = values.Remove(values.Length - 1, 1) + "]";
+                return new Tuple<string, string, decimal>(accNames, values, currentYearSpenceTransactions.Max(p => p.totalAmount));
             }
-            accNames = accNames.Remove(accNames.Length - 1, 1) + "]";
-            values = values.Remove(values.Length - 1, 1) + "]";
-            return new Tuple<string, string, decimal>(accNames, values, currentYearSpenceTransactions.Max(p => p.totalAmount));
+            catch (Exception)
+            {
+                return new Tuple<string, string, decimal>("","",0);
+            }
         }
         public Tuple<string, string, decimal> GroupSpenceBarCalc(Guid NidGroup)
         {
-            var months = Helpers.Dates.GetMonthsOfYear();
-            var accounts = _dbRepository.GetList<Account>();
-            var pc = new PersianCalendar();
-            string accNames = "[";
-            string values = "[";
-            decimal maxVal = 0;
-            foreach (var m in months)
+            try
             {
-                var currentMonthSpenceTransactions = _dbRepository.GetList<Transaction>(p => p.CreateDate >= m.Item1 && p.CreateDate <= m.Item2
-                && p.TransactionGroupId == NidGroup)
-                .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true && w.IsActive == true).Select(r => r.NidAccount).Contains(q.RecieverAccount))
-                .Sum(x => x.Amount);
-                accNames += "'" + GetMonthName(pc.GetMonth(m.Item1)) + "',";
-                values += "'" + currentMonthSpenceTransactions + "',";
-                if (currentMonthSpenceTransactions > maxVal)
-                    maxVal = currentMonthSpenceTransactions;
+                var months = Helpers.Dates.GetMonthsOfYear();
+                var accounts = _dbRepository.GetList<Account>();
+                var pc = new PersianCalendar();
+                string accNames = "[";
+                string values = "[";
+                decimal maxVal = 0;
+                foreach (var m in months)
+                {
+                    var currentMonthSpenceTransactions = _dbRepository.GetList<Transaction>(p => p.CreateDate >= m.Item1 && p.CreateDate <= m.Item2
+                    && p.TransactionGroupId == NidGroup)
+                    .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true && w.IsActive == true).Select(r => r.NidAccount).Contains(q.RecieverAccount))
+                    .Sum(x => x.Amount);
+                    accNames += "'" + GetMonthName(pc.GetMonth(m.Item1)) + "',";
+                    values += "'" + currentMonthSpenceTransactions + "',";
+                    if (currentMonthSpenceTransactions > maxVal)
+                        maxVal = currentMonthSpenceTransactions;
+                }
+                accNames = accNames.Remove(accNames.Length - 1, 1) + "]";
+                values = values.Remove(values.Length - 1, 1) + "]";
+                return new Tuple<string, string, decimal>(accNames, values, maxVal);
             }
-            accNames = accNames.Remove(accNames.Length - 1, 1) + "]";
-            values = values.Remove(values.Length - 1, 1) + "]";
-            return new Tuple<string, string, decimal>(accNames, values, maxVal);
+            catch (Exception)
+            {
+                return new Tuple<string, string, decimal>("","",0);
+            }
         }
         public Tuple<string, string, decimal> GroupIncomeBarCalc(Guid NidGroup)
         {
-            var months = Helpers.Dates.GetMonthsOfYear();
-            var accounts = _dbRepository.GetList<Account>();
-            var pc = new PersianCalendar();
-            string accNames = "[";
-            string values = "[";
-            decimal maxVal = 0;
-            foreach (var m in months)
+            try
             {
-                var currentMonthIncomeTransactions = _dbRepository.GetList<Transaction>(p => p.CreateDate >= m.Item1 && p.CreateDate <= m.Item2
-                && p.TransactionGroupId == NidGroup)
-                .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true && w.IsActive == true).Select(r => r.NidAccount).Contains(q.PayerAccount))
-                .Sum(x => x.Amount);
-                accNames += "'" + GetMonthName(pc.GetMonth(m.Item1)) + "',";
-                values += "'" + currentMonthIncomeTransactions + "',";
-                if (currentMonthIncomeTransactions > maxVal)
-                    maxVal = currentMonthIncomeTransactions;
+                var months = Helpers.Dates.GetMonthsOfYear();
+                var accounts = _dbRepository.GetList<Account>();
+                var pc = new PersianCalendar();
+                string accNames = "[";
+                string values = "[";
+                decimal maxVal = 0;
+                foreach (var m in months)
+                {
+                    var currentMonthIncomeTransactions = _dbRepository.GetList<Transaction>(p => p.CreateDate >= m.Item1 && p.CreateDate <= m.Item2
+                    && p.TransactionGroupId == NidGroup)
+                    .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true && w.IsActive == true).Select(r => r.NidAccount).Contains(q.PayerAccount))
+                    .Sum(x => x.Amount);
+                    accNames += "'" + GetMonthName(pc.GetMonth(m.Item1)) + "',";
+                    values += "'" + currentMonthIncomeTransactions + "',";
+                    if (currentMonthIncomeTransactions > maxVal)
+                        maxVal = currentMonthIncomeTransactions;
+                }
+                accNames = accNames.Remove(accNames.Length - 1, 1) + "]";
+                values = values.Remove(values.Length - 1, 1) + "]";
+                return new Tuple<string, string, decimal>(accNames, values, maxVal);
             }
-            accNames = accNames.Remove(accNames.Length - 1, 1) + "]";
-            values = values.Remove(values.Length - 1, 1) + "]";
-            return new Tuple<string, string, decimal>(accNames, values, maxVal);
+            catch (Exception)
+            {
+                return new Tuple<string, string, decimal>("","",0);
+            }
         }
         private Tuple<string, string> FundDistributionPieCalc()
         {
-            var months = Helpers.Dates.GetMonthsOfYear();
-            var accounts = _dbRepository.GetList<Account>(p => p.IsBackup == false && p.IsActive == true);
-            var totalFund = accounts.Sum(p => p.Amount);
-            var pc = new PersianCalendar();
-            string accNames = "[";
-            string values = "[";
-            foreach (var m in accounts)
+            try
             {
-                accNames += "'" + m.Title + "',";
-                values += "'" + Math.Round((m.Amount/totalFund)*100) + "',";
+                var months = Helpers.Dates.GetMonthsOfYear();
+                var accounts = _dbRepository.GetList<Account>(p => p.IsBackup == false && p.IsActive == true);
+                var totalFund = accounts.Sum(p => p.Amount);
+                var pc = new PersianCalendar();
+                string accNames = "[";
+                string values = "[";
+                foreach (var m in accounts)
+                {
+                    accNames += "'" + m.Title + "',";
+                    values += "'" + Math.Round((m.Amount / totalFund) * 100) + "',";
+                }
+                accNames = accNames.Remove(accNames.Length - 1, 1) + "]";
+                values = values.Remove(values.Length - 1, 1) + "]";
+                return new Tuple<string, string>(accNames, values);
             }
-            accNames = accNames.Remove(accNames.Length - 1, 1) + "]";
-            values = values.Remove(values.Length - 1, 1) + "]";
-            return new Tuple<string, string>(accNames, values);
+            catch (Exception)
+            {
+                return new Tuple<string, string>("","");
+            }
         }
         private Tuple<string, string> FundAccumulationAreaCalc()
         {
-            var months = Helpers.Dates.GetMonthsOfYear();
-            var accounts = _dbRepository.GetList<Account>(p => p.IsBackup == false && p.IsActive == true);
-            var initialYearAccounts = GetInitialYearAmounts().Sum(o => o.Amount);
-            var pc = new PersianCalendar();
-            string accNames = "[";
-            string values = "[";
-            foreach (var m in months)
+            try
             {
-                var spence = _dbRepository.GetList<Transaction>(p => p.CreateDate >= m.Item1 && p.CreateDate <= m.Item2)
-                .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true && w.IsActive == true).Select(r => r.NidAccount).Contains(q.RecieverAccount))
-                .Sum(x => x.Amount);
-                var income = _dbRepository.GetList<Transaction>(p => p.CreateDate >= m.Item1 && p.CreateDate <= m.Item2)
-                .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true && w.IsActive == true).Select(r => r.NidAccount).Contains(q.PayerAccount))
-                .Sum(x => x.Amount);
-                initialYearAccounts = initialYearAccounts + income - spence;
-                accNames += "'" + GetMonthName(pc.GetMonth(m.Item1)) + "',";
-                values += "'" + initialYearAccounts + "',";
+                var months = Helpers.Dates.GetMonthsOfYear();
+                var accounts = _dbRepository.GetList<Account>(p => p.IsBackup == false && p.IsActive == true);
+                var initialYearAccounts = GetInitialYearAmounts().Sum(o => o.Amount);
+                var pc = new PersianCalendar();
+                string accNames = "[";
+                string values = "[";
+                foreach (var m in months)
+                {
+                    var spence = _dbRepository.GetList<Transaction>(p => p.CreateDate >= m.Item1 && p.CreateDate <= m.Item2)
+                    .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true && w.IsActive == true).Select(r => r.NidAccount).Contains(q.RecieverAccount))
+                    .Sum(x => x.Amount);
+                    var income = _dbRepository.GetList<Transaction>(p => p.CreateDate >= m.Item1 && p.CreateDate <= m.Item2)
+                    .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true && w.IsActive == true).Select(r => r.NidAccount).Contains(q.PayerAccount))
+                    .Sum(x => x.Amount);
+                    initialYearAccounts = initialYearAccounts + income - spence;
+                    accNames += "'" + GetMonthName(pc.GetMonth(m.Item1)) + "',";
+                    values += "'" + initialYearAccounts + "',";
+                }
+                accNames = accNames.Remove(accNames.Length - 1, 1) + "]";
+                values = values.Remove(values.Length - 1, 1) + "]";
+                return new Tuple<string, string>(accNames, values);
             }
-            accNames = accNames.Remove(accNames.Length - 1, 1) + "]";
-            values = values.Remove(values.Length - 1, 1) + "]";
-            return new Tuple<string, string>(accNames, values);
+            catch (Exception)
+            {
+                return new Tuple<string, string>("","");
+            }
         }
         private List<Account> GetInitialYearAmounts()
         {
-            var year = Helpers.Dates.GetStartOfYear();
-            var accounts = _dbRepository.GetList<Account>(p => p.IsBackup == false && p.IsActive == true);
             var result = new List<Account>();
-            foreach (var acc in accounts)
+            try
             {
-                var spences = _dbRepository.GetList<Transaction>(p => p.CreateDate >= year)
-                .Where(q => q.PayerAccount == acc.NidAccount).Sum(u => u.Amount);
-                var Incomes = _dbRepository.GetList<Transaction>(p => p.CreateDate >= year)
-                .Where(q => q.RecieverAccount == acc.NidAccount).Sum(u => u.Amount);
-                result.Add(new Account() {  NidAccount = acc.NidAccount, Title = acc.Title, Amount = acc.Amount + spences - Incomes });
+                var year = Helpers.Dates.GetStartOfYear();
+                var accounts = _dbRepository.GetList<Account>(p => p.IsBackup == false && p.IsActive == true);
+                foreach (var acc in accounts)
+                {
+                    var spences = _dbRepository.GetList<Transaction>(p => p.CreateDate >= year)
+                    .Where(q => q.PayerAccount == acc.NidAccount).Sum(u => u.Amount);
+                    var Incomes = _dbRepository.GetList<Transaction>(p => p.CreateDate >= year)
+                    .Where(q => q.RecieverAccount == acc.NidAccount).Sum(u => u.Amount);
+                    result.Add(new Account() { NidAccount = acc.NidAccount, Title = acc.Title, Amount = acc.Amount + spences - Incomes });
+                }
+            }
+            catch (Exception)
+            {
             }
             return result;
         }
         private decimal GetYearIncomeAmounts()
         {
-            var year = Helpers.Dates.GetStartOfYear();
-            return _dbRepository.GetList<Transaction>(p => p.CreateDate >= year)
-            .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true && w.IsActive == true).Select(r => r.NidAccount).Contains(q.PayerAccount))
-            .Sum(u => u.Amount);
+            try
+            {
+                var year = Helpers.Dates.GetStartOfYear();
+                return _dbRepository.GetList<Transaction>(p => p.CreateDate >= year)
+                .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true && w.IsActive == true).Select(r => r.NidAccount).Contains(q.PayerAccount))
+                .Sum(u => u.Amount);
+            }
+            catch (Exception)
+            {
+                return 0;
+            }
         }
         private decimal GetYearSpenceAmounts()
         {
-            var year = Helpers.Dates.GetStartOfYear();
-            return _dbRepository.GetList<Transaction>(p => p.CreateDate >= year)
-            .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true && w.IsActive == true).Select(r => r.NidAccount).Contains(q.RecieverAccount))
-            .Sum(u => u.Amount);
+            try
+            {
+                var year = Helpers.Dates.GetStartOfYear();
+                return _dbRepository.GetList<Transaction>(p => p.CreateDate >= year)
+                .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true && w.IsActive == true).Select(r => r.NidAccount).Contains(q.RecieverAccount))
+                .Sum(u => u.Amount);
+            }
+            catch (Exception)
+            {
+                return 0;
+            }
         }
         private string GetMonthName(int month)
         {
@@ -907,26 +1415,54 @@ namespace Todolist.Services
         public TradeDashboardViewModel GetTradeDashboard()
         {
             TradeDashboardViewModel result = new TradeDashboardViewModel();
+            try
+            {
+
+            }
+            catch (Exception)
+            {
+            }
             return result;
         }
         public List<MarketDataCredential> GetMarketDataCredentials(Symbol symbol,Timeframe timeframe)
         {
-            return _dbRepository.GetList<MarketDataCredential>(p => p.Symbol == (int)symbol && p.Timeframe == (int)timeframe);
+            try
+            {
+                return _dbRepository.GetList<MarketDataCredential>(p => p.Symbol == (int)symbol && p.Timeframe == (int)timeframe);
+            }
+            catch (Exception)
+            {
+                return new List<MarketDataCredential>();
+            }
         }
         public bool PostMarketDataCredential(MarketDataCredential credential)
         {
-            credential.Id = Guid.NewGuid();
-            credential.CallCounter = 0;
-            credential.RefreshDate = DateTime.Now;
-            return _dbRepository.Add(credential);
+            try
+            {
+                credential.Id = Guid.NewGuid();
+                credential.CallCounter = 0;
+                credential.RefreshDate = DateTime.Now;
+                return _dbRepository.Add(credential);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
         public bool DeleteMarketDataCredential(Guid nidCredential)
         {
-            var credential = _dbRepository.Get<MarketDataCredential>(p => p.Id == nidCredential);
-            if (credential != null)
-                return _dbRepository.Delete<MarketDataCredential>(credential);
-            else
+            try
+            {
+                var credential = _dbRepository.Get<MarketDataCredential>(p => p.Id == nidCredential);
+                if (credential != null)
+                    return _dbRepository.Delete<MarketDataCredential>(credential);
+                else
+                    return false;
+            }
+            catch (Exception)
+            {
                 return false;
+            }
         }
     }
 }

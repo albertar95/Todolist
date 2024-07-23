@@ -25,7 +25,7 @@ namespace Todolist.Controllers
         public ActionResult RefreshCandles(Symbol symbol,Timeframe timeframe)
         {
             var lastCandle = _historicalDataGrabber.RefreshCandles(symbol,timeframe);
-            return Json(new { hasValue = true, lastCandle = lastCandle.ToString() });
+            return Json(new { hasValue = true, lastCandle = lastCandle == DateTime.MinValue ? "" : lastCandle.ToString() });
         }
         public ActionResult GetLastCandle(Symbol symbol, Timeframe timeframe)
         {
