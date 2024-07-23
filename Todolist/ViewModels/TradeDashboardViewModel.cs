@@ -7,6 +7,5 @@ namespace Todolist.ViewModels
 {
     public class TradeDashboardViewModel
     {
-        public DateTime LastCandle { get; set; }
     }
 }

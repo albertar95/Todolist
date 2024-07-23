@@ -907,7 +907,6 @@ namespace Todolist.Services
         public TradeDashboardViewModel GetTradeDashboard()
         {
             TradeDashboardViewModel result = new TradeDashboardViewModel();
-            result.LastCandle = DateTime.Now;
             return result;
         }
         public List<MarketDataCredential> GetMarketDataCredentials(Symbol symbol,Timeframe timeframe)

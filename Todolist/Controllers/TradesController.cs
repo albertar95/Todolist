@@ -24,8 +24,13 @@ namespace Todolist.Controllers
         }
         public ActionResult RefreshCandles(Symbol symbol,Timeframe timeframe)
         {
-            _historicalDataGrabber.RefreshCandles(symbol,timeframe);
-            return Json(new { });
+            var lastCandle = _historicalDataGrabber.RefreshCandles(symbol,timeframe);
+            return Json(new { hasValue = true, lastCandle = lastCandle.ToString() });
+        }
+        public ActionResult GetLastCandle(Symbol symbol, Timeframe timeframe)
+        {
+            var lastCandle = _historicalDataGrabber.GetLastCandle(symbol, timeframe);
+            return Json(new { hasValue = true, lastCandle = lastCandle == DateTime.MinValue ? "" : lastCandle.ToString() });
         }
         public ActionResult MarketDataCredentials(Symbol symbol = Symbol.EURUSD, Timeframe timeframe = Timeframe.M5)
         {

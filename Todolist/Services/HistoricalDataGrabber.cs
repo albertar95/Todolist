@@ -79,27 +79,34 @@ namespace Todolist.Services
                 {
                     var initial = _dbRepository.GetMax<AugmentedCandle, DateTime>(p => p.Time, q => q.Timeframe == (int)tf && q.Symbol == (int)sym);
                     if (initial != null)
-                        UpdateData(sym, tf);
+                        UpdateData(sym, tf,initial);
                     else
                         SeedData(sym, tf);
 
-                    GetLastHourData(sym, tf).GetAwaiter().GetResult();
+                    GetLastHourData(sym, tf,initial).GetAwaiter().GetResult();
                 }
             }
         }
-        public void RefreshCandles(Symbol sym,Timeframe tf)
+        public DateTime RefreshCandles(Symbol sym,Timeframe tf)
         {
             var initial = _dbRepository.GetMax<AugmentedCandle, DateTime>(p => p.Time, q => q.Timeframe == (int)tf && q.Symbol == (int)sym);
             if (initial != null)
-                UpdateData(sym, tf);
+            {
+                UpdateData(sym, tf, initial);
+                GetLastHourData(sym, tf, initial).GetAwaiter().GetResult();
+            }
             else
+            {
                 SeedData(sym, tf);
-
-            GetLastHourData(sym, tf).GetAwaiter().GetResult();
+                initial = _dbRepository.GetMax<AugmentedCandle, DateTime>(p => p.Time, q => q.Timeframe == (int)tf && q.Symbol == (int)sym);
+                GetLastHourData(sym, tf, initial).GetAwaiter().GetResult();
+            }
+            return _dbRepository.GetMax<AugmentedCandle, DateTime>(p => p.Time, q => q.Timeframe == (int)tf && q.Symbol == (int)sym).Time;
         }
-        public void UpdateData(Symbol symbol, Timeframe tf)
+        public void UpdateData(Symbol symbol, Timeframe tf,AugmentedCandle lastCandle)
         {
-            AugmentedCandle lastCandle = _dbRepository.GetMax<AugmentedCandle, DateTime>(p => p.Time, q => q.Timeframe == (int)tf && q.Symbol == (int)symbol);
+            if (Convert.ToInt32(DateTime.Now.Subtract(lastCandle.Time).TotalMinutes) < 60)
+                return;
             var candles = GetCandlesFromHost(tf, symbol);
             var convertedCandles = CandlesAugmentation(candles.Where(p => p.Time >= lastCandle.Time).OrderBy(q => q.Time).ToArray(), lastCandle, symbol, tf);
             _dbRepository.AddBatch(convertedCandles);
@@ -115,13 +122,14 @@ namespace Todolist.Services
                 //DeleteKeepIntervalOverflowCandles(symbol, tf);
             }
         }
-        public async Task<bool> GetLastHourData(Symbol symbol, Timeframe timeframe)
+        public async Task<bool> GetLastHourData(Symbol symbol, Timeframe timeframe, AugmentedCandle lastCandle)
         {
+            if (Convert.ToInt32(DateTime.Now.Subtract(lastCandle.Time).TotalMinutes) < (int)timeframe)
+                return false;
             if (DateTime.Now.DayOfWeek == DayOfWeek.Saturday || DateTime.Now.DayOfWeek == DayOfWeek.Sunday)
                 return false;
             else
             {
-                AugmentedCandle lastCandle = _dbRepository.GetMax<AugmentedCandle, DateTime>(p => p.Time, q => q.Timeframe == (int)timeframe && q.Symbol == (int)symbol);
                 int toCallCount = Convert.ToInt32(DateTime.Now.Subtract(lastCandle.Time).TotalMinutes) / (int)timeframe;
                 if (toCallCount > 0)
                 {
@@ -136,22 +144,36 @@ namespace Todolist.Services
                             MarketDataCandle candle = ApiHelper.Deserialize<MarketDataCandle>(response.Content);
                             if(candle != null)
                             {
-                                if (candle.message.ToLower() == "1000 per 1 month")
+                                if (candle.message != null)
                                 {
-                                    UpdateCredentialCounter(apikey.Id, true);
-                                    return false;
+                                    if (candle.message.ToLower() == "1000 per 1 month")
+                                    {
+                                        UpdateCredentialCounter(apikey.Id, true);
+                                        return false;
+                                    }
                                 }
+                                if (candle.open == 0 || candle.high == 0 || candle.low == 0 || candle.close == 0)
+                                    return false;
+                                candle.UrlRequestTime = lastCandle.Time.AddMinutes((int)timeframe * i);
+                                var convertedCandles = SingleCandlesAugmentation(castMarketDataToCandle(candle, symbol, timeframe), lastCandle, symbol, timeframe);
+                                var result = _dbRepository.Add(convertedCandles);
                             }
-                            if (candle.open == 0 || candle.high == 0 || candle.low == 0 || candle.close == 0)
-                                return false;
-                            candle.UrlRequestTime = lastCandle.Time.AddMinutes((int)timeframe * i);
-                            var convertedCandles = SingleCandlesAugmentation(castMarketDataToCandle(candle, symbol, timeframe), lastCandle, symbol, timeframe);
-                            var result = _dbRepository.Add(convertedCandles);
                         }
                     }
                     DeleteKeepIntervalOverflowCandles(symbol, timeframe);
                 }
                 return true;
+            }
+        }
+        public DateTime GetLastCandle(Symbol sym, Timeframe tf)
+        {
+            try
+            {
+                return _dbRepository.GetMax<AugmentedCandle, DateTime>(p => p.Time, q => q.Timeframe == (int)tf && q.Symbol == (int)sym).Time;
+            }
+            catch (Exception)
+            {
+                return DateTime.MinValue;
             }
         }
         #endregion
@@ -231,7 +253,7 @@ namespace Todolist.Services
             var dt2000 = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
             var millennium = ((DateTimeOffset)dt2000).ToUnixTimeMilliseconds();
             int chunkSize = CommonTradeOperations.UnixTimeStampToLocalDateTime(millennium + (Convert.ToInt64(Bins[6]) * Convert.ToInt64(60000))) >
-                CommonTradeOperations.UnixTimeStampToLocalDateTime(millennium + (Convert.ToInt64(Bins[6]) * Convert.ToInt64(60000))) ? 6 : 7;
+                CommonTradeOperations.UnixTimeStampToLocalDateTime(millennium + (Convert.ToInt64(Bins[0]) * Convert.ToInt64(60000))) ? 6 : 7;
             for (var offset = 0; offset < Bins.Count; offset += chunkSize)
             {
                 ds.Add(

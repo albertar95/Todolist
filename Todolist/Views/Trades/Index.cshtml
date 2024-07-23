@@ -16,8 +16,8 @@
                 <div class="card-body">
                     <div class="form-group d-flex">
                         <div class="col-md-4">
-                            <select id="sltSymbol" class="form-control" required>
-                                <option disabled selected>select Symbol</option>
+                            <select id="sltSymbol" onchange="updateLastCandle()" class="form-control" required>
+                                <option value="0" disabled selected>select Symbol</option>
                                 @foreach (var sym in (Todolist.Models.TradeModels.Symbol[])Enum.GetValues(typeof(Todolist.Models.TradeModels.Symbol)))
                                 {
                                     <option value="@string.Format("{0}",(int)sym)">@sym.ToString()</option>
@@ -25,8 +25,8 @@
                             </select>
                         </div>
                         <div class="col-md-4">
-                            <select id="sltTimeframe" class="form-control" required>
-                                <option disabled selected>select Timeframe</option>
+                            <select id="sltTimeframe" onchange="updateLastCandle()" class="form-control" required>
+                                <option value="0" disabled selected>select Timeframe</option>
                                 @foreach (var tf in (Todolist.Models.TradeModels.Timeframe[])Enum.GetValues(typeof(Todolist.Models.TradeModels.Timeframe)))
                                 {
                                     <option value="@string.Format("{0}",(int)tf)">@tf.ToString()</option>
@@ -34,14 +34,14 @@
                             </select>
                         </div>
                         <div class="col-md-4">
-                            <a href="#" onclick="RefreshCandles(event)" class="btn btn-outline-success"
+                            <a href="#" id="btnUpdate" class="btn btn-outline-success"
                                style="width:80px;justify-content:right;height:38px;margin-right:5px;overflow:hidden;">Update
                             </a>
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="col-md-6">
-                            <label id="lblLastCandle" class="control-label col-md-2">Last Saved Candle : @Model.LastCandle</label>
+                        <div class="col-md-12">
+                            Last Saved Candle : <label id="lblLastCandle" class="control-label"></label>
                         </div>
                     </div>
                 </div>
@@ -88,23 +88,52 @@
                     $("#errorDiv").attr('hidden', 'hidden');
                 }, 5000);
             }
-        });
-        function RefreshCandles(e)
-        {
-            e.preventDefault();
-            $("#waitingModal").modal();
-            $.ajax(
-                {
+            $("#btnUpdate").click(function (e)
+            {
+                e.preventDefault();
+                if ($("#sltTimeframe").find(":selected").val() !== '0' && $("#sltSymbol").find(":selected").val() !== '0') {
+                    $("#waitingModal").modal('show');
+                    $.ajax(
+                    {
                     url:'@Url.Action("RefreshCandles", "Trades")',
                     type:'post',
                     datatype: 'json',
                     data: { symbol: $("#sltSymbol").find(":selected").val(), timeframe: $("#sltTimeframe").find(":selected").val() },
                     success:function(result)
                     {
+                        if (result.hasValue) {
+                            $("#lblLastCandle").text(result.lastCandle);
+                            $("#waitingModal").modal('hide');
+                        }
                     },
-                    error:function(){}
-                });
-            $("#waitingModal").modal('toggle');
+                    error: function ()
+                    {
+                        $("#waitingModal").modal('hide');
+                    }
+                    });
+                }
+            });
+        });
+        function updateLastCandle()
+        {
+            if ($("#sltTimeframe").find(":selected").val() !== '0' && $("#sltSymbol").find(":selected").val() !== '0') {
+            $.ajax(
+            {
+            url:'@Url.Action("GetLastCandle", "Trades")',
+            type:'post',
+            datatype: 'json',
+            data: { symbol: $("#sltSymbol").find(":selected").val(), timeframe: $("#sltTimeframe").find(":selected").val() },
+            success:function(result)
+            {
+                if (result.hasValue) {
+                    $("#lblLastCandle").text(result.lastCandle);
+                }
+            },
+            error: function ()
+            {
+            }
+            });
+        }
         }
     </script>
 }
