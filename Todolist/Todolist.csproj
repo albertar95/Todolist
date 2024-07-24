@@ -127,6 +127,7 @@
     <Content Include="App_Data\tmp\candles.sql" />
     <Content Include="App_Data\tmp\credential.sql" />
     <Content Include="App_Data\tmp\ixCandle.sql" />
+    <Content Include="App_Data\tmp\TransactionGroups.sql" />
     <Content Include="Contents\css\fonts.css" />
     <Content Include="Contents\css\sb-admin-2.min.css" />
     <Content Include="Contents\js\demo\chart-area-demo.js" />
@@ -2117,6 +2118,7 @@
     <Content Include="Models\Model.edmx.diagram">
       <DependentUpon>Model.edmx</DependentUpon>
     </Content>
+    <Content Include="App_Data\tmp\up.zip" />
     <None Include="packages.config" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
