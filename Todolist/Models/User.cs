@@ -23,8 +23,8 @@ namespace Todolist.Models
             this.Shields = new HashSet<Shield>();
             this.Tasks = new HashSet<Task>();
             this.Accounts = new HashSet<Account>();
-            this.TransactionGroups = new HashSet<TransactionGroup>();
             this.Transactions = new HashSet<Transaction>();
+            this.TransactionGroups = new HashSet<TransactionGroup>();
         }
     
         public System.Guid NidUser { get; set; }
@@ -42,7 +42,7 @@ namespace Todolist.Models
         public virtual ICollection<Shield> Shields { get; set; }
         public virtual ICollection<Task> Tasks { get; set; }
         public virtual ICollection<Account> Accounts { get; set; }
-        public virtual ICollection<TransactionGroup> TransactionGroups { get; set; }
         public virtual ICollection<Transaction> Transactions { get; set; }
+        public virtual ICollection<TransactionGroup> TransactionGroups { get; set; }
     }
 }

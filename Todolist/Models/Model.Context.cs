@@ -36,9 +36,9 @@ namespace Todolist.Models
         public DbSet<Task> Tasks { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Account> Accounts { get; set; }
-        public DbSet<TransactionGroup> TransactionGroups { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<MarketDataCredential> MarketDataCredentials { get; set; }
         public DbSet<AugmentedCandle> AugmentedCandles { get; set; }
+        public DbSet<TransactionGroup> TransactionGroups { get; set; }
     }
 }

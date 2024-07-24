@@ -171,20 +171,20 @@
                 <div id="TransactionSection" hidden>
                     <input id="txtNidTransaction" type="text" hidden />
                     <div class="form-group">
+                        <select id="TransactionGroupId" class="form-control" required>
+                            <option value="0" disabled selected>select group</option>
+                            @foreach (var acc in Model.Groups.Where(p => p.IsActive).OrderBy(q => q.Title).ToList())
+                            {
+                                <option value="@acc.NidTransactionGroup" id="@string.Format("{0}_{1}",acc.PaymentType,acc.RelatedAccountId.ToString() ?? "")">@acc.Title</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <select id="TransactionType" class="form-control" required>
                             <option disabled selected>select Tr Type</option>
                             @foreach (var typ in Todolist.ViewModels.FinanceViewModel.TransactionTypes)
                             {
                                 <option value="@typ.Item1">@typ.Item2</option>
-                            }
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <select id="TransactionGroupId" class="form-control" required>
-                            <option value="0" disabled selected>select group</option>
-                            @foreach (var acc in Model.Groups.Where(p => p.IsActive).OrderBy(q => q.Title).ToList())
-                            {
-                                <option value="@acc.NidTransactionGroup">@acc.Title</option>
                             }
                         </select>
                     </div>
@@ -249,6 +249,7 @@
     {
     <script type="text/javascript">
         $(function () {
+            var paidoutAccount = '@Model.Accounts.Where(p => p.IsActive == true && p.IsBackup == true).OrderBy(q => q.Amount).FirstOrDefault().NidAccount';
             $(".modal").on('shown.bs.modal', function () {
                 $(this).find('[autofocus]').focus();
             });
@@ -268,6 +269,21 @@
                     $("#errorDiv").attr('hidden', 'hidden');
                 }, 5000);
             }
+            $("#TransactionGroupId").change(function ()
+            {
+                var values = ($(this).find(":selected").attr('id')).split('_');
+                $("#TransactionType").val(values[0]).change();
+                if (values[1] !== "") {
+                    $("#PayerAccount").val(values[1]).change();
+                } else {
+                    $("#PayerAccount").val(0).change();
+                }
+                if (values[0] == "1") {
+                    $("#RecieverAccount").val(paidoutAccount).change();
+                } else {
+                    $("#RecieverAccount").val(0).change();
+                }
+            });
         });
         function AddAccount(e)
         {
@@ -401,6 +417,9 @@
             $("#btnSubmitAddTransaction").attr('hidden', 'hidden');
             $("#btnSubmitEditTransaction").attr('hidden', 'hidden');
             $("#financeModal").modal();
+        }
+        function GroupChanged(e) {
+            alert('in')
         }
     </script>
 }

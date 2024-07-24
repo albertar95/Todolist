@@ -20,6 +20,7 @@ namespace Todolist.Models
         public System.DateTime CreateDate { get; set; }
         public bool IsActive { get; set; }
         public System.Guid UserId { get; set; }
+        public Nullable<System.Guid> RelatedAccountId { get; set; }
     
         public virtual User User { get; set; }
     }
