@@ -8,7 +8,7 @@
 <hr />
 <div class="row">
     <div class="col-md-12">
-        @using (Html.BeginForm("SubmitAddShield", "Reminders", FormMethod.Post, new { }))
+        @using (Html.BeginForm("SubmitAddShield", "Reminders", FormMethod.Post, new { enctype = "multipart/form-data" }))
         {
             <div class="form-group">
                 <label asp-for="Title" class="control-label">Title</label>
@@ -31,7 +31,7 @@
                     <div class="col-lg-4"></div>
                     <div class="col-lg-4 text-center">
                         <input type="submit" value="Create" class="btn btn-primary" />
-                        <a class="btn btn-outline-info" href="@Url.Action("Shields","Home")">Back to List</a>
+                        <a class="btn btn-outline-info" href="@Url.Action("Shields","Reminders")">Back to List</a>
                     </div>
                     <div class="col-lg-4"></div>
                 </div>

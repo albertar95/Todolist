@@ -79,6 +79,8 @@ namespace Todolist.Controllers
             var note = new Note() { GroupId = NidGroup };
             return View(note);
         }
+        [AllowAnonymous]
+        [ValidateInput(false)]
         public ActionResult SubmitAddNote(Note note)
         {
             if (_requestProcessor.PostNote(note))

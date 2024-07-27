@@ -6,7 +6,7 @@
 <h1>@Model.Title</h1>
 <div class="row">
     <div class="col-md-12">
-        @using (Html.BeginForm("SubmitEditNote", "Reminders", FormMethod.Post, new { }))
+        @using (Html.BeginForm("SubmitEditNote", "Reminders", FormMethod.Post, new { enctype = "multipart/form-data" }))
         {
             <input name="NidNote" value="@Model.NidNote" hidden />
             <input name="CreateDate" value="@Model.CreateDate" hidden />
@@ -26,7 +26,7 @@
                     <div class="col-lg-4 text-center">
                         <input type="submit" value="Update Note" class="btn btn-warning" />
                         <a onclick="DeleteNote(event,'@Model.NidNote','@Model.Title')" class="btn btn-outline-danger">delete note</a>
-                        <a class="btn btn-outline-info" href="@Url.Action("NoteGroup","Home",new { NidGroup = Model.GroupId })">Back to List</a>
+                        <a class="btn btn-outline-info" href="@Url.Action("NoteGroup","Reminders",new { NidGroup = Model.GroupId })">Back to List</a>
                     </div>
                     <div class="col-lg-4"></div>
                 </div>

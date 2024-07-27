@@ -8,7 +8,7 @@
 <hr />
 <div class="row">
     <div class="col-md-12">
-        @using (Html.BeginForm("", "Reminders", FormMethod.Post, new { }))
+        @using (Html.BeginForm("", "Reminders", FormMethod.Post, new { enctype = "multipart/form-data" }))
         {
             <input name="NidGroup" value="@Model.NidGroup" hidden />
             <input name="CreateDate" value="@Model.CreateDate" hidden />
@@ -22,7 +22,7 @@
                     <div class="col-lg-4"></div>
                     <div class="col-lg-4 text-center">
                         <input type="submit" value="edit" class="btn btn-warning" />
-                        <a class="btn btn-outline-info" href="@Url.Action("NoteGroups","Home")">Back to List</a>
+                        <a class="btn btn-outline-info" href="@Url.Action("NoteGroups","Reminders")">Back to List</a>
                     </div>
                     <div class="col-lg-4"></div>
                 </div>

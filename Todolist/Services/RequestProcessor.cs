@@ -1119,6 +1119,8 @@ namespace Todolist.Services
                 var currentMonthSpenceTransactions = _dbRepository.GetList<Transaction>(p => p.CreateDate >= startofmonth.Item1 && p.CreateDate <= startofmonth.Item2)
                     .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true).Select(r => r.NidAccount).Contains(q.RecieverAccount))
                     .GroupBy(a => a.PayerAccount).Select(m => new { acc = m.Key, totalAmount = m.Sum(o => o.Amount) }).ToList();
+                if (!currentMonthSpenceTransactions.Any())
+                    return new Tuple<string, string, decimal>("[]", "[]", 0);
                 string accNames = "[";
                 string values = "[";
                 var accounts = _dbRepository.GetList<Account>();
@@ -1144,6 +1146,8 @@ namespace Todolist.Services
                 var currentMonthIncomeTransactions = _dbRepository.GetList<Transaction>(p => p.CreateDate >= startofmonth.Item1 && p.CreateDate <= startofmonth.Item2)
                     .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true).Select(r => r.NidAccount).Contains(q.PayerAccount))
                     .GroupBy(a => a.RecieverAccount).Select(m => new { acc = m.Key, totalAmount = m.Sum(o => o.Amount) });
+                if (!currentMonthIncomeTransactions.Any())
+                    return new Tuple<string, string, decimal>("[]", "[]", 0);
                 string accNames = "[";
                 string values = "[";
                 var accounts = _dbRepository.GetList<Account>();
