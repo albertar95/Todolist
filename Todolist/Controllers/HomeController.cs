@@ -48,7 +48,7 @@ namespace Todolist.Controllers
         }
         public ActionResult IndexPaginationView(int Direction)
         {
-            return View("Index","Home", _requestProcessor.GetIndex(UserId, Direction));
+            return View("Index", _requestProcessor.GetIndex(UserId, Direction));
         }
     }
     public class JsonResults

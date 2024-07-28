@@ -504,7 +504,7 @@
                 $("#DeleteProgressSection").attr('hidden', 'hidden');
                 $("#EditProgressSection").attr('hidden', 'hidden');
                 $("#txtDeleteSchedule").text('are you sure to delete schedule ' + title + ' in ' + day + ' ?');
-                $("#btnSubmitDeleteSchedule").attr('href', '@Url.Action("SubmitDeleteSchedule","Home")' + '?NidSchedule=' + nid + '&Direction=' + $("#CurrentDirection").val());
+                $("#btnSubmitDeleteSchedule").attr('href', '@Url.Action("SubmitDeleteSchedule", "Schedules")' + '?NidSchedule=' + nid + '&Direction=' + $("#CurrentDirection").val());
                 $("#indexModal").modal();
             }
             if (actionType == 2)//delete progress
@@ -516,7 +516,7 @@
                 $("#DeleteScheduleSection").attr('hidden', 'hidden');
                 $("#EditProgressSection").attr('hidden', 'hidden');
                 $("#txtDeleteProgress").text('are you sure to delete progress ' + title + ' in ' + day + ' ?');
-                $("#btnSubmitDeleteProgress").attr('href', '@Url.Action("SubmitDeleteProgress","Home")' + '?NidProgress=' + nid + '&Direction=' + $("#CurrentDirection").val());
+                $("#btnSubmitDeleteProgress").attr('href', '@Url.Action("SubmitDeleteProgress", "Schedules")' + '?NidProgress=' + nid + '&Direction=' + $("#CurrentDirection").val());
                 $("#indexModal").modal();
             }
         }
