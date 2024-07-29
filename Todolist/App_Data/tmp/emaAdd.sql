@@ -1,0 +1,1 @@
+alter table AugmentedCandles add Ema50 float null
