@@ -53,5 +53,17 @@ namespace Todolist.Controllers
                 TempData["CredentialError"] = "error occured in deleted credential.try again later";
             return RedirectToAction("MarketDataCredentials","Trades");
         }
+
+        //windows service methods
+        public ActionResult AutoRefreshCandles()
+        {
+            _historicalDataGrabber.AutoRefreshCandles();
+            return Json(new { hasValue = true });
+        }
+        public ActionResult AutoRefreshSignals()
+        {
+            _historicalDataGrabber.AutoRefreshCandles();
+            return Json(new { hasValue = true });
+        }
     }
 }

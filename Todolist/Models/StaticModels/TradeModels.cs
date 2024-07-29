@@ -40,35 +40,6 @@ namespace Todolist.Models
             public float Close { get; set; }
             public int Volume { get; set; }
         }
-        public class Signals
-        {
-            public Guid Id { get; set; }
-            public Symbol Symbol { get; set; }
-            public Timeframe Timeframe { get; set; }
-            public SignalTypes SignalType { get; set; }
-            public DateTime StartDate { get; set; }
-            public float EnterPrice { get; set; }
-            public float StopLostPrice { get; set; }
-            public float TakeProfitPrice { get; set; }
-            public DateTime CreateDate { get; set; }
-            public bool IsActive { get; set; }
-            public byte WinChanceEstimate { get; set; }
-            public SignalProviders SignalProvider { get; set; }
-            public virtual ICollection<SignalResults> SignalResults { get; set; }
-        }
-        public class SignalResults
-        {
-            public Guid Id { get; set; }
-            public Guid SignalId { get; set; }
-            public SignalResultStatus Status { get; set; }
-            public float ClosePrice { get; set; }
-            public float ProfitPercentage { get; set; }
-            public int Duration { get; set; }
-            public DateTime CloseDate { get; set; }
-            public DateTime CreateDate { get; set; }
-            public SignalResultClosureTypes ClosureType { get; set; }
-            public virtual Signals Signal { get; set; }
-        }
         public class SignalEstimate
         {
             public Guid Id { get; set; }
@@ -78,6 +49,7 @@ namespace Todolist.Models
             public SMAPositions SmaPosition { get; set; }
             public CandlesToSMAPositions CandlesToSmaPosition { get; set; }
             public HistogramPositions HistogramPosition { get; set; }
+            public CandlesToEMAPositions CandlesToEMAPosition { get; set; }
             public SignalTypes signalType { get; set; }
         }
         public class SignalProgress
@@ -87,6 +59,7 @@ namespace Todolist.Models
             public LinesOnMacdPositions MacdMapPosition { get; set; }
             public LinesPositions LinePosition { get; set; }
             public SMAPositions smaPosition { get; set; }
+            public CandlesToEMAPositions CandlesToEMAPosition { get; set; }
             public double Profit { get; set; }
         }
         public enum SignalTypes
@@ -124,6 +97,10 @@ namespace Todolist.Models
         public enum CandlesToSMAPositions
         {
             CandlesUpperBoth = 1, CandlesUpper50AndBellow100 = 2, CandlesUpper100AndBellow50 = 3, CandlesBellowBoth = 4, CandlesNear50AndUpper100 = 5, CandlesNear50AndBellow100 = 6, CandlesNear100AndUpper50 = 7, CandlesNear100AndBellow50 = 8, CandlesNearBoth = 9
+        }
+        public enum CandlesToEMAPositions
+        {
+            UpperCandle = 1, Equal = 2, UpperEMA = 3
         }
         public enum HistogramPositions
         {

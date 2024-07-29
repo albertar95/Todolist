@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -17,6 +18,11 @@ namespace Todolist.Helpers
 {
     public class CommonTradeOperations
     {
+        public static string FileSourcePath = ConfigurationManager.AppSettings["FileSourcePath"];
+        public static float linesClosenessMargin = float.Parse(ConfigurationManager.AppSettings["linesClosenessMargin"]) * 0.0001F;
+        public static float linesOnMacdClosenessMargin = float.Parse(ConfigurationManager.AppSettings["linesOnMacdClosenessMargin"]) * 0.0001F;
+        public static float smaClosenessMargin = float.Parse(ConfigurationManager.AppSettings["smaClosenessMargin"]) * 0.0001F;
+        public static float smaAndCandleClosenessMargin = float.Parse(ConfigurationManager.AppSettings["smaAndCandleClosenessMargin"]) * 0.0001F;
         private static DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
         public static DateTime UnixTimeStampToDateTime(long unixTimeStamp)
         {
@@ -139,6 +145,19 @@ namespace Todolist.Helpers
                     return CandlesToSMAPositions.CandlesBellowBoth;
             }
         }
+        public static CandlesToEMAPositions CalcCandlesToEMAPosition(double close, double ema50, double closenessMargin = 0.0001F)
+        {
+            double diff50 = Math.Abs(close - ema50);
+            if (diff50 < closenessMargin)//near state
+                return CandlesToEMAPositions.Equal;
+            else
+            {
+                if (close >= ema50)
+                    return CandlesToEMAPositions.UpperCandle;
+                else
+                    return CandlesToEMAPositions.UpperEMA;
+            }
+        }
         public static HistogramPositions CalcHistogramPosition(double currentHistogram, double previousHistogram)
         {
             if (currentHistogram > 0)
@@ -173,7 +192,8 @@ namespace Todolist.Helpers
                     LinesPosition = CalcLinesPosition(tmpCandle.MACDLine, tmpCandle.SignalLine, linesClosenessMargin),
                     SmaPosition = CalcSMAPosition(tmpCandle.Sma50, tmpCandle.Sma100, smaClosenessMargin),
                     CandlesToSmaPosition = CalcCandlesToSMAPosition(tmpCandle.Close, tmpCandle.Sma50, tmpCandle.Sma100, smaAndCandleClosenessMargin),
-                    signalType = SignalTypes.NotSet
+                    signalType = SignalTypes.NotSet,
+                    CandlesToEMAPosition = CalcCandlesToEMAPosition(tmpCandle.Close,tmpCandle.Ema50 ?? 0,smaAndCandleClosenessMargin)
                 };
                 if (i <= 0)
                     tmpEstimate.HistogramPosition = HistogramPositions.unknown;
@@ -232,11 +252,11 @@ namespace Todolist.Helpers
                    $"{input.SignalId},{input.Status.ToString()},{input.ClosePrice},{input.ProfitPercentage}," +
                    $"{input.Duration},{ConvertToPersianDate(input.CloseDate)},{ConvertToPersianDate(input.CreateDate)},{input.ClosureType}";
         }
-        public static SignalDto CastSignalToDto(Signals signal)
+        public static SignalDto CastSignalToDto(Signal signal)
         {
-            return new SignalDto() { CreateDate = signal.CreateDate, EnterPrice = signal.EnterPrice, Id = signal.Id, IsActive = signal.IsActive, SignalType = signal.SignalType, StartDate = signal.StartDate, StopLostPrice = signal.StopLostPrice, Symbol = signal.Symbol, TakeProfitPrice = signal.TakeProfitPrice, Timeframe = signal.Timeframe, WinChanceEstimate = signal.WinChanceEstimate, SignalProvider = signal.SignalProvider };
+            return new SignalDto() { CreateDate = signal.CreateDate, EnterPrice = signal.EnterPrice, Id = signal.Id, IsActive = signal.IsActive, SignalType = (SignalTypes)signal.SignalType, StartDate = signal.StartDate, StopLostPrice = signal.StopLostPrice, Symbol = (Symbol)signal.Symbol, TakeProfitPrice = signal.TakeProfitPrice, Timeframe = (Timeframe)signal.Timeframe, WinChanceEstimate = signal.WinChanceEstimate, SignalProvider = (SignalProviders)signal.SignalProvider };
         }
-        public static SignalResultDto CastSignalResultToDto(SignalResults signal)
+        public static SignalResultDto CastSignalResultToDto(SignalResult signal)
         {
             return new SignalResultDto()
             {
@@ -244,17 +264,17 @@ namespace Todolist.Helpers
                 CloseDate = signal.CloseDate,
                 Id = signal.Id,
                 ClosePrice = signal.ClosePrice,
-                ClosureType = signal.ClosureType,
+                ClosureType = (SignalResultClosureTypes)signal.ClosureType,
                 Duration = signal.Duration,
                 ProfitPercentage = signal.ProfitPercentage,
                 SignalId = signal.SignalId,
-                Status = signal.Status,
-                Symbol = signal.Signal.Symbol,
-                Timeframe = signal.Signal.Timeframe,
+                Status = (SignalResultStatus)signal.Status,
+                Symbol = (Symbol)signal.Signal.Symbol,
+                Timeframe = (Timeframe)signal.Signal.Timeframe,
                 EnterPrice = signal.Signal.EnterPrice,
                 IsActive = signal.Signal.IsActive,
-                SignalProvider = signal.Signal.SignalProvider,
-                SignalType = signal.Signal.SignalType,
+                SignalProvider = (SignalProviders)signal.Signal.SignalProvider,
+                SignalType = (SignalTypes)signal.Signal.SignalType,
                 StartDate = signal.Signal.StartDate,
                 StopLostPrice = signal.Signal.StopLostPrice,
                 TakeProfitPrice = signal.Signal.TakeProfitPrice,
@@ -264,6 +284,48 @@ namespace Todolist.Helpers
         public static void WriteToLogFile(string path, string message)
         {
             File.AppendAllText(path, Environment.NewLine + message);
+        }
+
+        public static Dictionary<AugmentedCandle, SignalEstimate> GenerateSignalEstimates(List<AugmentedCandle> inputs)
+        {
+            return GenerateSignalEstimates(inputs, linesOnMacdClosenessMargin, linesClosenessMargin, smaClosenessMargin, smaAndCandleClosenessMargin);
+        }
+        public static void DownloadSignals(List<SignalResult> signals)
+        {
+            var filename = Path.Combine(FileSourcePath, $"signals_{DateTime.Now.Ticks}.csv");
+            using (StreamWriter writer = new StreamWriter(new FileStream(filename,
+            FileMode.Create, FileAccess.Write)))
+            {
+                writer.WriteLine("CreateDate,Symbol,Timeframe,StartDate,EnterPrice,SignalType,StopLostPrice,TakeProfitPrice,WinChanceEstimate,CloseDate" +
+                    ",ClosePrice,ClosureType,Duration,ProfitPercentage,Status");
+                signals.ForEach(x => { writer.WriteLine(CastSignalToCsv(x)); });
+            }
+            Console.WriteLine($"file create in {filename} at {DateTime.Now}");
+        }
+        public static void SignalReport(List<SignalResult> signals)
+        {
+            var filename = Path.Combine(FileSourcePath, $"signalreport_{DateTime.Now.Ticks}.csv");
+            using (StreamWriter writer = new StreamWriter(new FileStream(filename,
+            FileMode.Create, FileAccess.Write)))
+            {
+                writer.WriteLine("Symbol,Timeframe,SignalCount,CountOfBullish,CountOfBearish,CountOfSuccess,CountOfUnsuccess,CountOfSlhit,CountOfTpHit,CountOfMiddle" +
+                    ",SumOfSuccessProfit,SumOfUnsuccessProfit");
+                writer.WriteLine($"{signals.FirstOrDefault().Signal.Symbol},{signals.FirstOrDefault().Signal.Timeframe},{signals.Count}," +
+                    $"{signals.Count(p => p.Signal.SignalType == (int)SignalTypes.Bullish)},{signals.Count(p => p.Signal.SignalType == (int)SignalTypes.Bearish)}," +
+                    $"{signals.Count(p => p.Status == (int)SignalResultStatus.successful)},{signals.Count(p => p.Status == (int)SignalResultStatus.unsuccessful)}," +
+                    $"{signals.Count(p => p.ClosureType == (int)SignalResultClosureTypes.slHitted)},{signals.Count(p => p.ClosureType == (int)SignalResultClosureTypes.tpHitted)}," +
+                    $"{signals.Count(p => p.ClosureType == (int)SignalResultClosureTypes.closedInMiddleByProvider)}," +
+                    $"{signals.Where(q => q.Status == (int)SignalResultStatus.successful).Sum(p => p.ProfitPercentage)}," +
+                    $"{signals.Where(q => q.Status == (int)SignalResultStatus.unsuccessful).Sum(p => p.ProfitPercentage)}");
+            }
+            Console.WriteLine($"file create in {filename} at {DateTime.Now}");
+        }
+        static string CastSignalToCsv(SignalResult input)
+        {
+            return $"{input.Signal.CreateDate},{input.Signal.Symbol.ToString()},{input.Signal.Timeframe.ToString()},{input.Signal.StartDate.ToUniversalTime()}," +
+                   $"{input.Signal.EnterPrice},{input.Signal.SignalType.ToString()},{input.Signal.StopLostPrice},{input.Signal.TakeProfitPrice}," +
+                   $"{input.Signal.WinChanceEstimate},{input.CloseDate.ToUniversalTime()},{input.ClosePrice},{input.ClosureType.ToString()},{input.Duration}," +
+                   $"{input.ProfitPercentage},{input.Status.ToString()}";
         }
     }
     public class ApiHelper

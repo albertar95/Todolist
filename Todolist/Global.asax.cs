@@ -26,6 +26,7 @@ namespace Todolist
             builder.RegisterType(typeof(DbRepository)).As(typeof(IDbRepository)).InstancePerRequest();
             builder.RegisterType(typeof(RequestProcessor)).As(typeof(IRequestProcessor)).InstancePerRequest();
             builder.RegisterType(typeof(HistoricalDataGrabber)).As(typeof(IHistoricalDataGrabber)).InstancePerRequest();
+            builder.RegisterType(typeof(SignalGenerator)).As(typeof(ISignalGenerator)).InstancePerRequest();
             builder.RegisterType<ToDoListDbEntities>().AsSelf().InstancePerRequest();
 
             var container = builder.Build();

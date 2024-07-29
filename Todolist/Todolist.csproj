@@ -1920,6 +1920,12 @@
     <Compile Include="Models\Shield.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Signal.cs">
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\SignalResult.cs">
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\StaticModels\TradeModels.cs" />
     <Compile Include="Models\Task.cs">
       <DependentUpon>Model.tt</DependentUpon>
@@ -1937,9 +1943,11 @@
     <Compile Include="Services\Contracts\IDbRepository.cs" />
     <Compile Include="Services\Contracts\IHistoricalDataGrabber.cs" />
     <Compile Include="Services\Contracts\IRequestProcessor.cs" />
+    <Compile Include="Services\Contracts\ISignalGenerator.cs" />
     <Compile Include="Services\DbRepository.cs" />
     <Compile Include="Services\HistoricalDataGrabber.cs" />
     <Compile Include="Services\RequestProcessor.cs" />
+    <Compile Include="Services\SignalGenerator.cs" />
     <Compile Include="ViewModels\EditTransactionViewModel.cs" />
     <Compile Include="ViewModels\FinanceViewModel.cs" />
     <Compile Include="ViewModels\FinancialReportViewModel.cs" />

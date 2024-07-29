@@ -31,5 +31,6 @@ namespace Todolist.Models
         public double SignalLine { get; set; }
         public double Histogram { get; set; }
         public double RSI { get; set; }
+        public Nullable<double> Ema50 { get; set; }
     }
 }

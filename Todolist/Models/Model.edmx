@@ -40,6 +40,7 @@
           <Property Name="SignalLine" Type="float" Nullable="false" />
           <Property Name="Histogram" Type="float" Nullable="false" />
           <Property Name="RSI" Type="float" Nullable="false" />
+          <Property Name="Ema50" Type="float" />
         </EntityType>
         <EntityType Name="Goals">
           <Key>
@@ -145,6 +146,37 @@
           <Property Name="Username" Type="nvarchar" MaxLength="500" Nullable="false" />
           <Property Name="Password" Type="nvarchar(max)" Nullable="false" />
           <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
+        <EntityType Name="SignalResults">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="SignalId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Status" Type="int" Nullable="false" />
+          <Property Name="ClosePrice" Type="float" Nullable="false" />
+          <Property Name="ProfitPercentage" Type="float" Nullable="false" />
+          <Property Name="Duration" Type="int" Nullable="false" />
+          <Property Name="CloseDate" Type="datetime" Nullable="false" />
+          <Property Name="CreateDate" Type="datetime" Nullable="false" />
+          <Property Name="ClosureType" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Signals">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Symbol" Type="int" Nullable="false" />
+          <Property Name="Timeframe" Type="int" Nullable="false" />
+          <Property Name="SignalType" Type="int" Nullable="false" />
+          <Property Name="StartDate" Type="datetime" Nullable="false" />
+          <Property Name="EnterPrice" Type="float" Nullable="false" />
+          <Property Name="StopLostPrice" Type="float" Nullable="false" />
+          <Property Name="TakeProfitPrice" Type="float" Nullable="false" />
+          <Property Name="CreateDate" Type="datetime" Nullable="false" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+          <Property Name="WinChanceEstimate" Type="tinyint" Nullable="false" />
+          <Property Name="SignalProvider" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="Tasks">
           <Key>
@@ -331,6 +363,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_SignalResults_Signals">
+          <End Role="Signals" Type="Self.Signals" Multiplicity="1" />
+          <End Role="SignalResults" Type="Self.SignalResults" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Signals">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="SignalResults">
+              <PropertyRef Name="SignalId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Tasks_Users">
           <End Role="Users" Type="Self.Users" Multiplicity="1" />
           <End Role="Tasks" Type="Self.Tasks" Multiplicity="*" />
@@ -379,6 +423,8 @@
           <EntitySet Name="Routines" EntityType="Self.Routines" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Schedules" EntityType="Self.Schedules" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Shields" EntityType="Self.Shields" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SignalResults" EntityType="Self.SignalResults" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Signals" EntityType="Self.Signals" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Tasks" EntityType="Self.Tasks" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TransactionGroups" EntityType="Self.TransactionGroups" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Transactions" EntityType="Self.Transactions" Schema="dbo" store:Type="Tables" />
@@ -426,6 +472,10 @@
           <AssociationSet Name="FK_Shields_Users" Association="Self.FK_Shields_Users">
             <End Role="Users" EntitySet="Users" />
             <End Role="Shields" EntitySet="Shields" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SignalResults_Signals" Association="Self.FK_SignalResults_Signals">
+            <End Role="Signals" EntitySet="Signals" />
+            <End Role="SignalResults" EntitySet="SignalResults" />
           </AssociationSet>
           <AssociationSet Name="FK_Tasks_Users" Association="Self.FK_Tasks_Users">
             <End Role="Users" EntitySet="Users" />
@@ -693,11 +743,17 @@
             <End Role="Transaction" EntitySet="Transactions" />
           </AssociationSet>
           <EntitySet Name="MarketDataCredentials" EntityType="ToDoListDbModel.MarketDataCredential" />
-          <EntitySet Name="AugmentedCandles" EntityType="ToDoListDbModel.AugmentedCandle" />
           <EntitySet Name="TransactionGroups" EntityType="ToDoListDbModel.TransactionGroup" />
           <AssociationSet Name="FK_TransactionTypes_Users" Association="ToDoListDbModel.FK_TransactionTypes_Users">
             <End Role="User" EntitySet="Users" />
             <End Role="TransactionGroup" EntitySet="TransactionGroups" />
+          </AssociationSet>
+          <EntitySet Name="AugmentedCandles" EntityType="ToDoListDbModel.AugmentedCandle" />
+          <EntitySet Name="SignalResults" EntityType="ToDoListDbModel.SignalResult" />
+          <EntitySet Name="Signals" EntityType="ToDoListDbModel.Signal" />
+          <AssociationSet Name="FK_SignalResults_Signals" Association="ToDoListDbModel.FK_SignalResults_Signals">
+            <End Role="Signal" EntitySet="Signals" />
+            <End Role="SignalResult" EntitySet="SignalResults" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="User">
@@ -860,28 +916,6 @@
           <Property Name="CallCounter" Type="Int32" Nullable="false" />
           <Property Name="RefreshDate" Type="DateTime" Nullable="false" Precision="3" />
         </EntityType>
-        <EntityType Name="AugmentedCandle">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Guid" Nullable="false" />
-          <Property Name="Symbol" Type="Int32" Nullable="false" />
-          <Property Name="Timeframe" Type="Int32" Nullable="false" />
-          <Property Name="Time" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="Open" Type="Double" Nullable="false" />
-          <Property Name="High" Type="Double" Nullable="false" />
-          <Property Name="Low" Type="Double" Nullable="false" />
-          <Property Name="Close" Type="Double" Nullable="false" />
-          <Property Name="Volume" Type="Int32" Nullable="false" />
-          <Property Name="Sma50" Type="Double" Nullable="false" />
-          <Property Name="Sma100" Type="Double" Nullable="false" />
-          <Property Name="Ema12" Type="Double" Nullable="false" />
-          <Property Name="Ema26" Type="Double" Nullable="false" />
-          <Property Name="MACDLine" Type="Double" Nullable="false" />
-          <Property Name="SignalLine" Type="Double" Nullable="false" />
-          <Property Name="Histogram" Type="Double" Nullable="false" />
-          <Property Name="RSI" Type="Double" Nullable="false" />
-        </EntityType>
         <EntityType Name="TransactionGroup">
           <Key>
             <PropertyRef Name="NidTransactionGroup" />
@@ -904,6 +938,74 @@
             </Principal>
             <Dependent Role="TransactionGroup">
               <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="AugmentedCandle">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Guid" Nullable="false" />
+          <Property Name="Symbol" Type="Int32" Nullable="false" />
+          <Property Name="Timeframe" Type="Int32" Nullable="false" />
+          <Property Name="Time" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Open" Type="Double" Nullable="false" />
+          <Property Name="High" Type="Double" Nullable="false" />
+          <Property Name="Low" Type="Double" Nullable="false" />
+          <Property Name="Close" Type="Double" Nullable="false" />
+          <Property Name="Volume" Type="Int32" Nullable="false" />
+          <Property Name="Sma50" Type="Double" Nullable="false" />
+          <Property Name="Sma100" Type="Double" Nullable="false" />
+          <Property Name="Ema12" Type="Double" Nullable="false" />
+          <Property Name="Ema26" Type="Double" Nullable="false" />
+          <Property Name="MACDLine" Type="Double" Nullable="false" />
+          <Property Name="SignalLine" Type="Double" Nullable="false" />
+          <Property Name="Histogram" Type="Double" Nullable="false" />
+          <Property Name="RSI" Type="Double" Nullable="false" />
+          <Property Name="Ema50" Type="Double" />
+        </EntityType>
+        <EntityType Name="SignalResult">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Guid" Nullable="false" />
+          <Property Name="SignalId" Type="Guid" Nullable="false" />
+          <Property Name="Status" Type="Int32" Nullable="false" />
+          <Property Name="ClosePrice" Type="Double" Nullable="false" />
+          <Property Name="ProfitPercentage" Type="Double" Nullable="false" />
+          <Property Name="Duration" Type="Int32" Nullable="false" />
+          <Property Name="CloseDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ClosureType" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Signal" Relationship="ToDoListDbModel.FK_SignalResults_Signals" FromRole="SignalResult" ToRole="Signal" />
+        </EntityType>
+        <EntityType Name="Signal">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Guid" Nullable="false" />
+          <Property Name="Symbol" Type="Int32" Nullable="false" />
+          <Property Name="Timeframe" Type="Int32" Nullable="false" />
+          <Property Name="SignalType" Type="Int32" Nullable="false" />
+          <Property Name="StartDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EnterPrice" Type="Double" Nullable="false" />
+          <Property Name="StopLostPrice" Type="Double" Nullable="false" />
+          <Property Name="TakeProfitPrice" Type="Double" Nullable="false" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="WinChanceEstimate" Type="Byte" Nullable="false" />
+          <Property Name="SignalProvider" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="SignalResults" Relationship="ToDoListDbModel.FK_SignalResults_Signals" FromRole="Signal" ToRole="SignalResult" />
+        </EntityType>
+        <Association Name="FK_SignalResults_Signals">
+          <End Type="ToDoListDbModel.Signal" Role="Signal" Multiplicity="1" />
+          <End Type="ToDoListDbModel.SignalResult" Role="SignalResult" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Signal">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="SignalResult">
+              <PropertyRef Name="SignalId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1086,9 +1188,23 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="TransactionGroups">
+            <EntityTypeMapping TypeName="ToDoListDbModel.TransactionGroup">
+              <MappingFragment StoreEntitySet="TransactionGroups">
+                <ScalarProperty Name="RelatedAccountId" ColumnName="RelatedAccountId" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="PaymentType" ColumnName="PaymentType" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="NidTransactionGroup" ColumnName="NidTransactionGroup" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="AugmentedCandles">
             <EntityTypeMapping TypeName="ToDoListDbModel.AugmentedCandle">
               <MappingFragment StoreEntitySet="AugmentedCandles">
+                <ScalarProperty Name="Ema50" ColumnName="Ema50" />
                 <ScalarProperty Name="RSI" ColumnName="RSI" />
                 <ScalarProperty Name="Histogram" ColumnName="Histogram" />
                 <ScalarProperty Name="SignalLine" ColumnName="SignalLine" />
@@ -1109,16 +1225,36 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="TransactionGroups">
-            <EntityTypeMapping TypeName="ToDoListDbModel.TransactionGroup">
-              <MappingFragment StoreEntitySet="TransactionGroups">
-                <ScalarProperty Name="RelatedAccountId" ColumnName="RelatedAccountId" />
-                <ScalarProperty Name="UserId" ColumnName="UserId" />
+          <EntitySetMapping Name="SignalResults">
+            <EntityTypeMapping TypeName="ToDoListDbModel.SignalResult">
+              <MappingFragment StoreEntitySet="SignalResults">
+                <ScalarProperty Name="ClosureType" ColumnName="ClosureType" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="CloseDate" ColumnName="CloseDate" />
+                <ScalarProperty Name="Duration" ColumnName="Duration" />
+                <ScalarProperty Name="ProfitPercentage" ColumnName="ProfitPercentage" />
+                <ScalarProperty Name="ClosePrice" ColumnName="ClosePrice" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="SignalId" ColumnName="SignalId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Signals">
+            <EntityTypeMapping TypeName="ToDoListDbModel.Signal">
+              <MappingFragment StoreEntitySet="Signals">
+                <ScalarProperty Name="SignalProvider" ColumnName="SignalProvider" />
+                <ScalarProperty Name="WinChanceEstimate" ColumnName="WinChanceEstimate" />
                 <ScalarProperty Name="IsActive" ColumnName="IsActive" />
                 <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
-                <ScalarProperty Name="PaymentType" ColumnName="PaymentType" />
-                <ScalarProperty Name="Title" ColumnName="Title" />
-                <ScalarProperty Name="NidTransactionGroup" ColumnName="NidTransactionGroup" />
+                <ScalarProperty Name="TakeProfitPrice" ColumnName="TakeProfitPrice" />
+                <ScalarProperty Name="StopLostPrice" ColumnName="StopLostPrice" />
+                <ScalarProperty Name="EnterPrice" ColumnName="EnterPrice" />
+                <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+                <ScalarProperty Name="SignalType" ColumnName="SignalType" />
+                <ScalarProperty Name="Timeframe" ColumnName="Timeframe" />
+                <ScalarProperty Name="Symbol" ColumnName="Symbol" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

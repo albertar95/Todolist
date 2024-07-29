@@ -197,5 +197,9 @@ namespace Todolist.Services
                 return false;
             }
         }
+        public bool Any<T>(Expression<Func<T, bool>> predicate) where T : class
+        {
+            return _context.Set<T>().Any();
+        }
     }
 }

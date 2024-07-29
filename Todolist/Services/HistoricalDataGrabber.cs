@@ -28,6 +28,7 @@ namespace Todolist.Services
             Sma100 = 1.09006F,
             Ema12 = 1.09024F,
             Ema26 = 1.09034F,
+            Ema50 = 1.09065F,
             MACDLine = -0.00014F,
             SignalLine = -0.00017F,
             Histogram = -0.00003F,
@@ -46,6 +47,7 @@ namespace Todolist.Services
             Sma100 = 147.30F,
             Ema12 = 146.50F,
             Ema26 = 146.59F,
+            Ema50 = 147F,
             MACDLine = -0.09F,
             SignalLine = -0.16F,
             Histogram = 0.07F,
@@ -373,6 +375,7 @@ namespace Todolist.Services
                         tmpAug.Sma100 = float.Parse(candles.Skip(i - 100).Take(100).Sum(p => p.Close).ToString()) / 100F;
                     tmpAug.Ema12 = CommonTradeOperations.EmaCalculator(candles[i].Close, result[i - 1].Ema12, 12F);
                     tmpAug.Ema26 = CommonTradeOperations.EmaCalculator(candles[i].Close, result[i - 1].Ema26, 26F);
+                    tmpAug.Ema50 = CommonTradeOperations.EmaCalculator(candles[i].Close, result[i - 1].Ema50 ?? 0F, 50F);
                     tmpAug.MACDLine = tmpAug.Ema12 - tmpAug.Ema26;
                     tmpAug.SignalLine = CommonTradeOperations.EmaCalculator(tmpAug.MACDLine, result[i - 1].SignalLine, 9F);
                     tmpAug.Histogram = tmpAug.SignalLine - tmpAug.MACDLine;
@@ -414,6 +417,7 @@ namespace Todolist.Services
                     tmpAug.Sma100 = float.Parse(cndls.Sum(p => p.Close).ToString()) / 100F;
                 tmpAug.Ema12 = CommonTradeOperations.EmaCalculator(candles.Close, init.Ema12, 12F);
                 tmpAug.Ema26 = CommonTradeOperations.EmaCalculator(candles.Close, init.Ema26, 26F);
+                tmpAug.Ema50 = CommonTradeOperations.EmaCalculator(candles.Close, init.Ema50 ?? 0F, 50F);
                 tmpAug.MACDLine = tmpAug.Ema12 - tmpAug.Ema26;
                 tmpAug.SignalLine = CommonTradeOperations.EmaCalculator(tmpAug.MACDLine, init.SignalLine, 9F);
                 tmpAug.Histogram = tmpAug.SignalLine - tmpAug.MACDLine;

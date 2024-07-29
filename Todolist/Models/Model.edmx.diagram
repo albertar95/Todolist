@@ -31,9 +31,12 @@
         <EntityTypeShape EntityType="ToDoListDbModel.Transaction" Width="1.5" PointX="3" PointY="28.125" />
         <AssociationConnector Association="ToDoListDbModel.FK_Transactions_Users" />
         <EntityTypeShape EntityType="ToDoListDbModel.MarketDataCredential" Width="1.5" PointX="7.375" PointY="0.75" />
-        <EntityTypeShape EntityType="ToDoListDbModel.AugmentedCandle" Width="1.5" PointX="9.375" PointY="0.75" />
         <EntityTypeShape EntityType="ToDoListDbModel.TransactionGroup" Width="1.5" PointX="3" PointY="20.25" />
         <AssociationConnector Association="ToDoListDbModel.FK_TransactionTypes_Users" />
+        <EntityTypeShape EntityType="ToDoListDbModel.AugmentedCandle" Width="1.5" PointX="9.375" PointY="0.75" />
+        <EntityTypeShape EntityType="ToDoListDbModel.SignalResult" Width="1.5" PointX="13.625" PointY="1.25" />
+        <EntityTypeShape EntityType="ToDoListDbModel.Signal" Width="1.5" PointX="11.375" PointY="1" />
+        <AssociationConnector Association="ToDoListDbModel.FK_SignalResults_Signals" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
