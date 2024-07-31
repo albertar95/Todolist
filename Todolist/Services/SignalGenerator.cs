@@ -56,15 +56,10 @@ namespace Todolist.Services
             {
                 foreach (var tf in Timeframes)
                 {
-                    if (!IsSignalProcessInitialized)
-                    {
-                        if (_dbRepository.Any<Signal>(p => p.Symbol == (int)sym && p.Timeframe == (int)tf && p.SignalProvider == (int)SignalProviders.MaStrategyRevision))
-                            UpdateSignals(sym, tf);
-                        else
-                            SeedSignals(sym, tf);
-                    }
-                    else
+                    if (_dbRepository.Any<Signal>(p => p.Symbol == (int)sym && p.Timeframe == (int)tf && p.SignalProvider == (int)SignalProviders.MaStrategyRevision))
                         UpdateSignals(sym, tf);
+                    else
+                        SeedSignals(sym, tf);
                 }
             }
         }
@@ -79,30 +74,24 @@ namespace Todolist.Services
         public void UpdateSignals(Symbol symbol, Timeframe timeframe)
         {
             List<AugmentedCandle> allCandles = new List<AugmentedCandle>();
-            if (!IsSignalProcessInitialized)
+            var activeSignals = _dbRepository.GetList<Signal>(p => p.Symbol == (int)symbol && p.Timeframe == (int)timeframe && p.SignalProvider == (int)SignalProviders.MaStrategyRevision && p.IsActive == true);
+            if (activeSignals.Any())
             {
-                var allSignal = _dbRepository.GetList<Signal>(p => p.Symbol == (int)symbol && p.Timeframe == (int)timeframe && p.SignalProvider == (int)SignalProviders.MaStrategyRevision);
-                if (allSignal.Any(p => p.IsActive == true))
-                {
-                    currentSignal = allSignal.Where(q => q.IsActive == true).OrderByDescending(p => p.StartDate).FirstOrDefault();
-                    SignalStatus = currentSignal.SignalType == (int)SignalTypes.Bearish ? SignalCreationStatus.BearSignalCreated : SignalCreationStatus.BullSignalCreated;
-                }
-                if (SignalStatus != SignalCreationStatus.Observing)
-                    allCandles = _dbRepository.GetList<AugmentedCandle>(p => p.Symbol == (int)symbol && p.Timeframe == (int)timeframe && p.Time > currentSignal.StartDate, 10000).OrderBy(q => q.Time).ToList();
-                else
-                {
-                    var lastSignal = _dbRepository.GetList<Signal>(p => p.Symbol == (int)symbol && p.Timeframe == (int)timeframe && p.SignalProvider == (int)SignalProviders.MaStrategyRevision && p.IsActive == false).OrderByDescending(p => p.StartDate).FirstOrDefault();
-                    if (lastSignal != null)
-                    {
-                        var lastSignalResult = _dbRepository.Get<SignalResult>(p => p.Id == lastSignal.Id);
-                        if (lastSignalResult != null)
-                            allCandles = _dbRepository.GetList<AugmentedCandle>(p => p.Symbol == (int)symbol && p.Timeframe == (int)timeframe && p.Time > lastSignalResult.CloseDate,10000).OrderBy(q => q.Time).ToList();
-                    }
-                }
-                IsSignalProcessInitialized = true;
+                currentSignal = activeSignals.Where(q => q.IsActive == true).OrderByDescending(p => p.StartDate).FirstOrDefault();
+                SignalStatus = currentSignal.SignalType == (int)SignalTypes.Bearish ? SignalCreationStatus.BearSignalCreated : SignalCreationStatus.BullSignalCreated;
+                ProcessedCandleCheckpoint = currentSignal.StartDate;
             }
             else
-                allCandles = _dbRepository.GetList<AugmentedCandle>(p => p.Symbol == (int)symbol && p.Timeframe == (int)timeframe && p.Time > ProcessedCandleCheckpoint,10000).OrderBy(q => q.Time).ToList();
+            {
+                currentSignal = new Signal();
+                SignalStatus = SignalCreationStatus.Observing;
+                var lastResult = _dbRepository.GetMax<SignalResult, DateTime>(p => p.CloseDate,null);
+                if (lastResult != null)
+                    ProcessedCandleCheckpoint = lastResult.CloseDate;
+                else
+                    ProcessedCandleCheckpoint = DateTime.MinValue;
+            }
+            allCandles = _dbRepository.GetList<AugmentedCandle>(p => p.Symbol == (int)symbol && p.Timeframe == (int)timeframe && p.Time > ProcessedCandleCheckpoint, 10000).OrderBy(q => q.Time).ToList();
             var LastsignalEstimates = CommonTradeOperations.GenerateSignalEstimates(allCandles);
             GenerateSignalAndFollow(LastsignalEstimates);
         }
