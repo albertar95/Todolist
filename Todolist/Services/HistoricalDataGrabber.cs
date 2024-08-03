@@ -160,6 +160,8 @@ namespace Todolist.Services
             {
                 if (Convert.ToInt32(DateTime.Now.Subtract(lastCandle.Time).TotalMinutes) < (int)timeframe)
                     return false;
+                if (Convert.ToInt32(DateTime.Now.Subtract(lastCandle.Time).TotalMinutes) > 60)
+                    return false;
                 if (DateTime.Now.DayOfWeek == DayOfWeek.Saturday || DateTime.Now.DayOfWeek == DayOfWeek.Sunday)
                     return false;
                 else

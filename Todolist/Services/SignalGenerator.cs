@@ -77,7 +77,7 @@ namespace Todolist.Services
             var activeSignals = _dbRepository.GetList<Signal>(p => p.Symbol == (int)symbol && p.Timeframe == (int)timeframe && p.SignalProvider == (int)SignalProviders.MaStrategyRevision && p.IsActive == true);
             if (activeSignals.Any())
             {
-                currentSignal = activeSignals.Where(q => q.IsActive == true).OrderByDescending(p => p.StartDate).FirstOrDefault();
+                currentSignal = activeSignals.OrderByDescending(p => p.StartDate).FirstOrDefault();
                 SignalStatus = currentSignal.SignalType == (int)SignalTypes.Bearish ? SignalCreationStatus.BearSignalCreated : SignalCreationStatus.BullSignalCreated;
                 ProcessedCandleCheckpoint = currentSignal.StartDate;
             }
