@@ -11,6 +11,10 @@ namespace TradingWindowsService
 {
     public class CommonHelper
     {
+        public static void WriteLog(string path,string Content)
+        {
+            System.IO.File.AppendAllText(path, Content);
+        }
     }
     public class ApiHelper
     {

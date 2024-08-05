@@ -57,11 +57,13 @@ namespace Todolist.Controllers
         }
 
         //windows service methods
+        [HttpPost]
         public ActionResult AutoRefreshCandles()
         {
             _historicalDataGrabber.AutoRefreshCandles();
             return Json(new { hasValue = true });
         }
+        [HttpPost]
         public ActionResult AutoRefreshSignals()
         {
             _signalGenerator.AutoRefreshSignals();

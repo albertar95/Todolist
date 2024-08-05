@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Configuration;
 using System.Data;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.ServiceProcess;
 using System.Text;
@@ -19,12 +20,15 @@ namespace TradingWindowsService
         private readonly int GrabberServiceInterval;
         private readonly int SignalServiceInterval;
         private readonly string FileSourcePath;
+        private readonly bool DebugMode;
 
         #endregion
         public TradeService()
         {
             GrabberServiceInterval = int.Parse(ConfigurationManager.AppSettings["GrabberServiceInterval"]);
             SignalServiceInterval = int.Parse(ConfigurationManager.AppSettings["SignalServiceInterval"]);
+            FileSourcePath = ConfigurationManager.AppSettings["FileSourcePath"];
+            DebugMode = bool.Parse(ConfigurationManager.AppSettings["DebugMode"]);
             InitializeComponent();
         }
 
@@ -35,9 +39,10 @@ namespace TradingWindowsService
                 base.OnStart(args);
                 StartService();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                //CommonOperationService.WriteToLogFile(Path.Combine(FileSourcePath,"ErrorLog.txt"),$"{DateTime.Now} ----- {ex}");
+                if (DebugMode)
+                    CommonHelper.WriteLog(Path.Combine(FileSourcePath, "Log.txt"), $"{DateTime.Now} | error | {ex}" + Environment.NewLine);
             }
         }
 
@@ -60,12 +65,20 @@ namespace TradingWindowsService
             {
                 try
                 {
-                    CandleHelper.AutoRefresh().GetAwaiter().GetResult();
+                    var result = CandleHelper.AutoRefresh().GetAwaiter().GetResult();
+                    if (DebugMode)
+                    {
+                        if (result)
+                            CommonHelper.WriteLog(Path.Combine(FileSourcePath, "Log.txt"), $"{DateTime.Now} | info | candle refresh success" + Environment.NewLine);
+                        else
+                            CommonHelper.WriteLog(Path.Combine(FileSourcePath, "Log.txt"), $"{DateTime.Now} | info | candle refresh error" + Environment.NewLine);
+                    }
                     Thread.Sleep(period);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    //CommonOperationService.WriteToLogFile(Path.Combine(FileSourcePath, "ErrorLog.txt"), $"{DateTime.Now} ----- {ex}");
+                    if(DebugMode)
+                        CommonHelper.WriteLog(Path.Combine(FileSourcePath, "Log.txt"), $"{DateTime.Now} | error | {ex}" + Environment.NewLine);
                 }
             }
         }
@@ -75,12 +88,21 @@ namespace TradingWindowsService
             {
                 try
                 {
-                    SignalHelper.AutoRefresh().GetAwaiter().GetResult();
+                    var result = SignalHelper.AutoRefresh().GetAwaiter().GetResult();
+                    if (DebugMode)
+                    {
+                        if(result)
+                            CommonHelper.WriteLog(Path.Combine(FileSourcePath, "Log.txt"), $"{DateTime.Now} | info | signal refresh success" + Environment.NewLine);
+                        else
+                            CommonHelper.WriteLog(Path.Combine(FileSourcePath, "Log.txt"), $"{DateTime.Now} | info | signal refresh error" + Environment.NewLine);
+                    }
+
                     Thread.Sleep(period);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    //CommonOperationService.WriteToLogFile(Path.Combine(FileSourcePath, "ErrorLog.txt"), $"{DateTime.Now} ----- {ex}");
+                    if (DebugMode)
+                        CommonHelper.WriteLog(Path.Combine(FileSourcePath, "Log.txt"), $"{DateTime.Now} | error | {ex}" + Environment.NewLine);
                 }
             }
         }

@@ -12,7 +12,7 @@ namespace TradingWindowsService
         private static string BaseAddress = $"{ConfigurationManager.AppSettings["BaseAddress"]}/Trades";
         public static async Task<bool> AutoRefresh()
         {
-            var result = await ApiHelper.Call(ApiHelper.HttpMethods.Get, $"{BaseAddress}/AutoRefreshSignals");
+            var result = await ApiHelper.Call(ApiHelper.HttpMethods.Post, $"{BaseAddress}/AutoRefreshSignals");
             return result.IsSuccessfulResult();
         }
     }
