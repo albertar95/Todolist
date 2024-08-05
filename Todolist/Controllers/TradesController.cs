@@ -13,10 +13,12 @@ namespace Todolist.Controllers
     {
         private readonly IRequestProcessor _requestProcessor;
         private readonly IHistoricalDataGrabber _historicalDataGrabber;
-        public TradesController(IRequestProcessor requestProcessor,IHistoricalDataGrabber historicalDataGrabber)
+        private readonly ISignalGenerator _signalGenerator;
+        public TradesController(IRequestProcessor requestProcessor,IHistoricalDataGrabber historicalDataGrabber,ISignalGenerator signalGenerator)
         {
             _requestProcessor = requestProcessor;
             _historicalDataGrabber = historicalDataGrabber;
+            _signalGenerator = signalGenerator;
         }
         public ActionResult Index()
         {
@@ -62,7 +64,7 @@ namespace Todolist.Controllers
         }
         public ActionResult AutoRefreshSignals()
         {
-            _historicalDataGrabber.AutoRefreshCandles();
+            _signalGenerator.AutoRefreshSignals();
             return Json(new { hasValue = true });
         }
     }

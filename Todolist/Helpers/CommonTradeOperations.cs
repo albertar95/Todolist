@@ -19,10 +19,10 @@ namespace Todolist.Helpers
     public class CommonTradeOperations
     {
         public static string FileSourcePath = ConfigurationManager.AppSettings["FileSourcePath"];
-        public static float linesClosenessMargin = float.Parse(ConfigurationManager.AppSettings["linesClosenessMargin"]) * 0.0001F;
-        public static float linesOnMacdClosenessMargin = float.Parse(ConfigurationManager.AppSettings["linesOnMacdClosenessMargin"]) * 0.0001F;
-        public static float smaClosenessMargin = float.Parse(ConfigurationManager.AppSettings["smaClosenessMargin"]) * 0.0001F;
-        public static float smaAndCandleClosenessMargin = float.Parse(ConfigurationManager.AppSettings["smaAndCandleClosenessMargin"]) * 0.0001F;
+        public static double linesClosenessMargin = float.Parse(ConfigurationManager.AppSettings["linesClosenessMargin"]);
+        public static double linesOnMacdClosenessMargin = float.Parse(ConfigurationManager.AppSettings["linesOnMacdClosenessMargin"]);
+        public static double smaClosenessMargin = float.Parse(ConfigurationManager.AppSettings["smaClosenessMargin"]);
+        public static double smaAndCandleClosenessMargin = float.Parse(ConfigurationManager.AppSettings["smaAndCandleClosenessMargin"]);
         private static DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
         public static DateTime UnixTimeStampToDateTime(long unixTimeStamp)
         {
@@ -59,7 +59,7 @@ namespace Todolist.Helpers
             var rs = sumGain / sumLoss;
             return 100 - (100 / (1 + rs));
         }
-        public static LinesOnMacdPositions CalcLinesOnMacdMapPosition(double macd, double signal, double closenessMargin = 0.000002F)
+        public static LinesOnMacdPositions CalcLinesOnMacdMapPosition(double macd, double signal, double closenessMargin)
         {
             if (Math.Abs(macd) < closenessMargin && Math.Abs(signal) < closenessMargin)//near state
                 return LinesOnMacdPositions.BothNearBaseLine;
@@ -89,7 +89,7 @@ namespace Todolist.Helpers
                     return LinesOnMacdPositions.BothUpperBaseLine;
             }
         }
-        public static LinesPositions CalcLinesPosition(double macd, double signal, double closenessMargin = 0.000005F)
+        public static LinesPositions CalcLinesPosition(double macd, double signal, double closenessMargin)
         {
             if (Math.Abs(macd - signal) < closenessMargin)
                 return LinesPositions.Equal;
@@ -101,7 +101,7 @@ namespace Todolist.Helpers
                     return LinesPositions.UpperSignal;
             }
         }
-        public static SMAPositions CalcSMAPosition(double sma50, double sma100, double closenessMargin = 0.0001F)
+        public static SMAPositions CalcSMAPosition(double sma50, double sma100, double closenessMargin)
         {
             if (Math.Abs(sma50 - sma100) < closenessMargin)
                 return SMAPositions.Equal;
@@ -113,7 +113,7 @@ namespace Todolist.Helpers
                     return SMAPositions.Upper100;
             }
         }
-        public static CandlesToSMAPositions CalcCandlesToSMAPosition(double close, double sma50, double sma100, double closenessMargin = 0.0001F)
+        public static CandlesToSMAPositions CalcCandlesToSMAPosition(double close, double sma50, double sma100, double closenessMargin)
         {
             double diff50 = Math.Abs(close - sma50);
             double diff100 = Math.Abs(close - sma100);
@@ -145,7 +145,7 @@ namespace Todolist.Helpers
                     return CandlesToSMAPositions.CandlesBellowBoth;
             }
         }
-        public static CandlesToEMAPositions CalcCandlesToEMAPosition(double close, double ema50, double closenessMargin = 0.0001F)
+        public static CandlesToEMAPositions CalcCandlesToEMAPosition(double close, double ema50, double closenessMargin)
         {
             double diff50 = Math.Abs(close - ema50);
             if (diff50 < closenessMargin)//near state
@@ -176,8 +176,8 @@ namespace Todolist.Helpers
             }
         }
         public static Dictionary<AugmentedCandle, SignalEstimate> GenerateSignalEstimates(List<AugmentedCandle> inputs
-            , float linesOnMacdClosenessMargin = 0.000002F, float linesClosenessMargin = 0.000005F, float smaClosenessMargin = 0.0001F
-            , float smaAndCandleClosenessMargin = 0.0001F)
+            , double linesOnMacdClosenessMargin, double linesClosenessMargin, double smaClosenessMargin
+            , double smaAndCandleClosenessMargin)
         {
             Dictionary<AugmentedCandle, SignalEstimate> result = new Dictionary<AugmentedCandle, SignalEstimate>();
             var candleArray = inputs.OrderBy(p => p.Time).ToArray();
@@ -221,9 +221,9 @@ namespace Todolist.Helpers
             {
                 Duration = $"{candle.Time.Subtract(signal.StartDate).ToString(@"hh\:mm")}",
                 PriceProgress = ((candle.Close - signal.EnterPrice) * 10000F).ToString(),
-                MacdMapPosition = CalcLinesOnMacdMapPosition(candle.MACDLine, candle.SignalLine),
-                LinePosition = CalcLinesPosition(candle.MACDLine, candle.SignalLine),
-                smaPosition = CalcSMAPosition(candle.Sma50, candle.Sma100),
+                MacdMapPosition = CalcLinesOnMacdMapPosition(candle.MACDLine, candle.SignalLine,GetCloseness(linesOnMacdClosenessMargin,candle.Close)),
+                LinePosition = CalcLinesPosition(candle.MACDLine, candle.SignalLine, GetCloseness(linesClosenessMargin, candle.Close)),
+                smaPosition = CalcSMAPosition(candle.Sma50, candle.Sma100, GetCloseness(smaClosenessMargin, candle.Close)),
                 Profit = CalcProfit(signal.EnterPrice, candle.Close, signal.StopLostPrice, signal.SignalType)
             };
         }
@@ -288,7 +288,10 @@ namespace Todolist.Helpers
 
         public static Dictionary<AugmentedCandle, SignalEstimate> GenerateSignalEstimates(List<AugmentedCandle> inputs)
         {
-            return GenerateSignalEstimates(inputs, linesOnMacdClosenessMargin, linesClosenessMargin, smaClosenessMargin, smaAndCandleClosenessMargin);
+            var tmpcandle = inputs.FirstOrDefault().Close;
+            return GenerateSignalEstimates(inputs, GetCloseness(linesOnMacdClosenessMargin,tmpcandle)
+                , GetCloseness(linesClosenessMargin, tmpcandle), GetCloseness(smaClosenessMargin, tmpcandle),
+                GetCloseness(smaAndCandleClosenessMargin, tmpcandle));
         }
         public static void DownloadSignals(List<SignalResult> signals)
         {
@@ -326,6 +329,10 @@ namespace Todolist.Helpers
                    $"{input.Signal.EnterPrice},{input.Signal.SignalType.ToString()},{input.Signal.StopLostPrice},{input.Signal.TakeProfitPrice}," +
                    $"{input.Signal.WinChanceEstimate},{input.CloseDate.ToUniversalTime()},{input.ClosePrice},{input.ClosureType.ToString()},{input.Duration}," +
                    $"{input.ProfitPercentage},{input.Status.ToString()}";
+        }
+        static double GetCloseness(double input,double candleClose)
+        {
+            return  input * (0.0001 * Math.Pow(10, ((int)candleClose).ToString().Length));
         }
     }
     public class ApiHelper

@@ -106,5 +106,9 @@ namespace Todolist.Models
         {
             UpperBaseLineAscending = 1, UpperBaseLineDescending = 2, BellowBaseLineAscending = 3, BellowBaseLineDescending = 4, unknown = 5
         }
+        public enum OrderIndexs
+        {
+            EntryPoint = 1,StopLoss = 2,TakeProfit = 3
+        }
     }
 }

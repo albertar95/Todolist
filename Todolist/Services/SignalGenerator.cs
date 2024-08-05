@@ -20,12 +20,10 @@ namespace Todolist.Services
         private readonly List<Symbol> Symbol;
 
         public static Signal currentSignal;
-        public double CurrentCeiling;
-        public double CurrentFloor;
-        public static float minSlTpPip;
-        public static float maxSlTpPip;
-        public static float FixedSlPip;
-        public static float FixedTpPip;
+        public static float minSlTpPercentage;
+        public static float maxSlTpPercentage;
+        public static float FixedSlPercentage;
+        public static float FixedTpPercentage;
         public SMAPositions CurrentSmaPosition;
         public bool IsSignalProcessInitialized;
         public DateTime ProcessedCandleCheckpoint;
@@ -38,19 +36,17 @@ namespace Todolist.Services
             Timeframes = getTimeframes(ConfigurationManager.AppSettings["Timeframes"]);
             Symbol = getSymbol(ConfigurationManager.AppSettings["Symbol"]);
             currentSignal = new Signal();
-            CurrentCeiling = 0F;
-            CurrentFloor = 0F;
-            minSlTpPip = float.Parse(ConfigurationManager.AppSettings["minSlTpPip"]) * 0.0001F;
-            maxSlTpPip = float.Parse(ConfigurationManager.AppSettings["maxSlTpPip"]) * 0.0001F;
-            FixedSlPip = float.Parse(ConfigurationManager.AppSettings["FixedSlPip"]) * 0.0001F;
-            FixedTpPip = float.Parse(ConfigurationManager.AppSettings["FixedTpPip"]) * 0.0001F;
+            minSlTpPercentage = float.Parse(ConfigurationManager.AppSettings["minSlTpPercentage"]);
+            maxSlTpPercentage = float.Parse(ConfigurationManager.AppSettings["maxSlTpPercentage"]);
+            FixedSlPercentage = float.Parse(ConfigurationManager.AppSettings["FixedSlPercentage"]);
+            FixedTpPercentage = float.Parse(ConfigurationManager.AppSettings["FixedTpPercentage"]);
             CurrentSmaPosition = SMAPositions.Equal;
             IsSignalProcessInitialized = false;
             ProcessedCandleCheckpoint = DateTime.MinValue;
             SignalStatus = SignalCreationStatus.Observing;
         }
         #region CoreMethods
-        public void Worker()
+        public void AutoRefreshSignals()
         {
             foreach (var sym in Symbol)
             {
@@ -127,19 +123,19 @@ namespace Todolist.Services
                         SignalGenerator2(est);
                     else
                         FollowActiveSignals(est);
-                    if (est.Key.High > CurrentCeiling)
-                        CurrentCeiling = est.Key.High;
-                    if (est.Key.Low < CurrentFloor || CurrentFloor == 0F)
-                        CurrentFloor = est.Key.Low;
                 }
                 ProcessedCandleCheckpoint = estimates.OrderByDescending(p => p.Key.Time).FirstOrDefault().Key.Time;
             }
         }
         public void SignalGenerator2(KeyValuePair<AugmentedCandle, SignalEstimate> estimates)
         {
-            if (estimates.Value.LinesPosition == LinesPositions.UpperProvider)
+            if (estimates.Value.LinesPosition == LinesPositions.UpperProvider 
+                && (estimates.Value.LinesOnMacdMapPosition == LinesOnMacdPositions.BothBellowBaseLine
+                || estimates.Value.LinesOnMacdMapPosition == LinesOnMacdPositions.BothNearBaseLine))
                 FollowBullishCross(estimates);
-            if (estimates.Value.LinesPosition == LinesPositions.UpperSignal)
+            if (estimates.Value.LinesPosition == LinesPositions.UpperSignal
+                && (estimates.Value.LinesOnMacdMapPosition == LinesOnMacdPositions.BothUpperBaseLine
+                || estimates.Value.LinesOnMacdMapPosition == LinesOnMacdPositions.BothNearBaseLine))
                 FollowBearishCross(estimates);
         }
         public void FollowBullishCross(KeyValuePair<AugmentedCandle, SignalEstimate> est)
@@ -159,8 +155,8 @@ namespace Todolist.Services
                     SignalType = (int)SignalTypes.Bullish
                 };
                 newSignal.SignalProvider = (int)SignalProviders.MaStrategyRevision;
-                newSignal.StopLostPrice = est.Key.Close - CalcCurrentSL(est.Key.Close, SignalTypes.Bullish);
-                newSignal.TakeProfitPrice = est.Key.Close + CalcCurrentTP(est.Key.Close, SignalTypes.Bullish);
+                newSignal.StopLostPrice = CalcCurrentSL(est.Key.Close, SignalTypes.Bullish);
+                newSignal.TakeProfitPrice = CalcCurrentTP(est.Key.Close, SignalTypes.Bullish);
                 if (est.Value.HistogramPosition == HistogramPositions.UpperBaseLineAscending ||
                     est.Value.HistogramPosition == HistogramPositions.BellowBaseLineAscending)//optional forth criteria
                     winchance += 10;
@@ -187,8 +183,8 @@ namespace Todolist.Services
                     SignalType = (int)SignalTypes.Bearish
                 };
                 newSignal.SignalProvider = (int)SignalProviders.MaStrategyRevision;
-                newSignal.StopLostPrice = est.Key.Close + CalcCurrentSL(est.Key.Close, SignalTypes.Bearish);
-                newSignal.TakeProfitPrice = est.Key.Close - CalcCurrentTP(est.Key.Close, SignalTypes.Bearish);
+                newSignal.StopLostPrice = CalcCurrentSL(est.Key.Close, SignalTypes.Bearish);
+                newSignal.TakeProfitPrice = CalcCurrentTP(est.Key.Close, SignalTypes.Bearish);
                 if (est.Value.HistogramPosition == HistogramPositions.UpperBaseLineDescending ||
                     est.Value.HistogramPosition == HistogramPositions.BellowBaseLineDescending)//optional forth criteria
                     winchance += 10;
@@ -224,29 +220,32 @@ namespace Todolist.Services
                 IsClosure = true;
                 res = SignalResultClosureTypes.closedInMiddleByProvider;
             }
-            else if (est.Key.Close >= currentSignal.TakeProfitPrice)
+            else if (est.Key.Close >= currentSignal.TakeProfitPrice || est.Key.High >= currentSignal.TakeProfitPrice)
             {
                 IsClosure = true;
                 res = SignalResultClosureTypes.tpHitted;
             }
-            else if (est.Key.Close <= currentSignal.StopLostPrice)
+            else if (est.Key.Close <= currentSignal.StopLostPrice || est.Key.Low <= currentSignal.StopLostPrice)
             {
                 IsClosure = true;
                 res = SignalResultClosureTypes.slHitted;
             }
             if (IsClosure)
             {
+                if (est.Key.Time < currentSignal.StartDate)
+                    return;
                 var newSignalResult = new SignalResult()
                 {
                     Id = Guid.NewGuid(),
                     CreateDate = DateTime.Now,
                     SignalId = currentSignal.Id,
                     CloseDate = est.Key.Time,
-                    ClosePrice = est.Key.Close,
+                    ClosePrice = est.Key.High > est.Key.Close ? est.Key.High : est.Key.Close,
                     ClosureType = (int)res,
                     //Duration = (est.Key.Time - currentSignal.StartDate).Duration().Minutes,
                     Duration = Convert.ToInt32(est.Key.Time.Subtract(currentSignal.StartDate).TotalMinutes),
-                    ProfitPercentage = CommonTradeOperations.CalcProfit(currentSignal.EnterPrice, est.Key.Close, currentSignal.StopLostPrice, (SignalTypes)currentSignal.SignalType)
+                    ProfitPercentage = est.Key.High > est.Key.Close ? CommonTradeOperations.CalcProfit(currentSignal.EnterPrice, est.Key.High, currentSignal.StopLostPrice, (SignalTypes)currentSignal.SignalType)
+                    : CommonTradeOperations.CalcProfit(currentSignal.EnterPrice, est.Key.Close, currentSignal.StopLostPrice, (SignalTypes)currentSignal.SignalType)
                 };
                 if (newSignalResult.Duration <= 0)
                     newSignalResult.Status = (int)SignalResultStatus.equal;
@@ -274,29 +273,32 @@ namespace Todolist.Services
                 IsClosure = true;
                 res = SignalResultClosureTypes.closedInMiddleByProvider;
             }
-            else if (est.Key.Close <= currentSignal.TakeProfitPrice)
+            else if (est.Key.Close <= currentSignal.TakeProfitPrice || est.Key.Low <= currentSignal.TakeProfitPrice)
             {
                 IsClosure = true;
                 res = SignalResultClosureTypes.tpHitted;
             }
-            else if (est.Key.Close >= currentSignal.StopLostPrice)
+            else if (est.Key.Close >= currentSignal.StopLostPrice || est.Key.High >= currentSignal.StopLostPrice)
             {
                 IsClosure = true;
                 res = SignalResultClosureTypes.slHitted;
             }
             if (IsClosure)
             {
+                if(est.Key.Time < currentSignal.StartDate)
+                    return;
                 var newSignalResult = new SignalResult()
                 {
                     Id = Guid.NewGuid(),
                     CreateDate = DateTime.Now,
                     SignalId = currentSignal.Id,
                     CloseDate = est.Key.Time,
-                    ClosePrice = est.Key.Close,
+                    ClosePrice = est.Key.Low < est.Key.Close ? est.Key.Low : est.Key.Close,
                     ClosureType = (int)res,
                     //Duration = (est.Key.Time - currentSignal.StartDate).Duration().Minutes,
                     Duration = Convert.ToInt32(est.Key.Time.Subtract(currentSignal.StartDate).TotalMinutes),
-                    ProfitPercentage = CommonTradeOperations.CalcProfit(currentSignal.EnterPrice, est.Key.Close, currentSignal.StopLostPrice, (SignalTypes)currentSignal.SignalType)
+                    ProfitPercentage = est.Key.Low < est.Key.Close ? CommonTradeOperations.CalcProfit(currentSignal.EnterPrice, est.Key.Low, currentSignal.StopLostPrice, (SignalTypes)currentSignal.SignalType)
+                    : CommonTradeOperations.CalcProfit(currentSignal.EnterPrice, est.Key.Close, currentSignal.StopLostPrice, (SignalTypes)currentSignal.SignalType)
                 };
                 newSignalResult.Status = newSignalResult.ProfitPercentage >= 0 ? (int)SignalResultStatus.successful : (int)SignalResultStatus.unsuccessful;
                 if (_dbRepository.Add(newSignalResult))
@@ -312,17 +314,11 @@ namespace Todolist.Services
             switch (signalTypes)
             {
                 case SignalTypes.Bullish:
-                    if (Math.Abs(CurrentFloor - close) > minSlTpPip && Math.Abs(CurrentFloor - close) <= maxSlTpPip)
-                        return CurrentFloor;
-                    else
-                        return FixedSlPip;
+                    return close - CalcSLTPWithPercentage(close, FixedSlPercentage);
                 case SignalTypes.Bearish:
-                    if (Math.Abs(CurrentCeiling - close) > minSlTpPip && Math.Abs(CurrentCeiling - close) <= maxSlTpPip)
-                        return CurrentCeiling;
-                    else
-                        return FixedSlPip;
+                    return close + CalcSLTPWithPercentage(close, FixedSlPercentage);
                 default:
-                    return FixedSlPip;
+                    return CalcSLTPWithPercentage(close, FixedSlPercentage);
             }
         }
         public double CalcCurrentTP(double close, SignalTypes signalTypes)
@@ -330,17 +326,11 @@ namespace Todolist.Services
             switch (signalTypes)
             {
                 case SignalTypes.Bullish:
-                    if (Math.Abs(CurrentFloor - close) > minSlTpPip && Math.Abs(CurrentFloor - close) <= maxSlTpPip)
-                        return CurrentFloor * 2;
-                    else
-                        return FixedTpPip;
+                    return close + CalcSLTPWithPercentage(close, FixedTpPercentage);
                 case SignalTypes.Bearish:
-                    if (Math.Abs(CurrentCeiling - close) > minSlTpPip && Math.Abs(CurrentCeiling - close) <= maxSlTpPip)
-                        return CurrentCeiling * 2;
-                    else
-                        return FixedTpPip;
+                    return close - CalcSLTPWithPercentage(close, FixedTpPercentage);
                 default:
-                    return FixedTpPip;
+                    return CalcSLTPWithPercentage(close, FixedTpPercentage);
             }
         }
         public void DeleteSignals(Symbol symbol, Timeframe timeframe, SignalProviders provider)
@@ -353,6 +343,10 @@ namespace Todolist.Services
             {
                 _dbRepository.Delete(item);
             }
+        }
+        private double CalcSLTPWithPercentage(double input,double percentage)
+        {
+            return (input * percentage) / 100F;
         }
         #endregion
     }

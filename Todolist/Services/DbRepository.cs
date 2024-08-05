@@ -81,7 +81,10 @@ namespace Todolist.Services
 
         public T GetMax<T,TKEY>(Expression<Func<T, TKEY>> predicate, Expression<Func<T, bool>> condition) where T : class
         {
-            return _context.Set<T>().Where(condition).OrderByDescending(predicate).FirstOrDefault();
+            if(condition != null)
+                return _context.Set<T>().Where(condition).OrderByDescending(predicate).FirstOrDefault();
+            else
+                return _context.Set<T>().OrderByDescending(predicate).FirstOrDefault();
         }
         public bool AddBatch<T>(List<T> entities,int batchSize = 1000) where T : class
         {
@@ -199,7 +202,7 @@ namespace Todolist.Services
         }
         public bool Any<T>(Expression<Func<T, bool>> predicate) where T : class
         {
-            return _context.Set<T>().Any();
+            return _context.Set<T>().Any(predicate);
         }
     }
 }
