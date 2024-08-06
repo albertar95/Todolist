@@ -20,9 +20,9 @@ namespace Todolist.Controllers
             _historicalDataGrabber = historicalDataGrabber;
             _signalGenerator = signalGenerator;
         }
-        public ActionResult Index()
+        public ActionResult Index(Symbol symbol = Symbol.SOLUSDT, Timeframe timeframe = Timeframe.M15)
         {
-            return View(_requestProcessor.GetTradeDashboard());
+            return View(_requestProcessor.GetTradeDashboard(symbol,timeframe));
         }
         public ActionResult RefreshCandles(Symbol symbol,Timeframe timeframe)
         {
@@ -34,7 +34,7 @@ namespace Todolist.Controllers
             var lastCandle = _historicalDataGrabber.GetLastCandle(symbol, timeframe);
             return Json(new { hasValue = true, lastCandle = lastCandle == DateTime.MinValue ? "" : lastCandle.ToString() });
         }
-        public ActionResult MarketDataCredentials(Symbol symbol = Symbol.EURUSD, Timeframe timeframe = Timeframe.M5)
+        public ActionResult MarketDataCredentials(Symbol symbol = Symbol.SOLUSDT, Timeframe timeframe = Timeframe.M15)
         {
             return View(_requestProcessor.GetMarketDataCredentials(symbol, timeframe));
         }
@@ -68,6 +68,12 @@ namespace Todolist.Controllers
         {
             _signalGenerator.AutoRefreshSignals();
             return Json(new { hasValue = true });
+        }
+        public ActionResult AutoRefreshAll(Symbol symbol,Timeframe timeframe)
+        {
+            _historicalDataGrabber.AutoRefreshCandles();
+            _signalGenerator.AutoRefreshSignals();
+            return RedirectToAction("Index","Trades", new { symbol = symbol, timeframe = timeframe });
         }
     }
 }

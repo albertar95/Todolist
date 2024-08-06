@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Web;
+using Todolist.Helpers;
 using Todolist.Models;
 using Todolist.Models.Dto;
 using Todolist.Services.Contracts;
@@ -1416,12 +1417,17 @@ namespace Todolist.Services
                     return "";
             }
         }
-        public TradeDashboardViewModel GetTradeDashboard()
+        public TradeDashboardViewModel GetTradeDashboard(Symbol symbol, Timeframe timeframe)
         {
             TradeDashboardViewModel result = new TradeDashboardViewModel();
             try
             {
-
+                var signal = _dbRepository.GetMax<Signal, DateTime>(q => q.CreateDate, p => p.Symbol == (int)symbol && p.Timeframe == (int)timeframe && p.IsActive == true);
+                if(signal != null)
+                    result.signal = CommonTradeOperations.CastSignalToDto(signal);
+                result.candle = _dbRepository.GetMax<AugmentedCandle, DateTime>(q => q.Time, p => p.Symbol == (int)symbol && p.Timeframe == (int)timeframe);
+                if (result.signal != null)
+                    result.SignalProgress = CommonTradeOperations.CalcSignalProgress(result.signal, result.candle);
             }
             catch (Exception)
             {
