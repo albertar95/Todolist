@@ -28,8 +28,9 @@ function number_format(number, decimals, dec_point, thousands_sep) {
 }
 
 
-function SetAreaChart(elementId,labels,data)
+function SetAreaChart(elementId,labels,data,sign)
 {
+    sign = sign || '';
     // Area Chart Example
     var ctx = document.getElementById(elementId);
     var myLineChart = new Chart(ctx, {
@@ -37,7 +38,7 @@ function SetAreaChart(elementId,labels,data)
         data: {
             labels: labels,
             datasets: [{
-                label: "Earnings",
+                label: "Value",
                 lineTension: 0.3,
                 backgroundColor: "rgba(78, 115, 223, 0.05)",
                 borderColor: "rgba(78, 115, 223, 1)",
@@ -81,7 +82,7 @@ function SetAreaChart(elementId,labels,data)
                         padding: 10,
                         // Include a dollar sign in the ticks
                         callback: function (value, index, values) {
-                            return '$' + number_format(value);
+                            return sign + number_format(value);
                         }
                     },
                     gridLines: {
@@ -113,7 +114,7 @@ function SetAreaChart(elementId,labels,data)
                 callbacks: {
                     label: function (tooltipItem, chart) {
                         var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
-                        return datasetLabel + ': $' + number_format(tooltipItem.yLabel);
+                        return datasetLabel + ': ' + sign + number_format(tooltipItem.yLabel);
                     }
                 }
             }

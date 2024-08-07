@@ -62,29 +62,51 @@ namespace Todolist.Services
                 return false;
             }
         }
-        public T Get<T>(Expression<Func<T, bool>> predicate) where T : class
+        public T Get<T>(Expression<Func<T, bool>> predicate, string Include = "") where T : class
         {
-            return _context.Set<T>().FirstOrDefault(predicate);
+            if (!string.IsNullOrEmpty(Include))
+                return _context.Set<T>().Include(Include).FirstOrDefault(predicate);
+            else
+                return _context.Set<T>().FirstOrDefault(predicate);
         }
-        public List<T> GetList<T>(int pageSize = 1000) where T : class
+        public List<T> GetList<T>(int pageSize = 1000, string Include = "") where T : class
         {
-            return _context.Set<T>().Take(pageSize).ToList();
+            if (!string.IsNullOrEmpty(Include))
+                return _context.Set<T>().Include(Include).Take(pageSize).ToList();
+            else
+                return _context.Set<T>().Take(pageSize).ToList();
         }
-        public List<T> GetList<T>(Expression<Func<T, bool>> predicate, int pageSize = 1000) where T : class
+        public List<T> GetList<T>(Expression<Func<T, bool>> predicate, int pageSize = 1000,string Include = "") where T : class
         {
-            return _context.Set<T>().Where(predicate).Take(pageSize).ToList();
+            if(!string.IsNullOrEmpty(Include))
+                return _context.Set<T>().Include(Include).Where(predicate).Take(pageSize).ToList();
+            else
+                return _context.Set<T>().Where(predicate).Take(pageSize).ToList();
         }
-        public T GetMax<T>(Expression<Func<T, bool>> predicate) where T : class
+        public T GetMax<T>(Expression<Func<T, bool>> predicate, string Include = "") where T : class
         {
-            return _context.Set<T>().OrderByDescending(predicate).FirstOrDefault();
-        }
-
-        public T GetMax<T,TKEY>(Expression<Func<T, TKEY>> predicate, Expression<Func<T, bool>> condition) where T : class
-        {
-            if(condition != null)
-                return _context.Set<T>().Where(condition).OrderByDescending(predicate).FirstOrDefault();
+            if (!string.IsNullOrEmpty(Include))
+                return _context.Set<T>().Include(Include).OrderByDescending(predicate).FirstOrDefault();
             else
                 return _context.Set<T>().OrderByDescending(predicate).FirstOrDefault();
+        }
+
+        public T GetMax<T,TKEY>(Expression<Func<T, TKEY>> predicate, Expression<Func<T, bool>> condition, string Include = "") where T : class
+        {
+            if (!string.IsNullOrEmpty(Include))
+            {
+                if (condition != null)
+                    return _context.Set<T>().Include(Include).Where(condition).OrderByDescending(predicate).FirstOrDefault();
+                else
+                    return _context.Set<T>().Include(Include).OrderByDescending(predicate).FirstOrDefault();
+            }
+            else
+            {
+                if (condition != null)
+                    return _context.Set<T>().Where(condition).OrderByDescending(predicate).FirstOrDefault();
+                else
+                    return _context.Set<T>().OrderByDescending(predicate).FirstOrDefault();
+            }
         }
         public bool AddBatch<T>(List<T> entities,int batchSize = 1000) where T : class
         {

@@ -176,8 +176,8 @@ namespace Todolist.Helpers
             }
         }
         public static Dictionary<AugmentedCandle, SignalEstimate> GenerateSignalEstimates(List<AugmentedCandle> inputs
-            , double linesOnMacdClosenessMargin, double linesClosenessMargin, double smaClosenessMargin
-            , double smaAndCandleClosenessMargin)
+            , double m_linesOnMacdClosenessMargin, double m_linesClosenessMargin, double m_smaClosenessMargin
+            , double m_smaAndCandleClosenessMargin)
         {
             Dictionary<AugmentedCandle, SignalEstimate> result = new Dictionary<AugmentedCandle, SignalEstimate>();
             var candleArray = inputs.OrderBy(p => p.Time).ToArray();
@@ -188,12 +188,12 @@ namespace Todolist.Helpers
                 {
                     AugId = tmpCandle.Id,
                     Id = Guid.NewGuid(),
-                    LinesOnMacdMapPosition = CalcLinesOnMacdMapPosition(tmpCandle.MACDLine, tmpCandle.SignalLine, linesOnMacdClosenessMargin),
-                    LinesPosition = CalcLinesPosition(tmpCandle.MACDLine, tmpCandle.SignalLine, linesClosenessMargin),
-                    SmaPosition = CalcSMAPosition(tmpCandle.Sma50, tmpCandle.Sma100, smaClosenessMargin),
+                    LinesOnMacdMapPosition = CalcLinesOnMacdMapPosition(tmpCandle.MACDLine, tmpCandle.SignalLine, m_linesOnMacdClosenessMargin),
+                    LinesPosition = CalcLinesPosition(tmpCandle.MACDLine, tmpCandle.SignalLine, m_linesClosenessMargin),
+                    SmaPosition = CalcSMAPosition(tmpCandle.Sma50, tmpCandle.Sma100, m_smaClosenessMargin),
                     CandlesToSmaPosition = CalcCandlesToSMAPosition(tmpCandle.Close, tmpCandle.Sma50, tmpCandle.Sma100, smaAndCandleClosenessMargin),
                     signalType = SignalTypes.NotSet,
-                    CandlesToEMAPosition = CalcCandlesToEMAPosition(tmpCandle.Close,tmpCandle.Ema50 ?? 0,smaAndCandleClosenessMargin)
+                    CandlesToEMAPosition = CalcCandlesToEMAPosition(tmpCandle.Close,tmpCandle.Ema50 ?? 0, smaAndCandleClosenessMargin)
                 };
                 if (i <= 0)
                     tmpEstimate.HistogramPosition = HistogramPositions.unknown;
@@ -220,11 +220,12 @@ namespace Todolist.Helpers
             return new SignalProgress()
             {
                 Duration = $"{candle.Time.Subtract(signal.StartDate).ToString(@"hh\:mm")}",
-                PriceProgress = ((candle.Close - signal.EnterPrice) * 10000F).ToString(),
+                PriceProgress = ((candle.Close - signal.EnterPrice)).ToString("0.0##"),
                 MacdMapPosition = CalcLinesOnMacdMapPosition(candle.MACDLine, candle.SignalLine,GetCloseness(linesOnMacdClosenessMargin,candle.Close)),
                 LinePosition = CalcLinesPosition(candle.MACDLine, candle.SignalLine, GetCloseness(linesClosenessMargin, candle.Close)),
                 smaPosition = CalcSMAPosition(candle.Sma50, candle.Sma100, GetCloseness(smaClosenessMargin, candle.Close)),
-                Profit = CalcProfit(signal.EnterPrice, candle.Close, signal.StopLostPrice, signal.SignalType)
+                Profit = CalcProfit(signal.EnterPrice, candle.Close, signal.StopLostPrice, signal.SignalType),
+                CandlesToEMAPosition = CalcCandlesToEMAPosition(candle.Close, candle.Ema50 ?? 0, GetCloseness(smaAndCandleClosenessMargin,candle.Close))
             };
         }
         public static string CastCandleToCsv(AugmentedCandle input)

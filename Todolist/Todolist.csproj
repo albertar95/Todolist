@@ -1954,9 +1954,11 @@
     <Compile Include="ViewModels\GoalViewModel.cs" />
     <Compile Include="ViewModels\IndexViewModel.cs" />
     <Compile Include="ViewModels\LendDetailViewModel.cs" />
+    <Compile Include="ViewModels\MarketDataCredetialViewModel.cs" />
     <Compile Include="ViewModels\NotesViewModel.cs" />
     <Compile Include="ViewModels\ProgressViewModel.cs" />
     <Compile Include="ViewModels\RoutineViewModel.cs" />
+    <Compile Include="ViewModels\SignalResultsViewModel.cs" />
     <Compile Include="ViewModels\TradeDashboardViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -2179,6 +2181,8 @@
     <Content Include="Views\Financials\_GroupDetailReportPartialView.cshtml" />
     <Content Include="Views\Trades\Index.cshtml" />
     <Content Include="Views\Trades\MarketDataCredentials.cshtml" />
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Trades\SignalResults.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

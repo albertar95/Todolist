@@ -24,6 +24,7 @@ namespace Todolist.Services
         public static float maxSlTpPercentage;
         public static float FixedSlPercentage;
         public static float FixedTpPercentage;
+        public static float EvenSignalResultLimit;
         public SMAPositions CurrentSmaPosition;
         public bool IsSignalProcessInitialized;
         public DateTime ProcessedCandleCheckpoint;
@@ -40,6 +41,7 @@ namespace Todolist.Services
             maxSlTpPercentage = float.Parse(ConfigurationManager.AppSettings["maxSlTpPercentage"]);
             FixedSlPercentage = float.Parse(ConfigurationManager.AppSettings["FixedSlPercentage"]);
             FixedTpPercentage = float.Parse(ConfigurationManager.AppSettings["FixedTpPercentage"]);
+            EvenSignalResultLimit = float.Parse(ConfigurationManager.AppSettings["EvenSignalResultLimit"]);
             CurrentSmaPosition = SMAPositions.Equal;
             IsSignalProcessInitialized = false;
             ProcessedCandleCheckpoint = DateTime.MinValue;
@@ -81,7 +83,7 @@ namespace Todolist.Services
             {
                 currentSignal = new Signal();
                 SignalStatus = SignalCreationStatus.Observing;
-                var lastResult = _dbRepository.GetMax<SignalResult, DateTime>(p => p.CloseDate,null);
+                var lastResult = _dbRepository.GetMax<SignalResult, DateTime>(p => p.CloseDate,q => q.Signal.Symbol == (int)symbol && q.Signal.Timeframe == (int)timeframe);
                 if (lastResult != null)
                     ProcessedCandleCheckpoint = lastResult.CloseDate;
                 else
@@ -131,11 +133,19 @@ namespace Todolist.Services
         {
             if (estimates.Value.LinesPosition == LinesPositions.UpperProvider 
                 && (estimates.Value.LinesOnMacdMapPosition == LinesOnMacdPositions.BothBellowBaseLine
-                || estimates.Value.LinesOnMacdMapPosition == LinesOnMacdPositions.BothNearBaseLine))
+                || estimates.Value.LinesOnMacdMapPosition == LinesOnMacdPositions.BothNearBaseLine
+                || estimates.Value.LinesOnMacdMapPosition == LinesOnMacdPositions.MacdNearBaseLineAndSignalBellow
+                || estimates.Value.LinesOnMacdMapPosition == LinesOnMacdPositions.MacdUpperBaseLineAndSignalBellow
+                || estimates.Value.LinesOnMacdMapPosition == LinesOnMacdPositions.SignalNearBaseLineAndMacdBellow
+                || estimates.Value.LinesOnMacdMapPosition == LinesOnMacdPositions.SignalUpperBaseLineAndMacdBellow))
                 FollowBullishCross(estimates);
             if (estimates.Value.LinesPosition == LinesPositions.UpperSignal
                 && (estimates.Value.LinesOnMacdMapPosition == LinesOnMacdPositions.BothUpperBaseLine
-                || estimates.Value.LinesOnMacdMapPosition == LinesOnMacdPositions.BothNearBaseLine))
+                || estimates.Value.LinesOnMacdMapPosition == LinesOnMacdPositions.BothNearBaseLine
+                || estimates.Value.LinesOnMacdMapPosition == LinesOnMacdPositions.MacdNearBaseLineAndSignalUpper
+                || estimates.Value.LinesOnMacdMapPosition == LinesOnMacdPositions.MacdUpperBaseLineAndSignalBellow
+                || estimates.Value.LinesOnMacdMapPosition == LinesOnMacdPositions.SignalNearBaseLineAndMacdUpper
+                || estimates.Value.LinesOnMacdMapPosition == LinesOnMacdPositions.SignalUpperBaseLineAndMacdBellow))
                 FollowBearishCross(estimates);
         }
         public void FollowBullishCross(KeyValuePair<AugmentedCandle, SignalEstimate> est)
@@ -250,7 +260,16 @@ namespace Todolist.Services
                 if (newSignalResult.Duration <= 0)
                     newSignalResult.Status = (int)SignalResultStatus.equal;
                 else
-                    newSignalResult.Status = newSignalResult.ProfitPercentage >= 0 ? (int)SignalResultStatus.successful : (int)SignalResultStatus.unsuccessful;
+                {
+                    if (newSignalResult.ProfitPercentage <= EvenSignalResultLimit && newSignalResult.ProfitPercentage >= 0)
+                        newSignalResult.Status = (int)SignalResultStatus.equal;
+                    else if (newSignalResult.ProfitPercentage >= (EvenSignalResultLimit*-1) && newSignalResult.ProfitPercentage <= 0)
+                        newSignalResult.Status = (int)SignalResultStatus.equal;
+                    else if(newSignalResult.ProfitPercentage <= (EvenSignalResultLimit * -1) && newSignalResult.ProfitPercentage <= 0)
+                        newSignalResult.Status = (int)SignalResultStatus.unsuccessful;
+                    else if (newSignalResult.ProfitPercentage >= EvenSignalResultLimit && newSignalResult.ProfitPercentage >= 0)
+                        newSignalResult.Status = (int)SignalResultStatus.successful;
+                }
                 if (_dbRepository.Add(newSignalResult))
                 {
                     currentSignal.IsActive = false;
@@ -300,7 +319,19 @@ namespace Todolist.Services
                     ProfitPercentage = est.Key.Low < est.Key.Close ? CommonTradeOperations.CalcProfit(currentSignal.EnterPrice, est.Key.Low, currentSignal.StopLostPrice, (SignalTypes)currentSignal.SignalType)
                     : CommonTradeOperations.CalcProfit(currentSignal.EnterPrice, est.Key.Close, currentSignal.StopLostPrice, (SignalTypes)currentSignal.SignalType)
                 };
-                newSignalResult.Status = newSignalResult.ProfitPercentage >= 0 ? (int)SignalResultStatus.successful : (int)SignalResultStatus.unsuccessful;
+                if (newSignalResult.Duration <= 0)
+                    newSignalResult.Status = (int)SignalResultStatus.equal;
+                else
+                {
+                    if (newSignalResult.ProfitPercentage <= EvenSignalResultLimit && newSignalResult.ProfitPercentage >= 0)
+                        newSignalResult.Status = (int)SignalResultStatus.equal;
+                    else if (newSignalResult.ProfitPercentage >= (EvenSignalResultLimit * -1) && newSignalResult.ProfitPercentage <= 0)
+                        newSignalResult.Status = (int)SignalResultStatus.equal;
+                    else if (newSignalResult.ProfitPercentage <= (EvenSignalResultLimit * -1) && newSignalResult.ProfitPercentage <= 0)
+                        newSignalResult.Status = (int)SignalResultStatus.unsuccessful;
+                    else if (newSignalResult.ProfitPercentage >= EvenSignalResultLimit && newSignalResult.ProfitPercentage >= 0)
+                        newSignalResult.Status = (int)SignalResultStatus.successful;
+                }
                 if (_dbRepository.Add(newSignalResult))
                 {
                     currentSignal.IsActive = false;

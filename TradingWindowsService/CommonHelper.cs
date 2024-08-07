@@ -103,4 +103,9 @@ namespace TradingWindowsService
                 return false;
         }
     }
+    public class JsonResults
+    {
+        public bool hasError { get; set; }
+        public string message { get; set; }
+    }
 }

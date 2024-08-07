@@ -87,8 +87,9 @@ namespace Todolist.Services.Contracts
         Tuple<string, string, decimal> GroupSpenceBarCalc(Guid NidGroup);
         Tuple<string, string, decimal> GroupIncomeBarCalc(Guid NidGroup);
         TradeDashboardViewModel GetTradeDashboard(Symbol symbol, Timeframe timeframe);
-        List<MarketDataCredential> GetMarketDataCredentials(Symbol symbol, Timeframe timeframe);
+        MarketDataCredetialViewModel GetMarketDataCredentials(Symbol symbol, Timeframe timeframe);
         bool PostMarketDataCredential(MarketDataCredential credential);
         bool DeleteMarketDataCredential(Guid nidCredential);
+        SignalResultsViewModel GetSignalResults(Symbol symbol, Timeframe timeframe, int currentMonth);
     }
 }

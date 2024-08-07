@@ -1434,16 +1434,20 @@ namespace Todolist.Services
             }
             return result;
         }
-        public List<MarketDataCredential> GetMarketDataCredentials(Symbol symbol,Timeframe timeframe)
+        public MarketDataCredetialViewModel GetMarketDataCredentials(Symbol symbol,Timeframe timeframe)
         {
+            var result = new MarketDataCredetialViewModel();
+            result.Symbol = symbol;
+            result.Timeframe = timeframe;
+            result.Credentials = new List<MarketDataCredential>();
             try
             {
-                return _dbRepository.GetList<MarketDataCredential>(p => p.Symbol == (int)symbol && p.Timeframe == (int)timeframe);
+                _dbRepository.GetList<MarketDataCredential>(p => p.Symbol == (int)symbol && p.Timeframe == (int)timeframe).ForEach(x => { x.Password = Encryption.DecryptString(x.Password); result.Credentials.Add(x); });
             }
             catch (Exception)
             {
-                return new List<MarketDataCredential>();
             }
+            return result;
         }
         public bool PostMarketDataCredential(MarketDataCredential credential)
         {
@@ -1451,6 +1455,7 @@ namespace Todolist.Services
             {
                 credential.Id = Guid.NewGuid();
                 credential.CallCounter = 0;
+                credential.Password = Encryption.EncryptString(credential.Password);
                 credential.RefreshDate = DateTime.Now;
                 return _dbRepository.Add(credential);
             }
@@ -1472,6 +1477,73 @@ namespace Todolist.Services
             catch (Exception)
             {
                 return false;
+            }
+        }
+        public SignalResultsViewModel GetSignalResults(Symbol symbol, Timeframe timeframe,int currentMonth)
+        {
+            SignalResultsViewModel result = new SignalResultsViewModel();
+            result.Symbol = symbol;
+            result.Timeframe = timeframe;
+            result.SignalResults = new List<SignalResultDto>();
+            result.CurrentMonth = currentMonth;
+            var startAndEndOfMonth = Dates.GetStartAndEndOfMonth(result.CurrentMonth);
+            result.MonthlyCardStat = new Tuple<int, int, int, int>(0, 0, 0, 0);
+            result.MonthlyCardStatPercentage = new Tuple<double, double, double, double>(0, 0, 0, 0);
+            try
+            {
+                var signals = _dbRepository.GetList<SignalResult>(p => p.Signal.Symbol == (int)symbol && p.Signal.Timeframe == (int)timeframe && p.Signal.IsActive == false
+                && p.Signal.StartDate >= startAndEndOfMonth.Item1.Date && p.Signal.StartDate <= startAndEndOfMonth.Item2.Date
+                , 10000,"Signal");
+                if (signals != null)
+                    signals.ForEach(x => { result.SignalResults.Add(CommonTradeOperations.CastSignalResultToDto(x)); });
+                result.MonthlyCardStat = new Tuple<int, int, int, int>(
+                    signals.Count(),
+                    signals.Where(p => p.Status == 1).Count(),
+                    signals.Where(p => p.Status == 2).Count(),
+                    signals.Where(p => p.Status == 3).Count()
+                    );
+                result.MonthlyCardStatPercentage = new Tuple<double, double, double, double>(
+                    signals.Sum(q => q.ProfitPercentage),
+                    signals.Where(p => p.Status == 1).Sum(q => q.ProfitPercentage),
+                    signals.Where(p => p.Status == 2).Sum(q => q.ProfitPercentage),
+                    signals.Where(p => p.Status == 3).Sum(q => q.ProfitPercentage)
+                    );
+                result.SignalResultsAreaChart = SignalResultAreaCalc(signals);
+            }
+            catch (Exception)
+            {
+            }
+            return result;
+        }
+        private Tuple<string, string> SignalResultAreaCalc(List<SignalResult> signals)
+        {
+            try
+            {
+                string accNames = "[";
+                string values = "[";
+                if (signals.Any())
+                {
+                    var pc = new PersianCalendar();
+                    double currentStat = 0;
+                    foreach (var m in signals.OrderBy(p => p.Signal.StartDate))
+                    {
+                        accNames += "'" + pc.GetDayOfMonth(m.CloseDate) + "',";
+                        currentStat += m.ProfitPercentage;
+                        values += "'" + (int)currentStat + "',";
+                    }
+                    accNames = accNames.Remove(accNames.Length - 1, 1) + "]";
+                    values = values.Remove(values.Length - 1, 1) + "]";
+                }
+                else
+                {
+                    accNames += "]";
+                    values += "]";
+                }
+                return new Tuple<string, string>(accNames, values);
+            }
+            catch (Exception)
+            {
+                return new Tuple<string, string>("", "");
             }
         }
     }

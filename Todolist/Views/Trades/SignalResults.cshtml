@@ -1,0 +1,248 @@
+﻿@model Todolist.ViewModels.SignalResultsViewModel
+@{
+    ViewBag.Title = "SignalResults";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="PageWrapper">
+    <div class="card shadow mb-4">
+        <!-- Card Header - Dropdown -->
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">@string.Format("{0}-{1}", Enum.GetName(typeof(Todolist.Models.TradeModels.Symbol), Model.Symbol), Enum.GetName(typeof(Todolist.Models.TradeModels.Timeframe), Model.Timeframe))</h6>
+            <div class="dropdown no-arrow">
+                <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(-158px, 19px, 0px);">
+                    @foreach (var sym in (Todolist.Models.TradeModels.Symbol[])Enum.GetValues(typeof(Todolist.Models.TradeModels.Symbol)))
+                    {
+                        foreach (var tf in (Todolist.Models.TradeModels.Timeframe[])Enum.GetValues(typeof(Todolist.Models.TradeModels.Timeframe)))
+                        {
+                            <a class="dropdown-item" href="@Url.Action("SignalResults","Trades",new { symbol = sym, timeframe = tf })">@string.Format("{0}-{1}", sym.ToString(), tf.ToString())</a>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+        <!-- Card Body -->
+        <div class="card-body">
+            <div class="row">
+                <div class="form-group d-flex">
+                    <label class="control-label col-md-4" style="padding-top:6px;">month : </label>
+                    <div class="col-md-12">
+                        <select id="sltCurrentMonth" class="form-control">
+                            <option disabled>select month</option>
+                            <option value="1">1-farvardin</option>
+                            <option value="2">2-ordibehesht</option>
+                            <option value="3">3-khordad</option>
+                            <option value="4">4-tir</option>
+                            <option value="5">5-mordad</option>
+                            <option value="6">6-shahrivar</option>
+                            <option value="7">7-mehr</option>
+                            <option value="8">8-aban</option>
+                            <option value="9">9-azar</option>
+                            <option value="10">10-dey</option>
+                            <option value="11">11-bahman</option>
+                            <option value="12">12-esfand</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        Total Signals
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">count   : @Model.MonthlyCardStat.Item1 </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">profit  : @Model.MonthlyCardStatPercentage.Item1.ToString("0.0##") %</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-database fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-success shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                        Total Wins
+                                    </div>
+                                    @if (Model.MonthlyCardStat.Item1 != 0)
+                                    {
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">count    : @Model.MonthlyCardStat.Item2 </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">Win Rate : @string.Format("{0}", Math.Round(Convert.ToDecimal(Model.MonthlyCardStat.Item2) / Convert.ToDecimal(Model.MonthlyCardStat.Item1) * 100)) % </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">profit   : @Model.MonthlyCardStatPercentage.Item2.ToString("0.0##") %</div>
+                                    }
+                                    else
+                                    {
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">count    : N/A </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">Win Rate : N/A </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">profit   : N/A </div>
+                                    }
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-arrow-up fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-warning shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                        Total Evens
+                                    </div>
+                                    @if (Model.MonthlyCardStat.Item1 != 0)
+                                    {
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">count     : @Model.MonthlyCardStat.Item3 </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">Even Rate : @string.Format("{0}", Math.Round(Convert.ToDecimal(Model.MonthlyCardStat.Item3) / Convert.ToDecimal(Model.MonthlyCardStat.Item1) * 100)) % </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">profit    : @Model.MonthlyCardStatPercentage.Item3.ToString("0.0##") %</div>
+                                    }
+                                    else
+                                    {
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">count     : N/A </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">Even Rate : N/A </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">profit    : N/A </div>
+                                    }
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-bell fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-danger shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                        Total Losses
+                                    </div>
+                                    @if (Model.MonthlyCardStat.Item1 != 0)
+                                    {
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">count     : @Model.MonthlyCardStat.Item4 </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">Lose Rate : @string.Format("{0}", Math.Round(Convert.ToDecimal(Model.MonthlyCardStat.Item4) / Convert.ToDecimal(Model.MonthlyCardStat.Item1) * 100)) % </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">profit    : @Model.MonthlyCardStatPercentage.Item4.ToString("0.0##") %</div>
+                                    }
+                                    else
+                                    {
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">count     : N/A </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">Lose Rate : N/A </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">profit    : N/A </div>
+                                    }
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-arrow-down fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-4">
+                <h4 class="header-control mb-4">Signal Results Report</h4>
+                <div class="chart-area">
+                    <canvas id="SignalResultsArea"></canvas>
+                </div>
+            </div>
+            <div class="row">
+                <h4 class="header-control mb-4">Results List</h4>
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable1" width="100%" cellspacing="0">
+                        <thead style="text-align:center;">
+                            <tr>
+                                <th>Start Date</th>
+                                <th>Enter Price</th>
+                                <th>StopLost Price</th>
+                                <th>TakeProfit Price</th>
+                                <th>Close Date</th>
+                                <th>Close Price</th>
+                                <th>Profit</th>
+                                <th>Duration</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var tr in Model.SignalResults.OrderByDescending(p => p.StartDate))
+                            {
+                                switch (tr.Status)
+                                {
+                                    case Todolist.Models.TradeModels.SignalResultStatus.successful:
+                                        <tr style="text-align:center;background-color:#bbf2cf;">
+                                            <td>@Todolist.Helpers.Dates.ToPersianDate2(tr.StartDate, true)</td>
+                                            <td>@tr.EnterPrice.ToString("0.0##")</td>
+                                            <td>@tr.StopLostPrice.ToString("0.0##")</td>
+                                            <td>@tr.TakeProfitPrice.ToString("0.0##")</td>
+                                            <td>@Todolist.Helpers.Dates.ToPersianDate2(tr.CloseDate, true)</td>
+                                            <td>@tr.ClosePrice.ToString("0.0##")</td>
+                                            <td>@tr.ProfitPercentage.ToString("0.0##") %</td>
+                                            <td>@tr.Duration</td>
+                                        </tr>
+                                        break;
+                                    case Todolist.Models.TradeModels.SignalResultStatus.equal:
+                                        <tr style="text-align:center;background-color:khaki;">
+                                            <td>@Todolist.Helpers.Dates.ToPersianDate2(tr.StartDate, true)</td>
+                                            <td>@tr.EnterPrice.ToString("0.0##")</td>
+                                            <td>@tr.StopLostPrice.ToString("0.0##")</td>
+                                            <td>@tr.TakeProfitPrice.ToString("0.0##")</td>
+                                            <td>@Todolist.Helpers.Dates.ToPersianDate2(tr.CloseDate, true)</td>
+                                            <td>@tr.ClosePrice.ToString("0.0##")</td>
+                                            <td>@tr.ProfitPercentage.ToString("0.0##") %</td>
+                                            <td>@tr.Duration</td>
+                                        </tr>
+                                        break;
+                                    case Todolist.Models.TradeModels.SignalResultStatus.unsuccessful:
+                                        <tr style="text-align:center;background-color:#f5c9ce;">
+                                            <td>@Todolist.Helpers.Dates.ToPersianDate2(tr.StartDate, true)</td>
+                                            <td>@tr.EnterPrice.ToString("0.0##")</td>
+                                            <td>@tr.StopLostPrice.ToString("0.0##")</td>
+                                            <td>@tr.TakeProfitPrice.ToString("0.0##")</td>
+                                            <td>@Todolist.Helpers.Dates.ToPersianDate2(tr.CloseDate, true)</td>
+                                            <td>@tr.ClosePrice.ToString("0.0##")</td>
+                                            <td>@tr.ProfitPercentage.ToString("0.0##") %</td>
+                                            <td>@tr.Duration</td>
+                                        </tr>
+                                        break;
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts
+    {
+<script src="@Url.Content("~/Contents/vendor/chart.js/Chart.min.js")"></script>
+<script src="@Url.Content("~/Contents/js/demo/chart-area-demo.js")"></script>
+    <script type="text/javascript">
+        $(function () {
+            $("#dataTable1").DataTable({
+                "order": [[0, "desc"]]
+            });
+            $("#sltCurrentMonth").val(@Model.CurrentMonth).change();
+            SetAreaChart('SignalResultsArea',@Html.Raw(Model.SignalResultsAreaChart.Item1),@Html.Raw(Model.SignalResultsAreaChart.Item2),'%');
+            $("#sltCurrentMonth").change(function ()
+            {
+                var url = '@Url.Action("SignalResults", "Trades")' + '?symbol='+@string.Format("{0}", (int)Model.Symbol)+'&timeframe='+@string.Format("{0}", (int)Model.Timeframe)
+                            +'&Month='+$(this).val();
+                window.location = url;
+            });
+        });
+    </script>
+}

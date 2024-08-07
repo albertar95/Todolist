@@ -68,10 +68,10 @@ namespace TradingWindowsService
                     var result = CandleHelper.AutoRefresh().GetAwaiter().GetResult();
                     if (DebugMode)
                     {
-                        if (result)
+                        if (!result.Item1)
                             CommonHelper.WriteLog(Path.Combine(FileSourcePath, "Log.txt"), $"{DateTime.Now} | info | candle refresh success" + Environment.NewLine);
                         else
-                            CommonHelper.WriteLog(Path.Combine(FileSourcePath, "Log.txt"), $"{DateTime.Now} | info | candle refresh error" + Environment.NewLine);
+                            CommonHelper.WriteLog(Path.Combine(FileSourcePath, "Log.txt"), $"{DateTime.Now} | info | candle refresh error | {result.Item2}" + Environment.NewLine);
                     }
                     Thread.Sleep(period);
                 }

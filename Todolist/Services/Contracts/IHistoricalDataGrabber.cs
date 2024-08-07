@@ -10,11 +10,11 @@ namespace Todolist.Services.Contracts
 {
     public interface IHistoricalDataGrabber
     {
-        void AutoRefreshCandles();
+        Tuple<bool, List<Tuple<int, string>>> AutoRefreshCandles();
         DateTime RefreshCandles(Symbol sym, Timeframe tf);
-        void UpdateData(Symbol symbol, Timeframe tf, AugmentedCandle lastCandle);
-        void SeedData(Symbol symbol, Timeframe tf);
-        Task<bool> GetLastHourData(Symbol symbol, Timeframe timeframe, AugmentedCandle lastCandle);
+        bool UpdateData(Symbol symbol, Timeframe tf, AugmentedCandle lastCandle);
+        bool SeedData(Symbol symbol, Timeframe tf);
+        Task<Tuple<bool,string>> GetLastHourData(Symbol symbol, Timeframe timeframe, AugmentedCandle lastCandle);
         DateTime GetLastCandle(Symbol sym, Timeframe tf);
     }
 }

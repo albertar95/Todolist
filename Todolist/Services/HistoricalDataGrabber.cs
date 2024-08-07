@@ -74,8 +74,10 @@ namespace Todolist.Services
             Symbol = getSymbol(ConfigurationManager.AppSettings["Symbol"]);
         }
         #region CoreMethods
-        public void AutoRefreshCandles()
+        public Tuple<bool, List<Tuple<int, string>>> AutoRefreshCandles()
         {
+            var resultMessage = new List<Tuple<int, string>>();
+            bool hasError = false;
             try
             {
                 foreach (var sym in Symbol)
@@ -85,21 +87,38 @@ namespace Todolist.Services
                         var initial = _dbRepository.GetMax<AugmentedCandle, DateTime>(p => p.Time, q => q.Timeframe == (int)tf && q.Symbol == (int)sym);
                         if (initial != null)
                         {
-                            UpdateData(sym, tf, initial);
-                            GetLastHourData(sym, tf, initial).GetAwaiter().GetResult();
+                            if (!UpdateData(sym, tf, initial))
+                            {
+                                resultMessage.Add(new Tuple<int, string>((int)sym, "bulk update error"));
+                                hasError = true;
+                            }
                         }
                         else
                         {
-                            SeedData(sym, tf);
-                            initial = _dbRepository.GetMax<AugmentedCandle, DateTime>(p => p.Time, q => q.Timeframe == (int)tf && q.Symbol == (int)sym);
-                            GetLastHourData(sym, tf, initial).GetAwaiter().GetResult();
+                            if(!SeedData(sym, tf))
+                            {
+                                resultMessage.Add(new Tuple<int, string>((int)sym, "seed update error"));
+                                hasError = true;
+                            }
+                        }
+                        initial = _dbRepository.GetMax<AugmentedCandle, DateTime>(p => p.Time, q => q.Timeframe == (int)tf && q.Symbol == (int)sym);
+                        var lastHourResult = GetLastHourData(sym, tf, initial).GetAwaiter().GetResult();
+                        if (lastHourResult.Item1)
+                            resultMessage.Add(new Tuple<int, string>((int)sym, "success"));
+                        else
+                        {
+                            resultMessage.Add(new Tuple<int, string>((int)sym, lastHourResult.Item2));
+                            hasError = true;
                         }
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                resultMessage.Add(new Tuple<int, string>(1, ex.Message));
+                hasError = true;
             }
+            return new Tuple<bool, List<Tuple<int, string>>>(hasError,resultMessage);
         }
         public DateTime RefreshCandles(Symbol sym,Timeframe tf)
         {
@@ -124,22 +143,24 @@ namespace Todolist.Services
                 return DateTime.MinValue;
             }
         }
-        public void UpdateData(Symbol symbol, Timeframe tf,AugmentedCandle lastCandle)
+        public bool UpdateData(Symbol symbol, Timeframe tf,AugmentedCandle lastCandle)
         {
             try
             {
-                if (Convert.ToInt32(DateTime.Now.Subtract(lastCandle.Time).TotalMinutes) < 60)
-                    return;
+                if (Convert.ToInt32(DateTime.Now.ToLocalTime().Subtract(lastCandle.Time).TotalMinutes) < 60)
+                    return true;
                 var candles = GetCandlesFromHost(tf, symbol);
                 var convertedCandles = CandlesAugmentation(candles.Where(p => p.Time >= lastCandle.Time).OrderBy(q => q.Time).ToArray(), lastCandle, symbol, tf);
                 _dbRepository.AddBatch(convertedCandles);
                 DeleteKeepIntervalOverflowCandles(symbol, tf);
+                return true;
             }
             catch (Exception)
             {
+                return false;
             }
         }
-        public void SeedData(Symbol symbol, Timeframe tf)
+        public bool SeedData(Symbol symbol, Timeframe tf)
         {
             try
             {
@@ -150,24 +171,28 @@ namespace Todolist.Services
                     _dbRepository.AddBatch<AugmentedCandle>(convertedCandles.OrderBy(p => p.Time).Skip(150).ToList().Where(q => q.Time >= DateTime.Now.Date.AddDays(keepDataInterval * -1)).ToList());
                     //DeleteKeepIntervalOverflowCandles(symbol, tf);
                 }
+                return true;
             }
             catch (Exception)
             {
+                return false;
             }
         }
-        public async Task<bool> GetLastHourData(Symbol symbol, Timeframe timeframe, AugmentedCandle lastCandle)
+        public async Task<Tuple<bool,string>> GetLastHourData(Symbol symbol, Timeframe timeframe, AugmentedCandle lastCandle)
         {
             try
             {
-                if (Convert.ToInt32(DateTime.Now.Subtract(lastCandle.Time).TotalMinutes) < (int)timeframe)
-                    return false;
-                if (Convert.ToInt32(DateTime.Now.Subtract(lastCandle.Time).TotalMinutes) > 60)
-                    return false;
+                if (Convert.ToInt32(DateTime.Now.ToLocalTime().Subtract(lastCandle.Time).TotalMinutes) < (int)timeframe)
+                    return new Tuple<bool, string>(true,"");
+                if (Convert.ToInt32(DateTime.Now.ToLocalTime().Subtract(lastCandle.Time).TotalMinutes) > 60)
+                    return new Tuple<bool, string>(true, "");
                 if (DateTime.Now.DayOfWeek == DayOfWeek.Saturday || DateTime.Now.DayOfWeek == DayOfWeek.Sunday)
-                    return false;
+                    return new Tuple<bool, string>(true, "");
+                if (lastCandle == null)
+                    return new Tuple<bool, string>(false, "last calndle is null");
                 else
                 {
-                    int toCallCount = Convert.ToInt32(DateTime.Now.Subtract(lastCandle.Time).TotalMinutes) / (int)timeframe;
+                    int toCallCount = Convert.ToInt32(DateTime.Now.ToLocalTime().Subtract(lastCandle.Time).TotalMinutes) / (int)timeframe;
                     if (toCallCount > 0)
                     {
                         DateTime dt = lastCandle.Time.ToUniversalTime();
@@ -186,25 +211,29 @@ namespace Todolist.Services
                                         if (candle.message.ToLower() == "1000 per 1 month")
                                         {
                                             UpdateCredentialCounter(apikey.Id, true);
-                                            return false;
+                                            return new Tuple<bool, string>(false, "api 1000 counter is full");
                                         }
                                     }
                                     if (candle.open == 0 || candle.high == 0 || candle.low == 0 || candle.close == 0)
-                                        return false;
+                                        return new Tuple<bool, string>(false, "wronge data from api");
                                     candle.UrlRequestTime = lastCandle.Time.AddMinutes((int)timeframe * i);
                                     var convertedCandles = SingleCandlesAugmentation(castMarketDataToCandle(candle, symbol, timeframe), lastCandle, symbol, timeframe);
                                     var result = _dbRepository.Add(convertedCandles);
                                 }
+                                else
+                                    new Tuple<bool, string>(false, "error in deserializing candle");
                             }
+                            else
+                                new Tuple<bool, string>(false, "http error in calling api");
                         }
                         DeleteKeepIntervalOverflowCandles(symbol, timeframe);
                     }
-                    return true;
+                    return new Tuple<bool, string>(true, "");
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return false;
+                return new Tuple<bool, string>(false, ex.Message);
             }
         }
         public DateTime GetLastCandle(Symbol sym, Timeframe tf)

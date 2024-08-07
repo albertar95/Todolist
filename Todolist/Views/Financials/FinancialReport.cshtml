@@ -216,7 +216,7 @@
             SetBarChart('GroupSpenceBar', @Html.Raw(Model.GroupSpenceBarChart.Item1), @Html.Raw(Model.GroupSpenceBarChart.Item2), @Html.Raw(Model.GroupSpenceBarChart.Item3));
             SetBarChart('GroupIncomeBar', @Html.Raw(Model.GroupIncomeBarChart.Item1), @Html.Raw(Model.GroupIncomeBarChart.Item2), @Html.Raw(Model.GroupIncomeBarChart.Item3));
             SetPieChart('FundDistributionPie',@Html.Raw(Model.FundDistributionPieChart.Item1),@Html.Raw(Model.FundDistributionPieChart.Item2));
-            SetAreaChart('FundAccumulationArea',@Html.Raw(Model.FundAccumulationAreaChart.Item1),@Html.Raw(Model.FundAccumulationAreaChart.Item2));
+            SetAreaChart('FundAccumulationArea',@Html.Raw(Model.FundAccumulationAreaChart.Item1),@Html.Raw(Model.FundAccumulationAreaChart.Item2),'$');
             $("#sltCurrentMonth").change(function ()
             {
                 $.ajax(

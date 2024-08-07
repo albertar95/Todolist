@@ -45,23 +45,31 @@ namespace Todolist.Controllers
                 TempData["CredentialSuccess"] = "credential created successfully";
             else
                 TempData["CredentialError"] = "error occured in creating credential.try again later";
-            return RedirectToAction("MarketDataCredentials", "Trades");
+            return RedirectToAction("MarketDataCredentials", "Trades",new { symbol = credential.Symbol, timeframe = credential.Timeframe });
         }
-        public ActionResult DeleteCredential(Guid id)
+        public ActionResult DeleteCredential(Guid id, Symbol symbol = Symbol.SOLUSDT, Timeframe timeframe = Timeframe.M15)
         {
             if (_requestProcessor.DeleteMarketDataCredential(id))
                 TempData["CredentialSuccess"] = "credential deleted successfully";
             else
                 TempData["CredentialError"] = "error occured in deleted credential.try again later";
-            return RedirectToAction("MarketDataCredentials","Trades");
+            return RedirectToAction("MarketDataCredentials","Trades",new { symbol = symbol, timeframe = timeframe });
+        }
+        public ActionResult SignalResults(Symbol symbol = Symbol.SOLUSDT, Timeframe timeframe = Timeframe.M15,int Month = 0)
+        {
+            if (Month == 0)
+                Month = Helpers.Dates.CurrentMonth();
+            return View(_requestProcessor.GetSignalResults(symbol,timeframe,Month));
         }
 
         //windows service methods
         [HttpPost]
         public ActionResult AutoRefreshCandles()
         {
-            _historicalDataGrabber.AutoRefreshCandles();
-            return Json(new { hasValue = true });
+            var result = _historicalDataGrabber.AutoRefreshCandles();
+            string message = "";
+            result.Item2.ForEach(x => { message += $"{x.Item1} - {x.Item2},"; });
+            return Json(new { hasError = result.Item1, message =  message});
         }
         [HttpPost]
         public ActionResult AutoRefreshSignals()
