@@ -1867,6 +1867,7 @@
     <Compile Include="Helpers\CommonTradeOperations.cs" />
     <Compile Include="Helpers\Dates.cs" />
     <Compile Include="Helpers\Encryption.cs" />
+    <Compile Include="Helpers\NotifyHelper.cs" />
     <Compile Include="Helpers\ViewHelper.cs" />
     <Compile Include="Models\Account.cs">
       <DependentUpon>Model.tt</DependentUpon>

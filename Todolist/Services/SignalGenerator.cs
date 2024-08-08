@@ -18,6 +18,7 @@ namespace Todolist.Services
         private readonly IDbRepository _dbRepository;
         private readonly List<Timeframe> Timeframes;
         private readonly List<Symbol> Symbol;
+        private readonly List<string> NotifyEmails;
 
         public static Signal currentSignal;
         public static float minSlTpPercentage;
@@ -36,6 +37,7 @@ namespace Todolist.Services
             _dbRepository = dbRepository;
             Timeframes = getTimeframes(ConfigurationManager.AppSettings["Timeframes"]);
             Symbol = getSymbol(ConfigurationManager.AppSettings["Symbol"]);
+            NotifyEmails = getNotifyEmails(ConfigurationManager.AppSettings["NotifyEmails"]);
             currentSignal = new Signal();
             minSlTpPercentage = float.Parse(ConfigurationManager.AppSettings["minSlTpPercentage"]);
             maxSlTpPercentage = float.Parse(ConfigurationManager.AppSettings["maxSlTpPercentage"]);
@@ -115,6 +117,12 @@ namespace Todolist.Services
             input.ToLower().Split(',').ToList().ForEach(x => { result.Add((Symbol)(int.Parse(x))); });
             return result;
         }
+        public static List<string> getNotifyEmails(string input)
+        {
+            List<string> result = new List<string>();
+            input.ToLower().Split(',').ToList().ForEach(x => { result.Add(x); });
+            return result;
+        }
         public void GenerateSignalAndFollow(Dictionary<AugmentedCandle, SignalEstimate> estimates)
         {
             if (estimates.Count != 0)
@@ -174,7 +182,9 @@ namespace Todolist.Services
                 _dbRepository.Add(newSignal);
                 SignalStatus = SignalCreationStatus.BullSignalCreated;
                 currentSignal = newSignal;
-            }
+                NotifyEmails.ForEach(x => { NotifyHelper.SendMail(GetEmailMessage(est), "bullish signal occured", x); });
+            }else
+                NotifyEmails.ForEach(x => { NotifyHelper.SendMail(GetEmailMessage(est), "bullish cross occured", x); });
         }
         public void FollowBearishCross(KeyValuePair<AugmentedCandle, SignalEstimate> est)
         {
@@ -202,7 +212,9 @@ namespace Todolist.Services
                 _dbRepository.Add(newSignal);
                 SignalStatus = SignalCreationStatus.BearSignalCreated;
                 currentSignal = newSignal;
-            }
+                NotifyEmails.ForEach(x => { NotifyHelper.SendMail(GetEmailMessage(est), "bearish signal occured", x); });
+            }else
+                NotifyEmails.ForEach(x => { NotifyHelper.SendMail(GetEmailMessage(est), "bearish cross occured", x); });
         }
         public void FollowActiveSignals(KeyValuePair<AugmentedCandle, SignalEstimate> estimate, bool IsTerminator = false)
         {
@@ -275,6 +287,7 @@ namespace Todolist.Services
                     currentSignal.IsActive = false;
                     _dbRepository.Update(currentSignal);
                     SignalStatus = SignalCreationStatus.Observing;
+                    NotifyEmails.ForEach(x => { NotifyHelper.SendMail(GetEmailMessage(est) + $"terminate type : {res.ToString()}", "bullish signal terminated", x); });
                 }
             }
         }
@@ -337,6 +350,7 @@ namespace Todolist.Services
                     currentSignal.IsActive = false;
                     _dbRepository.Update(currentSignal);
                     SignalStatus = SignalCreationStatus.Observing;
+                    NotifyEmails.ForEach(x => { NotifyHelper.SendMail(GetEmailMessage(est) + $"terminate type : {res.ToString()}", "bearish signal terminated", x); });
                 }
             }
         }
@@ -378,6 +392,10 @@ namespace Todolist.Services
         private double CalcSLTPWithPercentage(double input,double percentage)
         {
             return (input * percentage) / 100F;
+        }
+        private string GetEmailMessage(KeyValuePair<AugmentedCandle, SignalEstimate> est)
+        {
+            return $"candle time : {est.Key.Time}{Environment.NewLine}symbol : {Enum.GetName(typeof(Symbol), est.Key.Symbol)}{Environment.NewLine}timeframe : {Enum.GetName(typeof(Timeframe), est.Key.Timeframe)}{Environment.NewLine}";
         }
         #endregion
     }

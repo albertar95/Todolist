@@ -110,5 +110,9 @@ namespace Todolist.Models
         {
             EntryPoint = 1,StopLoss = 2,TakeProfit = 3
         }
+        public enum NotifyType
+        {
+            preSignal = 1,Signal = 2,Terminate = 3
+        }
     }
 }
