@@ -144,9 +144,7 @@
     <Content Include="App_Data\privatekey\7.txt" />
     <Content Include="App_Data\privatekey\8.txt" />
     <Content Include="App_Data\privatekey\9.txt" />
-    <Content Include="App_Data\tmp\emaAdd.sql" />
-    <Content Include="App_Data\tmp\SignalResults.sql" />
-    <Content Include="App_Data\tmp\Signals.sql" />
+    <Content Include="App_Data\tmp\notifylogs.sql" />
     <Content Include="Contents\css\fonts.css" />
     <Content Include="Contents\css\sb-admin-2.min.css" />
     <Content Include="Contents\js\demo\chart-area-demo.js" />
@@ -1903,6 +1901,9 @@
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\NoteGroup.cs">
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\NotifyLog.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Progress.cs">

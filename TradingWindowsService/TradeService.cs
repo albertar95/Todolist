@@ -21,6 +21,8 @@ namespace TradingWindowsService
         private readonly int SignalServiceInterval;
         private readonly string FileSourcePath;
         private readonly bool DebugMode;
+        private readonly int ErrorTolerance;
+        private int errorOccuredCount;
 
         #endregion
         public TradeService()
@@ -29,6 +31,8 @@ namespace TradingWindowsService
             SignalServiceInterval = int.Parse(ConfigurationManager.AppSettings["SignalServiceInterval"]);
             FileSourcePath = ConfigurationManager.AppSettings["FileSourcePath"];
             DebugMode = bool.Parse(ConfigurationManager.AppSettings["DebugMode"]);
+            ErrorTolerance = int.Parse(ConfigurationManager.AppSettings["ErrorTolerance"]);
+            errorOccuredCount = 0;
             InitializeComponent();
         }
 
@@ -77,8 +81,17 @@ namespace TradingWindowsService
                 }
                 catch (Exception ex)
                 {
-                    if(DebugMode)
-                        CommonHelper.WriteLog(Path.Combine(FileSourcePath, "Log.txt"), $"{DateTime.Now} | error | {ex}" + Environment.NewLine);
+                    if (errorOccuredCount > ErrorTolerance)
+                    {
+                        stopService = true;
+                        base.OnStop();
+                    }
+                    else
+                    {
+                        if (DebugMode)
+                            CommonHelper.WriteLog(Path.Combine(FileSourcePath, "Log.txt"), $"{DateTime.Now} | error | {ex}" + Environment.NewLine);
+                        errorOccuredCount++;
+                    }
                 }
             }
         }

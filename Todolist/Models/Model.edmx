@@ -90,6 +90,15 @@
           <Property Name="CreateDate" Type="datetime" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
         </EntityType>
+        <EntityType Name="NotifyLogs">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Symbol" Type="int" Nullable="false" />
+          <Property Name="Timeframe" Type="int" Nullable="false" />
+          <Property Name="LastNotify" Type="datetime" Nullable="false" />
+        </EntityType>
         <EntityType Name="Progresses">
           <Key>
             <PropertyRef Name="NidProgress" />
@@ -230,6 +239,7 @@
           <Property Name="CreateDate" Type="datetime" Nullable="false" />
           <Property Name="LastLoginDate" Type="datetime" />
           <Property Name="IsDisabled" Type="bit" Nullable="false" />
+          <Property Name="ProfilePic" Type="varbinary(max)" />
         </EntityType>
         <Association Name="FK_Accounts_Users">
           <End Role="Users" Type="Self.Users" Multiplicity="1" />
@@ -418,6 +428,7 @@
           <EntitySet Name="MarketDataCredentials" EntityType="Self.MarketDataCredentials" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="NoteGroups" EntityType="Self.NoteGroups" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Notes" EntityType="Self.Notes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="NotifyLogs" EntityType="Self.NotifyLogs" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Progresses" EntityType="Self.Progresses" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RoutineProgresses" EntityType="Self.RoutineProgresses" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Routines" EntityType="Self.Routines" Schema="dbo" store:Type="Tables" />
@@ -755,6 +766,7 @@
             <End Role="Signal" EntitySet="Signals" />
             <End Role="SignalResult" EntitySet="SignalResults" />
           </AssociationSet>
+          <EntitySet Name="NotifyLogs" EntityType="ToDoListDbModel.NotifyLog" />
           </EntityContainer>
         <EntityType Name="User">
           <Key>
@@ -776,6 +788,7 @@
           <NavigationProperty Name="Accounts" Relationship="ToDoListDbModel.FK_Accounts_Users" FromRole="User" ToRole="Account" />
           <NavigationProperty Name="Transactions" Relationship="ToDoListDbModel.FK_Transactions_Users" FromRole="User" ToRole="Transaction" />
           <NavigationProperty Name="TransactionGroups" Relationship="ToDoListDbModel.FK_TransactionTypes_Users" FromRole="User" ToRole="TransactionGroup" />
+          <Property Name="ProfilePic" Type="Binary" MaxLength="Max" FixedLength="false" />
         </EntityType>
         <Association Name="FK_Goals_Users">
           <End Type="ToDoListDbModel.User" Role="User" Multiplicity="1" />
@@ -1009,6 +1022,15 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="NotifyLog">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Guid" Nullable="false" />
+          <Property Name="Symbol" Type="Int32" Nullable="false" />
+          <Property Name="Timeframe" Type="Int32" Nullable="false" />
+          <Property Name="LastNotify" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1134,6 +1156,7 @@
           <EntitySetMapping Name="Users">
             <EntityTypeMapping TypeName="ToDoListDbModel.User">
               <MappingFragment StoreEntitySet="Users">
+                <ScalarProperty Name="ProfilePic" ColumnName="ProfilePic" />
                 <ScalarProperty Name="IsDisabled" ColumnName="IsDisabled" />
                 <ScalarProperty Name="LastLoginDate" ColumnName="LastLoginDate" />
                 <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
@@ -1252,6 +1275,16 @@
                 <ScalarProperty Name="EnterPrice" ColumnName="EnterPrice" />
                 <ScalarProperty Name="StartDate" ColumnName="StartDate" />
                 <ScalarProperty Name="SignalType" ColumnName="SignalType" />
+                <ScalarProperty Name="Timeframe" ColumnName="Timeframe" />
+                <ScalarProperty Name="Symbol" ColumnName="Symbol" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="NotifyLogs">
+            <EntityTypeMapping TypeName="ToDoListDbModel.NotifyLog">
+              <MappingFragment StoreEntitySet="NotifyLogs">
+                <ScalarProperty Name="LastNotify" ColumnName="LastNotify" />
                 <ScalarProperty Name="Timeframe" ColumnName="Timeframe" />
                 <ScalarProperty Name="Symbol" ColumnName="Symbol" />
                 <ScalarProperty Name="Id" ColumnName="Id" />

@@ -215,7 +215,7 @@ namespace Todolist.Controllers
                 TempData["RoutineSuccess"] = $"routine deleted successfully";
             else
                 TempData["RoutineError"] = $"an error occured while deleting routine!";
-            return RedirectToAction("IndexPaginationView2", "Schedules", new { Direction = Direction });
+            return RedirectToAction("RoutineCalendar", "Schedules", new { Direction = Direction });
         }
         public ActionResult SubmitDoneRoutine(RoutineProgress Progress)
         {
@@ -231,17 +231,13 @@ namespace Todolist.Controllers
             progresses.ForEach(x => { if (x.ProgressDate == Progress.ProgressDate.Date) _requestProcessor.DeleteRoutineProgress(x.NidRoutineProgress); });
             return RedirectToAction("Routines", "Schedules");
         }
-        public ActionResult RoutineCalendar()
+        public ActionResult RoutineCalendar(int Direction = 0)
         {
-            return View(_requestProcessor.GetRoutines(UserId));
+            return View(_requestProcessor.GetRoutines(UserId,Direction));
         }
         public ActionResult IndexPagination2(int Direction)
         {
             return Json(new JsonResults() { HasValue = true, Html = Helpers.ViewHelper.RenderViewToString(this, "_RoutineCalendarPartialView", _requestProcessor.GetRoutines(UserId, Direction)) });
-        }
-        public ActionResult IndexPaginationView2(int Direction)
-        {
-            return View("RoutineCalendar", "Schedules", _requestProcessor.GetRoutines(UserId, Direction));
         }
         public ActionResult SubmitEditRoutine(Routine Routine, int Direction = 0)
         {
@@ -253,12 +249,12 @@ namespace Todolist.Controllers
                 TempData["RoutineSuccess"] = $"routine edited successfully";
             else
                 TempData["RoutineError"] = $"an error occured while editing routine!";
-            return RedirectToAction("IndexPaginationView2", "Schedules", new { Direction = Direction });
+            return RedirectToAction("RoutineCalendar", "Schedules", new { Direction = Direction });
         }
         public ActionResult SubmitDeleteRoutineProgress(Guid NidRoutineProgress, int Direction = 0)
         {
             _requestProcessor.DeleteRoutineProgress(NidRoutineProgress);
-            return RedirectToAction("IndexPaginationView2", "Schedules", new { Direction = Direction });
+            return RedirectToAction("RoutineCalendar", "Schedules", new { Direction = Direction });
         }
         public ActionResult SubmitAddRoutineProgress(RoutineProgress Progress, int Direction = 0)
         {
@@ -266,7 +262,7 @@ namespace Todolist.Controllers
                 TempData["RoutineSuccess"] = $"routine done successfully";
             else
                 TempData["RoutineError"] = $"an error occured while doning routine!";
-            return RedirectToAction("IndexPaginationView2", "Schedules", new { Direction = Direction });
+            return RedirectToAction("RoutineCalendar", "Schedules", new { Direction = Direction });
         }
     }
 }

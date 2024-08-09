@@ -42,5 +42,6 @@ namespace Todolist.Models
         public DbSet<AugmentedCandle> AugmentedCandles { get; set; }
         public DbSet<SignalResult> SignalResults { get; set; }
         public DbSet<Signal> Signals { get; set; }
+        public DbSet<NotifyLog> NotifyLogs { get; set; }
     }
 }

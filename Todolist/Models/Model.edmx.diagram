@@ -37,6 +37,7 @@
         <EntityTypeShape EntityType="ToDoListDbModel.SignalResult" Width="1.5" PointX="13.625" PointY="1.25" />
         <EntityTypeShape EntityType="ToDoListDbModel.Signal" Width="1.5" PointX="11.375" PointY="1" />
         <AssociationConnector Association="ToDoListDbModel.FK_SignalResults_Signals" />
+        <EntityTypeShape EntityType="ToDoListDbModel.NotifyLog" Width="1.5" PointX="5.375" PointY="4.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -182,9 +182,10 @@ namespace Todolist.Services
                 _dbRepository.Add(newSignal);
                 SignalStatus = SignalCreationStatus.BullSignalCreated;
                 currentSignal = newSignal;
-                NotifyEmails.ForEach(x => { NotifyHelper.SendMail(GetEmailMessage(est), "bullish signal occured", x); });
-            }else
-                NotifyEmails.ForEach(x => { NotifyHelper.SendMail(GetEmailMessage(est), "bullish cross occured", x); });
+                SignalNotify(NotifyType.Signal, est,SignalTypes.Bullish);
+            }
+            else
+                SignalNotify(NotifyType.preSignal, est, SignalTypes.Bullish);
         }
         public void FollowBearishCross(KeyValuePair<AugmentedCandle, SignalEstimate> est)
         {
@@ -212,9 +213,10 @@ namespace Todolist.Services
                 _dbRepository.Add(newSignal);
                 SignalStatus = SignalCreationStatus.BearSignalCreated;
                 currentSignal = newSignal;
-                NotifyEmails.ForEach(x => { NotifyHelper.SendMail(GetEmailMessage(est), "bearish signal occured", x); });
-            }else
-                NotifyEmails.ForEach(x => { NotifyHelper.SendMail(GetEmailMessage(est), "bearish cross occured", x); });
+                SignalNotify(NotifyType.Signal, est, SignalTypes.Bearish);
+            }
+            else
+                SignalNotify(NotifyType.preSignal, est, SignalTypes.Bearish);
         }
         public void FollowActiveSignals(KeyValuePair<AugmentedCandle, SignalEstimate> estimate, bool IsTerminator = false)
         {
@@ -287,7 +289,7 @@ namespace Todolist.Services
                     currentSignal.IsActive = false;
                     _dbRepository.Update(currentSignal);
                     SignalStatus = SignalCreationStatus.Observing;
-                    NotifyEmails.ForEach(x => { NotifyHelper.SendMail(GetEmailMessage(est) + $"terminate type : {res.ToString()}", "bullish signal terminated", x); });
+                    SignalNotify(NotifyType.Terminate, est, SignalTypes.Bullish, res);
                 }
             }
         }
@@ -350,7 +352,7 @@ namespace Todolist.Services
                     currentSignal.IsActive = false;
                     _dbRepository.Update(currentSignal);
                     SignalStatus = SignalCreationStatus.Observing;
-                    NotifyEmails.ForEach(x => { NotifyHelper.SendMail(GetEmailMessage(est) + $"terminate type : {res.ToString()}", "bearish signal terminated", x); });
+                    SignalNotify(NotifyType.Terminate, est, SignalTypes.Bearish, res);
                 }
             }
         }
@@ -393,9 +395,50 @@ namespace Todolist.Services
         {
             return (input * percentage) / 100F;
         }
-        private string GetEmailMessage(KeyValuePair<AugmentedCandle, SignalEstimate> est)
+        private string GetEmailMessage(NotifyType typo, KeyValuePair<AugmentedCandle, SignalEstimate> est, SignalTypes signalType, SignalResultClosureTypes closure = SignalResultClosureTypes.closedInMiddleByProvider)
         {
-            return $"candle time : {est.Key.Time}{Environment.NewLine}symbol : {Enum.GetName(typeof(Symbol), est.Key.Symbol)}{Environment.NewLine}timeframe : {Enum.GetName(typeof(Timeframe), est.Key.Timeframe)}{Environment.NewLine}";
+            var message = "";
+            message += $"notify type :{typo.ToString()}{Environment.NewLine}";
+            message += $"signal type : {signalType.ToString()}{Environment.NewLine}";
+            message += $"candle time : {est.Key.Time}{Environment.NewLine}";
+            message += $"symbol : {Enum.GetName(typeof(Symbol), est.Key.Symbol)}{Environment.NewLine}";
+            message += $"timeframe : {Enum.GetName(typeof(Timeframe), est.Key.Timeframe)}{Environment.NewLine}";
+            message += $"line position : {est.Value.LinesPosition.ToString()}{Environment.NewLine}";
+            message += $"line on macd position : {est.Value.LinesOnMacdMapPosition.ToString()}{Environment.NewLine}";
+            message += $"candles to ema position : {est.Value.CandlesToEMAPosition.ToString()}{Environment.NewLine}";
+            if(typo == NotifyType.Terminate)
+                message += $"terminate type : {closure.ToString()}{Environment.NewLine}";
+            return message;
+        }
+        private void SignalNotify(NotifyType typo, KeyValuePair<AugmentedCandle, SignalEstimate> est,SignalTypes signalType, SignalResultClosureTypes closure = SignalResultClosureTypes.closedInMiddleByProvider)
+        {
+            bool notifyUpdated = false;
+            if(typo == NotifyType.preSignal)
+            {
+                var lastNotify = _dbRepository.GetMax<NotifyLog>(p => p.Symbol == est.Key.Symbol && p.Timeframe == est.Key.Timeframe);
+                if (lastNotify != null)
+                {
+                    if (est.Key.Time <= lastNotify.LastNotify)
+                        return;
+                }
+            }
+            NotifyEmails.ForEach(x => {
+                if (NotifyHelper.SendMail(GetEmailMessage(typo, est,signalType,closure), DateTime.Now.ToLongTimeString(), x))
+                {
+                    if (!notifyUpdated)
+                    {
+                        var notifylog = _dbRepository.GetMax<NotifyLog>(p => p.Symbol == est.Key.Symbol && p.Timeframe == est.Key.Timeframe);
+                        if (notifylog != null)
+                        {
+                            notifylog.LastNotify = est.Key.Time;
+                            _dbRepository.Update(notifylog);
+                        }
+                        else
+                            _dbRepository.Add(new NotifyLog() { Id = Guid.NewGuid(), LastNotify = est.Key.Time, Symbol = est.Key.Symbol, Timeframe = est.Key.Timeframe });
+                        notifyUpdated = true;
+                    }
+                }
+            });
         }
         #endregion
     }

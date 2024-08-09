@@ -34,6 +34,7 @@ namespace Todolist.Models
         public System.DateTime CreateDate { get; set; }
         public Nullable<System.DateTime> LastLoginDate { get; set; }
         public bool IsDisabled { get; set; }
+        public byte[] ProfilePic { get; set; }
     
         public virtual ICollection<Goal> Goals { get; set; }
         public virtual ICollection<NoteGroup> NoteGroups { get; set; }

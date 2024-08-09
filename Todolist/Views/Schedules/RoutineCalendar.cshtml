@@ -253,7 +253,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var rtn in Model.RoutineProgresses.Where(p => p.ProgressDate >= Model.StartDate).OrderBy(p => p.ProgressDate))
+                        @foreach (var rtn in Model.RoutineProgresses.Where(p => p.ProgressDate >= Model.StartDate && p.ProgressDate <= Model.EndDate).OrderBy(p => p.ProgressDate))
                         {
                             <tr style="text-align:center;">
                                 <td>@Model.Routines.FirstOrDefault(p => p.NidRoutine == rtn.RoutineId).Title</td>

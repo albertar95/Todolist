@@ -42,7 +42,6 @@
             this.serviceInstaller.Description = "trading windows service";
             this.serviceInstaller.DisplayName = "TradingService";
             this.serviceInstaller.ServiceName = "TradingWS";
-            this.serviceInstaller.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             // 
             // ProjectInstaller
             // 
