@@ -30,6 +30,7 @@ namespace Todolist.Services
         public bool IsSignalProcessInitialized;
         public DateTime ProcessedCandleCheckpoint;
         public SignalCreationStatus SignalStatus;
+        public bool EnableNotify;
 
         #endregion
         public SignalGenerator(IDbRepository dbRepository)
@@ -44,6 +45,7 @@ namespace Todolist.Services
             FixedSlPercentage = float.Parse(ConfigurationManager.AppSettings["FixedSlPercentage"]);
             FixedTpPercentage = float.Parse(ConfigurationManager.AppSettings["FixedTpPercentage"]);
             EvenSignalResultLimit = float.Parse(ConfigurationManager.AppSettings["EvenSignalResultLimit"]);
+            EnableNotify = bool.Parse(ConfigurationManager.AppSettings["EnableNotify"]);
             CurrentSmaPosition = SMAPositions.Equal;
             IsSignalProcessInitialized = false;
             ProcessedCandleCheckpoint = DateTime.MinValue;
@@ -102,6 +104,14 @@ namespace Todolist.Services
         public void GetSignalReport(Symbol symbol, Timeframe timeframe, SignalProviders provider)
         {
             CommonTradeOperations.SignalReport(_dbRepository.GetList<SignalResult>(p => p.Signal.Timeframe == (int)timeframe && p.Signal.Symbol == (int)symbol && p.Signal.SignalProvider == (int)provider));
+        }
+        public string GetSignalEstimates(Symbol symbol,Timeframe timeframe,int CandleCounts = 10000)
+        {
+            string result = "time,open,high,low,close,macdline,signalline,histogram,rsi,CandlesToEMAPosition,LinesPosition,LinesOnMacdMapPosition" + Environment.NewLine;
+            var allCandles = _dbRepository.GetList<AugmentedCandle>(p => p.Symbol == (int)symbol && p.Timeframe == (int)timeframe, CandleCounts).OrderBy(q => q.Time).ToList();
+            var LastsignalEstimates = CommonTradeOperations.GenerateSignalEstimates(allCandles);
+            LastsignalEstimates.ToList().ForEach(x => { result += CommonTradeOperations.CastCandleEstimateToCsv(x) + Environment.NewLine; });
+            return result;
         }
         #endregion
         #region PrivateMethods
@@ -412,6 +422,8 @@ namespace Todolist.Services
         }
         private void SignalNotify(NotifyType typo, KeyValuePair<AugmentedCandle, SignalEstimate> est,SignalTypes signalType, SignalResultClosureTypes closure = SignalResultClosureTypes.closedInMiddleByProvider)
         {
+            if (!EnableNotify)
+                return;
             bool notifyUpdated = false;
             if(typo == NotifyType.preSignal)
             {

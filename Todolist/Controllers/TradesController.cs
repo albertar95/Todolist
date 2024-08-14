@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using Todolist.Models;
@@ -82,6 +83,12 @@ namespace Todolist.Controllers
             _historicalDataGrabber.AutoRefreshCandles();
             _signalGenerator.AutoRefreshSignals();
             return RedirectToAction("Index","Trades", new { symbol = symbol, timeframe = timeframe });
+        }
+        [HttpGet]
+        public ActionResult GetSignalEstimates(Symbol symbol = Symbol.SOLUSDT,Timeframe timeframe = Timeframe.M5)
+        {
+            //System.IO.File.WriteAllText(@"D:\tmp\estimates.csv", _signalGenerator.GetSignalEstimates(Symbol.SOLUSDT,Timeframe.M5));
+            return File(Encoding.UTF8.GetBytes(_signalGenerator.GetSignalEstimates(symbol,timeframe)), "text/csv", "estimates.csv");
         }
     }
 }

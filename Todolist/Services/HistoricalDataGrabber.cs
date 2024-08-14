@@ -78,7 +78,7 @@ namespace Todolist.Services
             High = 179.57F,
             Low = 179.29F,
             Open = 179.57F,
-            Time = new DateTime(2024, 07, 22, 10, 0, 0),
+            Time = new DateTime(2024, 07, 22, 6, 30, 0),
             Volume = 0,
             RSI = 37.72F
         },
@@ -98,7 +98,7 @@ namespace Todolist.Services
             High = 67321F,
             Low = 67263F,
             Open = 67314F,
-            Time = new DateTime(2024, 07, 22, 13, 0, 0),
+            Time = new DateTime(2024, 07, 22, 9, 30, 0),
             Volume = 0,
             RSI = 51.75F
         }
@@ -222,6 +222,8 @@ namespace Todolist.Services
         {
             try
             {
+                if (DateTime.Now.ToLocalTime().Hour >= 21 && DateTime.Now.ToLocalTime().Hour <= 6)
+                    return new Tuple<bool, string>(true, "");
                 if (Convert.ToInt32(DateTime.Now.ToLocalTime().Subtract(lastCandle.Time).TotalMinutes) < (int)timeframe)
                     return new Tuple<bool, string>(true,"");
                 if (Convert.ToInt32(DateTime.Now.ToLocalTime().Subtract(lastCandle.Time).TotalMinutes) > 60)

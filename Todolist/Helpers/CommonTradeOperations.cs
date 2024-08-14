@@ -235,10 +235,10 @@ namespace Todolist.Helpers
         }
         public static string CastCandleEstimateToCsv(KeyValuePair<AugmentedCandle, SignalEstimate> input)
         {
-            return $"{input.Key.Time},{input.Key.Open},{input.Key.High},{input.Key.Low},{input.Key.Close},{input.Key.Volume},{input.Key.Sma50},{input.Key.Sma100},{input.Key.Ema12},{input.Key.Ema26}," +
+            return $"{input.Key.Time},{input.Key.Open},{input.Key.High},{input.Key.Low},{input.Key.Close}," +
                    $"{input.Key.MACDLine},{input.Key.SignalLine},{input.Key.Histogram},{input.Key.RSI}," +
-                   $"{input.Value.SmaPosition.ToString()},{input.Value.CandlesToSmaPosition.ToString()}," +
-                   $"{input.Value.LinesOnMacdMapPosition.ToString()},{input.Value.LinesPosition.ToString()}";
+                   $"{input.Value.CandlesToEMAPosition.ToString()},{input.Value.LinesPosition.ToString()}," +
+                   $"{input.Value.LinesOnMacdMapPosition.ToString()}";
         }
         public static string CastSignalToCsv(SignalDto input)
         {
