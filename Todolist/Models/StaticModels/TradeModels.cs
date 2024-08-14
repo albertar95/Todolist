@@ -9,7 +9,7 @@ namespace Todolist.Models
     {
         public enum Timeframe
         {
-            M15 = 15
+            M5 = 5, M15 = 15
         }
         public enum Symbol
         {

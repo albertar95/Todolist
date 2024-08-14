@@ -184,8 +184,8 @@ namespace Todolist.Services
                 currentSignal = newSignal;
                 SignalNotify(NotifyType.Signal, est,SignalTypes.Bullish);
             }
-            else
-                SignalNotify(NotifyType.preSignal, est, SignalTypes.Bullish);
+            //else
+            //    SignalNotify(NotifyType.preSignal, est, SignalTypes.Bullish);
         }
         public void FollowBearishCross(KeyValuePair<AugmentedCandle, SignalEstimate> est)
         {
@@ -215,8 +215,8 @@ namespace Todolist.Services
                 currentSignal = newSignal;
                 SignalNotify(NotifyType.Signal, est, SignalTypes.Bearish);
             }
-            else
-                SignalNotify(NotifyType.preSignal, est, SignalTypes.Bearish);
+            //else
+            //    SignalNotify(NotifyType.preSignal, est, SignalTypes.Bearish);
         }
         public void FollowActiveSignals(KeyValuePair<AugmentedCandle, SignalEstimate> estimate, bool IsTerminator = false)
         {
