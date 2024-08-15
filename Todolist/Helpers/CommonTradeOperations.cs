@@ -321,10 +321,10 @@ namespace Todolist.Helpers
         }
         static string CastSignalToCsv(SignalResult input)
         {
-            return $"{input.Signal.CreateDate},{input.Signal.Symbol.ToString()},{input.Signal.Timeframe.ToString()},{input.Signal.StartDate.ToUniversalTime()}," +
-                   $"{input.Signal.EnterPrice},{input.Signal.SignalType.ToString()},{input.Signal.StopLostPrice},{input.Signal.TakeProfitPrice}," +
-                   $"{input.Signal.WinChanceEstimate},{input.CloseDate.ToUniversalTime()},{input.ClosePrice},{input.ClosureType.ToString()},{input.Duration}," +
-                   $"{input.ProfitPercentage},{input.Status.ToString()}";
+            return $"{input.Signal.CreateDate},{Enum.GetName(typeof(Symbol),input.Signal.Symbol)},{Enum.GetName(typeof(Timeframe), input.Signal.Timeframe)},{input.Signal.StartDate.ToUniversalTime()}," +
+                   $"{input.Signal.EnterPrice},{Enum.GetName(typeof(SignalTypes), input.Signal.SignalType)},{input.Signal.StopLostPrice},{input.Signal.TakeProfitPrice}," +
+                   $"{input.Signal.WinChanceEstimate},{input.CloseDate.ToUniversalTime()},{input.ClosePrice},{Enum.GetName(typeof(SignalResultClosureTypes), input.ClosureType)},{input.Duration}," +
+                   $"{input.ProfitPercentage},{Enum.GetName(typeof(SignalResultStatus), input.Status)}";
         }
         static double GetCloseness(double input,double candleClose)
         {

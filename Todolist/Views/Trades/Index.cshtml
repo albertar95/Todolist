@@ -33,16 +33,14 @@
         </div>
         <!-- Card Body -->
         <div class="card-body">
-            <div class="row">
+            @*<div class="row">
                 <div class="col-md-12 mb-12 d-flex mb-4">
-                    @*@if (Model.candle != null)
-        {
-            <a class="btn btn-outline-info" href="@Url.Action("AutoRefreshAll","Trades",new { symbol = Model.candle.Symbol,timeframe = Model.candle.Timeframe })">Refresh</a>
-        }*@
-                    <a class="btn btn-outline-info mr-2" href="@Url.Action("GetSignalEstimates","Trades",new { symbol = Model.candle.Symbol,timeframe = Model.candle.Timeframe })">Download Estimates</a>
-                    <a class="btn btn-outline-danger" href="@Url.Action("DeleteSignals","Trades",new { symbol = Model.candle.Symbol,timeframe = Model.candle.Timeframe })">Delete</a>
+                    @if (Model.candle != null)
+                    {
+                        <a class="btn btn-outline-info" href="@Url.Action("AutoRefreshAll","Trades",new { symbol = Model.candle.Symbol,timeframe = Model.candle.Timeframe })">Refresh</a>
+                    }
                 </div>
-            </div>
+            </div>*@
             @if (Model.signal != null)
             {
                 <div class="row">
