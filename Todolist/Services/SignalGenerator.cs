@@ -107,7 +107,7 @@ namespace Todolist.Services
         }
         public string GetSignalEstimates(Symbol symbol,Timeframe timeframe,int CandleCounts = 10000)
         {
-            string result = "time,open,high,low,close,macdline,signalline,histogram,rsi,CandlesToEMAPosition,LinesPosition,LinesOnMacdMapPosition" + Environment.NewLine;
+            string result = "time,open,high,low,close,ema,macdline,signalline,histogram,rsi,CandlesToEMAPosition,LinesPosition,LinesOnMacdMapPosition" + Environment.NewLine;
             var allCandles = _dbRepository.GetList<AugmentedCandle>(p => p.Symbol == (int)symbol && p.Timeframe == (int)timeframe, CandleCounts).OrderBy(q => q.Time).ToList();
             var LastsignalEstimates = CommonTradeOperations.GenerateSignalEstimates(allCandles);
             LastsignalEstimates.ToList().ForEach(x => { result += CommonTradeOperations.CastCandleEstimateToCsv(x) + Environment.NewLine; });
