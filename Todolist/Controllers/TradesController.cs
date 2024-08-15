@@ -90,5 +90,10 @@ namespace Todolist.Controllers
             //System.IO.File.WriteAllText(@"D:\tmp\estimates.csv", _signalGenerator.GetSignalEstimates(Symbol.SOLUSDT,Timeframe.M5));
             return File(Encoding.UTF8.GetBytes(_signalGenerator.GetSignalEstimates(symbol,timeframe)), "text/csv", "estimates.csv");
         }
+        public ActionResult DeleteSignals(Symbol symbol, Timeframe timeframe)
+        {
+            _signalGenerator.DeleteSignals(symbol, timeframe);
+            return RedirectToAction("Index", "Trades",new { symbol = symbol, timeframe = timeframe });
+        }
     }
 }

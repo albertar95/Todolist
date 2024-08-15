@@ -191,9 +191,9 @@ namespace Todolist.Helpers
                     LinesOnMacdMapPosition = CalcLinesOnMacdMapPosition(tmpCandle.MACDLine, tmpCandle.SignalLine, m_linesOnMacdClosenessMargin),
                     LinesPosition = CalcLinesPosition(tmpCandle.MACDLine, tmpCandle.SignalLine, m_linesClosenessMargin),
                     SmaPosition = CalcSMAPosition(tmpCandle.Sma50, tmpCandle.Sma100, m_smaClosenessMargin),
-                    CandlesToSmaPosition = CalcCandlesToSMAPosition(tmpCandle.Close, tmpCandle.Sma50, tmpCandle.Sma100, smaAndCandleClosenessMargin),
+                    CandlesToSmaPosition = CalcCandlesToSMAPosition(tmpCandle.Close, tmpCandle.Sma50, tmpCandle.Sma100, m_smaAndCandleClosenessMargin),
                     signalType = SignalTypes.NotSet,
-                    CandlesToEMAPosition = CalcCandlesToEMAPosition(tmpCandle.Close,tmpCandle.Ema50 ?? 0, smaAndCandleClosenessMargin)
+                    CandlesToEMAPosition = CalcCandlesToEMAPosition(tmpCandle.Close,tmpCandle.Ema50 ?? 0, m_smaAndCandleClosenessMargin)
                 };
                 if (i <= 0)
                     tmpEstimate.HistogramPosition = HistogramPositions.unknown;

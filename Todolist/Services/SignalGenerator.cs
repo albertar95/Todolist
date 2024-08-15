@@ -390,7 +390,7 @@ namespace Todolist.Services
                     return CalcSLTPWithPercentage(close, FixedTpPercentage);
             }
         }
-        public void DeleteSignals(Symbol symbol, Timeframe timeframe, SignalProviders provider)
+        public void DeleteSignals(Symbol symbol, Timeframe timeframe, SignalProviders provider = SignalProviders.MaStrategyRevision)
         {
             foreach (var item in _dbRepository.GetList<SignalResult>(p => p.Signal.Symbol == (int)symbol && p.Signal.Timeframe == (int)timeframe && p.Signal.SignalProvider == (int)provider))
             {
