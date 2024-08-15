@@ -159,74 +159,77 @@
                 </div>
             </div>
             <div class="row">
-                <h4 class="header-control mb-4">Results List</h4>
-                <div class="table-responsive">
-                    <table class="table table-bordered" id="dataTable1" width="100%" cellspacing="0">
-                        <thead style="text-align:center;">
-                            <tr>
-                                <th>type</th>
-                                <th>Start Date</th>
-                                <th>Enter Price</th>
-                                <th>StopLost Price</th>
-                                <th>TakeProfit Price</th>
-                                <th>Close Date</th>
-                                <th>Close Price</th>
-                                <th>Profit</th>
-                                <th>Duration</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var tr in Model.SignalResults.OrderByDescending(p => p.StartDate))
-                            {
-                                switch (tr.Status)
+                <div class="col-md-10"><h4 class="header-control mb-4">Results List</h4></div>
+                <div class="col-md-2" style="text-align:right;"><a href="@Url.Action("DownloadSignalResult","Trades",new { symbol = Model.Symbol,timeframe = Model.Timeframe })" class="btn btn-outline-success"><i class="fa fa-download"></i></a></div>
+            </div>
+                <div class="row">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="dataTable1" width="100%" cellspacing="0">
+                            <thead style="text-align:center;">
+                                <tr>
+                                    <th>type</th>
+                                    <th>Start Date</th>
+                                    <th>Enter Price</th>
+                                    <th>StopLost Price</th>
+                                    <th>TakeProfit Price</th>
+                                    <th>Close Date</th>
+                                    <th>Close Price</th>
+                                    <th>Profit</th>
+                                    <th>Duration</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var tr in Model.SignalResults.OrderByDescending(p => p.StartDate))
                                 {
-                                    case Todolist.Models.TradeModels.SignalResultStatus.successful:
-                                        <tr style="text-align:center;background-color:#bbf2cf;">
-                                            <td>@tr.SignalType.ToString().Replace("ish","")</td>
-                                            <td>@Todolist.Helpers.Dates.ToPersianDate2(tr.StartDate, true)</td>
-                                            <td>@tr.EnterPrice.ToString("0.0##")</td>
-                                            <td>@tr.StopLostPrice.ToString("0.0##")</td>
-                                            <td>@tr.TakeProfitPrice.ToString("0.0##")</td>
-                                            <td>@Todolist.Helpers.Dates.ToPersianDate2(tr.CloseDate, true)</td>
-                                            <td>@tr.ClosePrice.ToString("0.0##")</td>
-                                            <td>@tr.ProfitPercentage.ToString("0.0##") %</td>
-                                            <td>@tr.Duration</td>
-                                        </tr>
-                                        break;
-                                    case Todolist.Models.TradeModels.SignalResultStatus.equal:
-                                        <tr style="text-align:center;background-color:khaki;">
-                                            <td>@tr.SignalType.ToString().Replace("ish", "")</td>
-                                            <td>@Todolist.Helpers.Dates.ToPersianDate2(tr.StartDate, true)</td>
-                                            <td>@tr.EnterPrice.ToString("0.0##")</td>
-                                            <td>@tr.StopLostPrice.ToString("0.0##")</td>
-                                            <td>@tr.TakeProfitPrice.ToString("0.0##")</td>
-                                            <td>@Todolist.Helpers.Dates.ToPersianDate2(tr.CloseDate, true)</td>
-                                            <td>@tr.ClosePrice.ToString("0.0##")</td>
-                                            <td>@tr.ProfitPercentage.ToString("0.0##") %</td>
-                                            <td>@tr.Duration</td>
-                                        </tr>
-                                        break;
-                                    case Todolist.Models.TradeModels.SignalResultStatus.unsuccessful:
-                                        <tr style="text-align:center;background-color:#f5c9ce;">
-                                            <td>@tr.SignalType.ToString().Replace("ish", "")</td>
-                                            <td>@Todolist.Helpers.Dates.ToPersianDate2(tr.StartDate, true)</td>
-                                            <td>@tr.EnterPrice.ToString("0.0##")</td>
-                                            <td>@tr.StopLostPrice.ToString("0.0##")</td>
-                                            <td>@tr.TakeProfitPrice.ToString("0.0##")</td>
-                                            <td>@Todolist.Helpers.Dates.ToPersianDate2(tr.CloseDate, true)</td>
-                                            <td>@tr.ClosePrice.ToString("0.0##")</td>
-                                            <td>@tr.ProfitPercentage.ToString("0.0##") %</td>
-                                            <td>@tr.Duration</td>
-                                        </tr>
-                                        break;
+                                    switch (tr.Status)
+                                    {
+                                        case Todolist.Models.TradeModels.SignalResultStatus.successful:
+                                            <tr style="text-align:center;background-color:#bbf2cf;">
+                                                <td>@tr.SignalType.ToString().Replace("ish", "")</td>
+                                                <td>@Todolist.Helpers.Dates.ToPersianDate2(tr.StartDate, true)</td>
+                                                <td>@tr.EnterPrice.ToString("0.0##")</td>
+                                                <td>@tr.StopLostPrice.ToString("0.0##")</td>
+                                                <td>@tr.TakeProfitPrice.ToString("0.0##")</td>
+                                                <td>@Todolist.Helpers.Dates.ToPersianDate2(tr.CloseDate, true)</td>
+                                                <td>@tr.ClosePrice.ToString("0.0##")</td>
+                                                <td>@tr.ProfitPercentage.ToString("0.0##") %</td>
+                                                <td>@tr.Duration</td>
+                                            </tr>
+                                            break;
+                                        case Todolist.Models.TradeModels.SignalResultStatus.equal:
+                                            <tr style="text-align:center;background-color:khaki;">
+                                                <td>@tr.SignalType.ToString().Replace("ish", "")</td>
+                                                <td>@Todolist.Helpers.Dates.ToPersianDate2(tr.StartDate, true)</td>
+                                                <td>@tr.EnterPrice.ToString("0.0##")</td>
+                                                <td>@tr.StopLostPrice.ToString("0.0##")</td>
+                                                <td>@tr.TakeProfitPrice.ToString("0.0##")</td>
+                                                <td>@Todolist.Helpers.Dates.ToPersianDate2(tr.CloseDate, true)</td>
+                                                <td>@tr.ClosePrice.ToString("0.0##")</td>
+                                                <td>@tr.ProfitPercentage.ToString("0.0##") %</td>
+                                                <td>@tr.Duration</td>
+                                            </tr>
+                                            break;
+                                        case Todolist.Models.TradeModels.SignalResultStatus.unsuccessful:
+                                            <tr style="text-align:center;background-color:#f5c9ce;">
+                                                <td>@tr.SignalType.ToString().Replace("ish", "")</td>
+                                                <td>@Todolist.Helpers.Dates.ToPersianDate2(tr.StartDate, true)</td>
+                                                <td>@tr.EnterPrice.ToString("0.0##")</td>
+                                                <td>@tr.StopLostPrice.ToString("0.0##")</td>
+                                                <td>@tr.TakeProfitPrice.ToString("0.0##")</td>
+                                                <td>@Todolist.Helpers.Dates.ToPersianDate2(tr.CloseDate, true)</td>
+                                                <td>@tr.ClosePrice.ToString("0.0##")</td>
+                                                <td>@tr.ProfitPercentage.ToString("0.0##") %</td>
+                                                <td>@tr.Duration</td>
+                                            </tr>
+                                            break;
+                                    }
                                 }
-                            }
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 </div>
 
 

@@ -294,17 +294,12 @@ namespace Todolist.Helpers
                 , GetCloseness(linesClosenessMargin, tmpcandle), GetCloseness(smaClosenessMargin, tmpcandle),
                 GetCloseness(smaAndCandleClosenessMargin, tmpcandle));
         }
-        public static void DownloadSignals(List<SignalResult> signals)
+        public static string DownloadSignals(List<SignalResult> signals)
         {
-            var filename = Path.Combine(FileSourcePath, $"signals_{DateTime.Now.Ticks}.csv");
-            using (StreamWriter writer = new StreamWriter(new FileStream(filename,
-            FileMode.Create, FileAccess.Write)))
-            {
-                writer.WriteLine("CreateDate,Symbol,Timeframe,StartDate,EnterPrice,SignalType,StopLostPrice,TakeProfitPrice,WinChanceEstimate,CloseDate" +
-                    ",ClosePrice,ClosureType,Duration,ProfitPercentage,Status");
-                signals.ForEach(x => { writer.WriteLine(CastSignalToCsv(x)); });
-            }
-            Console.WriteLine($"file create in {filename} at {DateTime.Now}");
+            string result = "CreateDate,Symbol,Timeframe,StartDate,EnterPrice,SignalType,StopLostPrice,TakeProfitPrice,WinChanceEstimate,CloseDate" +
+                    ",ClosePrice,ClosureType,Duration,ProfitPercentage,Status" + Environment.NewLine;
+            signals.ForEach(x => { result += CastSignalToCsv(x) + Environment.NewLine; });
+            return result;
         }
         public static void SignalReport(List<SignalResult> signals)
         {

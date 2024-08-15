@@ -95,5 +95,9 @@ namespace Todolist.Controllers
             _signalGenerator.DeleteSignals(symbol, timeframe);
             return RedirectToAction("Index", "Trades",new { symbol = symbol, timeframe = timeframe });
         }
+        public ActionResult DownloadSignalResult(Symbol symbol, Timeframe timeframe)
+        {
+            return File(Encoding.UTF8.GetBytes(_signalGenerator.GetSignalsWithResult(symbol, timeframe)), "text/csv", "results.csv");
+        }
     }
 }

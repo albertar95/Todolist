@@ -97,9 +97,9 @@ namespace Todolist.Services
             var LastsignalEstimates = CommonTradeOperations.GenerateSignalEstimates(allCandles);
             GenerateSignalAndFollow(LastsignalEstimates);
         }
-        public void GetSignalsWithResult(Symbol symbol, Timeframe timeframe, SignalProviders provider)
+        public string GetSignalsWithResult(Symbol symbol, Timeframe timeframe, SignalProviders provider = SignalProviders.MaStrategyRevision)
         {
-            CommonTradeOperations.DownloadSignals(_dbRepository.GetList<SignalResult>(p => p.Signal.Timeframe == (int)timeframe && p.Signal.Symbol == (int)symbol && p.Signal.SignalProvider == (int)provider));
+            return CommonTradeOperations.DownloadSignals(_dbRepository.GetList<SignalResult>(p => p.Signal.Timeframe == (int)timeframe && p.Signal.Symbol == (int)symbol && p.Signal.SignalProvider == (int)provider));
         }
         public void GetSignalReport(Symbol symbol, Timeframe timeframe, SignalProviders provider)
         {

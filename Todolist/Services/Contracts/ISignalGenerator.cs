@@ -11,7 +11,7 @@ namespace Todolist.Services.Contracts
     {
         void AutoRefreshSignals();
         void SeedSignals(Symbol symbol, Timeframe timeframe, bool clearPrevious = false);
-        void GetSignalsWithResult(Symbol symbol, Timeframe timeframe, SignalProviders provider);
+        string GetSignalsWithResult(Symbol symbol, Timeframe timeframe, SignalProviders provider = SignalProviders.MaStrategyRevision);
         void GetSignalReport(Symbol symbol, Timeframe timeframe, SignalProviders provider);
         string GetSignalEstimates(Symbol symbol, Timeframe timeframe, int CandleCounts = 10000);
         void DeleteSignals(Symbol symbol, Timeframe timeframe, SignalProviders provider = SignalProviders.MaStrategyRevision);
