@@ -170,29 +170,32 @@ namespace Todolist.Services
         {
             if (est.Value.CandlesToEMAPosition == CandlesToEMAPositions.UpperCandle)//second criteria met
             {
-                byte winchance = 75;
-                var newSignal = new Signal()
+                if(est.Key.Time.Hour >= 6 && est.Key.Time.Hour <= 21)
                 {
-                    Id = Guid.NewGuid(),
-                    CreateDate = DateTime.Now,
-                    EnterPrice = est.Key.Close,
-                    IsActive = true,
-                    StartDate = est.Key.Time,
-                    Symbol = est.Key.Symbol,
-                    Timeframe = est.Key.Timeframe,
-                    SignalType = (int)SignalTypes.Bullish
-                };
-                newSignal.SignalProvider = (int)SignalProviders.MaStrategyRevision;
-                newSignal.StopLostPrice = CalcCurrentSL(est.Key.Close, SignalTypes.Bullish);
-                newSignal.TakeProfitPrice = CalcCurrentTP(est.Key.Close, SignalTypes.Bullish);
-                if (est.Value.HistogramPosition == HistogramPositions.UpperBaseLineAscending ||
-                    est.Value.HistogramPosition == HistogramPositions.BellowBaseLineAscending)//optional forth criteria
-                    winchance += 10;
-                newSignal.WinChanceEstimate = winchance;
-                _dbRepository.Add(newSignal);
-                SignalStatus = SignalCreationStatus.BullSignalCreated;
-                currentSignal = newSignal;
-                SignalNotify(NotifyType.Signal, est,SignalTypes.Bullish);
+                    byte winchance = 75;
+                    var newSignal = new Signal()
+                    {
+                        Id = Guid.NewGuid(),
+                        CreateDate = DateTime.Now,
+                        EnterPrice = est.Key.Close,
+                        IsActive = true,
+                        StartDate = est.Key.Time,
+                        Symbol = est.Key.Symbol,
+                        Timeframe = est.Key.Timeframe,
+                        SignalType = (int)SignalTypes.Bullish
+                    };
+                    newSignal.SignalProvider = (int)SignalProviders.MaStrategyRevision;
+                    newSignal.StopLostPrice = CalcCurrentSL(est.Key.Close, SignalTypes.Bullish);
+                    newSignal.TakeProfitPrice = CalcCurrentTP(est.Key.Close, SignalTypes.Bullish);
+                    if (est.Value.HistogramPosition == HistogramPositions.UpperBaseLineAscending ||
+                        est.Value.HistogramPosition == HistogramPositions.BellowBaseLineAscending)//optional forth criteria
+                        winchance += 10;
+                    newSignal.WinChanceEstimate = winchance;
+                    _dbRepository.Add(newSignal);
+                    SignalStatus = SignalCreationStatus.BullSignalCreated;
+                    currentSignal = newSignal;
+                    SignalNotify(NotifyType.Signal, est, SignalTypes.Bullish);
+                }
             }
             //else
             //    SignalNotify(NotifyType.preSignal, est, SignalTypes.Bullish);
@@ -201,29 +204,32 @@ namespace Todolist.Services
         {
             if (est.Value.CandlesToEMAPosition == CandlesToEMAPositions.UpperEMA)//second criteria met
             {
-                byte winchance = 75;
-                var newSignal = new Signal()
+                if (est.Key.Time.Hour >= 6 && est.Key.Time.Hour <= 21)
                 {
-                    Id = Guid.NewGuid(),
-                    CreateDate = DateTime.Now,
-                    EnterPrice = est.Key.Close,
-                    IsActive = true,
-                    StartDate = est.Key.Time,
-                    Symbol = est.Key.Symbol,
-                    Timeframe = est.Key.Timeframe,
-                    SignalType = (int)SignalTypes.Bearish
-                };
-                newSignal.SignalProvider = (int)SignalProviders.MaStrategyRevision;
-                newSignal.StopLostPrice = CalcCurrentSL(est.Key.Close, SignalTypes.Bearish);
-                newSignal.TakeProfitPrice = CalcCurrentTP(est.Key.Close, SignalTypes.Bearish);
-                if (est.Value.HistogramPosition == HistogramPositions.UpperBaseLineDescending ||
-                    est.Value.HistogramPosition == HistogramPositions.BellowBaseLineDescending)//optional forth criteria
-                    winchance += 10;
-                newSignal.WinChanceEstimate = winchance;
-                _dbRepository.Add(newSignal);
-                SignalStatus = SignalCreationStatus.BearSignalCreated;
-                currentSignal = newSignal;
-                SignalNotify(NotifyType.Signal, est, SignalTypes.Bearish);
+                    byte winchance = 75;
+                    var newSignal = new Signal()
+                    {
+                        Id = Guid.NewGuid(),
+                        CreateDate = DateTime.Now,
+                        EnterPrice = est.Key.Close,
+                        IsActive = true,
+                        StartDate = est.Key.Time,
+                        Symbol = est.Key.Symbol,
+                        Timeframe = est.Key.Timeframe,
+                        SignalType = (int)SignalTypes.Bearish
+                    };
+                    newSignal.SignalProvider = (int)SignalProviders.MaStrategyRevision;
+                    newSignal.StopLostPrice = CalcCurrentSL(est.Key.Close, SignalTypes.Bearish);
+                    newSignal.TakeProfitPrice = CalcCurrentTP(est.Key.Close, SignalTypes.Bearish);
+                    if (est.Value.HistogramPosition == HistogramPositions.UpperBaseLineDescending ||
+                        est.Value.HistogramPosition == HistogramPositions.BellowBaseLineDescending)//optional forth criteria
+                        winchance += 10;
+                    newSignal.WinChanceEstimate = winchance;
+                    _dbRepository.Add(newSignal);
+                    SignalStatus = SignalCreationStatus.BearSignalCreated;
+                    currentSignal = newSignal;
+                    SignalNotify(NotifyType.Signal, est, SignalTypes.Bearish);
+                }
             }
             //else
             //    SignalNotify(NotifyType.preSignal, est, SignalTypes.Bearish);
@@ -249,11 +255,11 @@ namespace Todolist.Services
                 IsClosure = true;
                 res = SignalResultClosureTypes.closedInMiddleByProvider;
             }
-            else if (est.Value.LinesPosition == LinesPositions.UpperSignal || IsTerminator)
-            {
-                IsClosure = true;
-                res = SignalResultClosureTypes.closedInMiddleByProvider;
-            }
+            //else if (est.Value.LinesPosition == LinesPositions.UpperSignal || IsTerminator)
+            //{
+            //    IsClosure = true;
+            //    res = SignalResultClosureTypes.closedInMiddleByProvider;
+            //}
             else if (est.Key.Close >= currentSignal.TakeProfitPrice || est.Key.High >= currentSignal.TakeProfitPrice)
             {
                 IsClosure = true;
@@ -312,11 +318,11 @@ namespace Todolist.Services
                 IsClosure = true;
                 res = SignalResultClosureTypes.closedInMiddleByProvider;
             }
-            else if (est.Value.LinesPosition == LinesPositions.UpperProvider || IsTerminator)
-            {
-                IsClosure = true;
-                res = SignalResultClosureTypes.closedInMiddleByProvider;
-            }
+            //else if (est.Value.LinesPosition == LinesPositions.UpperProvider || IsTerminator)
+            //{
+            //    IsClosure = true;
+            //    res = SignalResultClosureTypes.closedInMiddleByProvider;
+            //}
             else if (est.Key.Close <= currentSignal.TakeProfitPrice || est.Key.Low <= currentSignal.TakeProfitPrice)
             {
                 IsClosure = true;
@@ -392,14 +398,8 @@ namespace Todolist.Services
         }
         public void DeleteSignals(Symbol symbol, Timeframe timeframe, SignalProviders provider = SignalProviders.MaStrategyRevision)
         {
-            foreach (var item in _dbRepository.GetList<SignalResult>(p => p.Signal.Symbol == (int)symbol && p.Signal.Timeframe == (int)timeframe && p.Signal.SignalProvider == (int)provider))
-            {
-                _dbRepository.Delete(item);
-            }
-            foreach (var item in _dbRepository.GetList<Signal>(p => p.Symbol == (int)symbol && p.Timeframe == (int)timeframe && p.SignalProvider == (int)provider))
-            {
-                _dbRepository.Delete(item);
-            }
+            _dbRepository.DeleteBatch(_dbRepository.GetList<SignalResult>(p => p.Signal.Symbol == (int)symbol && p.Signal.Timeframe == (int)timeframe && p.Signal.SignalProvider == (int)provider));
+            _dbRepository.DeleteBatch(_dbRepository.GetList<Signal>(p => p.Symbol == (int)symbol && p.Timeframe == (int)timeframe && p.SignalProvider == (int)provider));
         }
         private double CalcSLTPWithPercentage(double input,double percentage)
         {

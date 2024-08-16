@@ -162,7 +162,7 @@
                 <div class="col-md-10"><h4 class="header-control mb-4">Results List</h4></div>
                 <div class="col-md-2" style="text-align:right;">
                     @*<a class="btn btn-outline-info mr-2" href="@Url.Action("GetSignalEstimates","Trades",new { symbol = Model.Symbol,timeframe = Model.Timeframe })">Download Estimates</a>*@
-                    <a class="btn btn-outline-danger mr-2" href="@Url.Action("DeleteSignals","Trades",new { symbol = Model.Symbol,timeframe = Model.Timeframe })"><i class="fa fa-trash"></i></a>
+                    <a class="btn btn-outline-danger mr-2" href="#" data-toggle="modal" data-target="#deleteModal"><i class="fa fa-trash"></i></a>
                     <a href="@Url.Action("DownloadSignalResult","Trades",new { symbol = Model.Symbol,timeframe = Model.Timeframe })" class="btn btn-outline-success"><i class="fa fa-download"></i></a>
                 </div>
             </div>
@@ -236,6 +236,27 @@
         </div>
 </div>
 
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">alert</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="txtmodalBody">are you sure you want to delete all signals for this timeframe?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                <a class="btn btn-danger" href="@Url.Action("DeleteSignals","Trades",new { symbol = Model.Symbol,timeframe = Model.Timeframe })" id="btnMDelete">Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 @section Scripts
     {
@@ -244,7 +265,8 @@
     <script type="text/javascript">
         $(function () {
             $("#dataTable1").DataTable({
-                "order": [[1, "desc"]]
+                "order": [[1, "desc"]],
+                "pageLength": 50
             });
             $("#sltCurrentMonth").val(@Model.CurrentMonth).change();
             SetAreaChart('SignalResultsArea',@Html.Raw(Model.SignalResultsAreaChart.Item1),@Html.Raw(Model.SignalResultsAreaChart.Item2),'%');

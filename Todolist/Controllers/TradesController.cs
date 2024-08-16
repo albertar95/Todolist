@@ -62,22 +62,6 @@ namespace Todolist.Controllers
                 Month = Helpers.Dates.CurrentMonth();
             return View(_requestProcessor.GetSignalResults(symbol,timeframe,Month));
         }
-
-        //windows service methods
-        [HttpPost]
-        public ActionResult AutoRefreshCandles()
-        {
-            var result = _historicalDataGrabber.AutoRefreshCandles();
-            string message = "";
-            result.Item2.ForEach(x => { message += $"{x.Item1} - {x.Item2},"; });
-            return Json(new { hasError = result.Item1, message =  message});
-        }
-        [HttpPost]
-        public ActionResult AutoRefreshSignals()
-        {
-            _signalGenerator.AutoRefreshSignals();
-            return Json(new { hasValue = true });
-        }
         public ActionResult AutoRefreshAll(Symbol symbol,Timeframe timeframe)
         {
             _historicalDataGrabber.AutoRefreshCandles();
@@ -93,11 +77,27 @@ namespace Todolist.Controllers
         public ActionResult DeleteSignals(Symbol symbol, Timeframe timeframe)
         {
             _signalGenerator.DeleteSignals(symbol, timeframe);
-            return RedirectToAction("Index", "Trades",new { symbol = symbol, timeframe = timeframe });
+            return RedirectToAction("SignalResults", "Trades",new { symbol = symbol, timeframe = timeframe });
         }
         public ActionResult DownloadSignalResult(Symbol symbol, Timeframe timeframe)
         {
-            return File(Encoding.UTF8.GetBytes(_signalGenerator.GetSignalsWithResult(symbol, timeframe)), "text/csv", "results.csv");
+            return File(Encoding.UTF8.GetBytes(_signalGenerator.GetSignalsWithResult(symbol, timeframe)), "text/csv", $"results_{symbol.ToString()}_{timeframe.ToString()}.csv");
+        }
+
+        //windows service methods
+        [HttpPost]
+        public ActionResult AutoRefreshCandles()
+        {
+            var result = _historicalDataGrabber.AutoRefreshCandles();
+            string message = "";
+            result.Item2.ForEach(x => { message += $"{x.Item1} - {x.Item2},"; });
+            return Json(new { hasError = result.Item1, message = message });
+        }
+        [HttpGet]
+        public ActionResult AutoRefreshSignals()
+        {
+            _signalGenerator.AutoRefreshSignals();
+            return Json(new { hasValue = true });
         }
     }
 }
