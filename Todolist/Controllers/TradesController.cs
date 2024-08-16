@@ -93,7 +93,7 @@ namespace Todolist.Controllers
             result.Item2.ForEach(x => { message += $"{x.Item1} - {x.Item2},"; });
             return Json(new { hasError = result.Item1, message = message });
         }
-        [HttpGet]
+        [HttpPost]
         public ActionResult AutoRefreshSignals()
         {
             _signalGenerator.AutoRefreshSignals();
