@@ -71,6 +71,7 @@ namespace Todolist.Services
                 DeleteSignals(symbol, timeframe, SignalProviders.MaStrategyRevision);
             var allCandles = _dbRepository.GetList<AugmentedCandle>(p => p.Symbol == (int)symbol && p.Timeframe == (int)timeframe, 10000).OrderBy(q => q.Time).ToList();
             var LastsignalEstimates = CommonTradeOperations.GenerateSignalEstimates(allCandles);
+            EnableNotify = false;
             GenerateSignalAndFollow(LastsignalEstimates);
         }
         public void UpdateSignals(Symbol symbol, Timeframe timeframe)
@@ -377,11 +378,11 @@ namespace Todolist.Services
             switch (signalTypes)
             {
                 case SignalTypes.Bullish:
-                    return close - CalcSLTPWithPercentage(close, FixedSlPercentage);
+                    return close - CalcSLTPWithPercentage(close, true);
                 case SignalTypes.Bearish:
-                    return close + CalcSLTPWithPercentage(close, FixedSlPercentage);
+                    return close + CalcSLTPWithPercentage(close, true);
                 default:
-                    return CalcSLTPWithPercentage(close, FixedSlPercentage);
+                    return CalcSLTPWithPercentage(close, true);
             }
         }
         public double CalcCurrentTP(double close, SignalTypes signalTypes)
@@ -389,11 +390,11 @@ namespace Todolist.Services
             switch (signalTypes)
             {
                 case SignalTypes.Bullish:
-                    return close + CalcSLTPWithPercentage(close, FixedTpPercentage);
+                    return close + CalcSLTPWithPercentage(close, false);
                 case SignalTypes.Bearish:
-                    return close - CalcSLTPWithPercentage(close, FixedTpPercentage);
+                    return close - CalcSLTPWithPercentage(close, false);
                 default:
-                    return CalcSLTPWithPercentage(close, FixedTpPercentage);
+                    return CalcSLTPWithPercentage(close, false);
             }
         }
         public void DeleteSignals(Symbol symbol, Timeframe timeframe, SignalProviders provider = SignalProviders.MaStrategyRevision)
@@ -401,9 +402,12 @@ namespace Todolist.Services
             _dbRepository.DeleteBatch(_dbRepository.GetList<SignalResult>(p => p.Signal.Symbol == (int)symbol && p.Signal.Timeframe == (int)timeframe && p.Signal.SignalProvider == (int)provider));
             _dbRepository.DeleteBatch(_dbRepository.GetList<Signal>(p => p.Symbol == (int)symbol && p.Timeframe == (int)timeframe && p.SignalProvider == (int)provider));
         }
-        private double CalcSLTPWithPercentage(double input,double percentage)
+        private double CalcSLTPWithPercentage(double input,bool IsSl)
         {
-            return (input * percentage) / 100F;
+            if(IsSl)
+                return (input * FixedSlPercentage) / 100F;
+            else
+                return (input * FixedSlPercentage * FixedTpPercentage) / 100F;
         }
         private string GetEmailMessage(NotifyType typo, KeyValuePair<AugmentedCandle, SignalEstimate> est, SignalTypes signalType, SignalResultClosureTypes closure = SignalResultClosureTypes.closedInMiddleByProvider)
         {
