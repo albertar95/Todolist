@@ -288,6 +288,10 @@ namespace Todolist.Services
                     ProfitPercentage = est.Key.High > est.Key.Close ? CommonTradeOperations.CalcProfit(currentSignal.EnterPrice, est.Key.High, currentSignal.StopLostPrice, (SignalTypes)currentSignal.SignalType)
                     : CommonTradeOperations.CalcProfit(currentSignal.EnterPrice, est.Key.Close, currentSignal.StopLostPrice, (SignalTypes)currentSignal.SignalType)
                 };
+                if (newSignalResult.ProfitPercentage > FixedTpPercentage)
+                    newSignalResult.ProfitPercentage = FixedTpPercentage;
+                if (newSignalResult.ProfitPercentage < (FixedSlPercentage*-1))
+                    newSignalResult.ProfitPercentage = (FixedSlPercentage * -1);
                 if (newSignalResult.Duration <= 0)
                     newSignalResult.Status = (int)SignalResultStatus.equal;
                 else
