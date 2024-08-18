@@ -10,6 +10,7 @@ using static Todolist.Models.TradeModels;
 
 namespace Todolist.Controllers
 {
+    [Authorize]
     public class TradesController : Controller
     {
         private readonly IRequestProcessor _requestProcessor;
