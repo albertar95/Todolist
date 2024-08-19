@@ -120,6 +120,12 @@ namespace Todolist.Services
             bool hasError = false;
             try
             {
+                var apis = _dbRepository.GetList<MarketDataCredential>(p => p.CallCounter > 0);
+                foreach (var api in apis)
+                {
+                    api.CallCounter = 1000;
+                    _dbRepository.Update(api);
+                }
                 foreach (var sym in Symbol)
                 {
                     foreach (var tf in Timeframes)

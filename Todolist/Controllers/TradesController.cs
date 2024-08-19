@@ -86,6 +86,7 @@ namespace Todolist.Controllers
         }
 
         //windows service methods
+        [AllowAnonymous]
         [HttpPost]
         public ActionResult AutoRefreshCandles()
         {
@@ -94,6 +95,7 @@ namespace Todolist.Controllers
             result.Item2.ForEach(x => { message += $"{x.Item1} - {x.Item2},"; });
             return Json(new { hasError = result.Item1, message = message });
         }
+        [AllowAnonymous]
         [HttpPost]
         public ActionResult AutoRefreshSignals()
         {
