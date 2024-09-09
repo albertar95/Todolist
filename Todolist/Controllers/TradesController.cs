@@ -87,7 +87,7 @@ namespace Todolist.Controllers
 
         //windows service methods
         [AllowAnonymous]
-        [HttpPost]
+        [HttpGet]
         public ActionResult AutoRefreshCandles()
         {
             var result = _historicalDataGrabber.AutoRefreshCandles();

@@ -41,6 +41,8 @@
           <Property Name="Histogram" Type="float" Nullable="false" />
           <Property Name="RSI" Type="float" Nullable="false" />
           <Property Name="Ema50" Type="float" />
+          <Property Name="Ema100" Type="float" />
+          <Property Name="Ema200" Type="float" />
         </EntityType>
         <EntityType Name="Goals">
           <Key>
@@ -239,7 +241,6 @@
           <Property Name="CreateDate" Type="datetime" Nullable="false" />
           <Property Name="LastLoginDate" Type="datetime" />
           <Property Name="IsDisabled" Type="bit" Nullable="false" />
-          <Property Name="ProfilePic" Type="varbinary(max)" />
         </EntityType>
         <Association Name="FK_Accounts_Users">
           <End Role="Users" Type="Self.Users" Multiplicity="1" />
@@ -718,7 +719,23 @@
             <End Role="Tasks" EntitySet="Tasks" />
             <End Role="Schedules" EntitySet="Schedules" />
           </AssociationSet>
+          <EntitySet Name="Accounts" EntityType="ToDoListDbModel.Account" />
+          <EntitySet Name="Transactions" EntityType="ToDoListDbModel.Transaction" />
+          <EntitySet Name="MarketDataCredentials" EntityType="ToDoListDbModel.MarketDataCredential" />
+          <EntitySet Name="TransactionGroups" EntityType="ToDoListDbModel.TransactionGroup" />
+          <EntitySet Name="SignalResults" EntityType="ToDoListDbModel.SignalResult" />
+          <EntitySet Name="Signals" EntityType="ToDoListDbModel.Signal" />
+          <AssociationSet Name="FK_SignalResults_Signals" Association="ToDoListDbModel.FK_SignalResults_Signals">
+            <End Role="Signal" EntitySet="Signals" />
+            <End Role="SignalResult" EntitySet="SignalResults" />
+          </AssociationSet>
+          <EntitySet Name="NotifyLogs" EntityType="ToDoListDbModel.NotifyLog" />
+          <EntitySet Name="AugmentedCandles" EntityType="ToDoListDbModel.AugmentedCandle" />
           <EntitySet Name="Users" EntityType="ToDoListDbModel.User" />
+          <AssociationSet Name="FK_Accounts_Users" Association="ToDoListDbModel.FK_Accounts_Users">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Account" EntitySet="Accounts" />
+          </AssociationSet>
           <AssociationSet Name="FK_Goals_Users" Association="ToDoListDbModel.FK_Goals_Users">
             <End Role="User" EntitySet="Users" />
             <End Role="Goal" EntitySet="Goals" />
@@ -743,31 +760,150 @@
             <End Role="User" EntitySet="Users" />
             <End Role="Task" EntitySet="Tasks" />
           </AssociationSet>
-          <EntitySet Name="Accounts" EntityType="ToDoListDbModel.Account" />
-          <AssociationSet Name="FK_Accounts_Users" Association="ToDoListDbModel.FK_Accounts_Users">
-            <End Role="User" EntitySet="Users" />
-            <End Role="Account" EntitySet="Accounts" />
-          </AssociationSet>
-          <EntitySet Name="Transactions" EntityType="ToDoListDbModel.Transaction" />
-          <AssociationSet Name="FK_Transactions_Users" Association="ToDoListDbModel.FK_Transactions_Users">
-            <End Role="User" EntitySet="Users" />
-            <End Role="Transaction" EntitySet="Transactions" />
-          </AssociationSet>
-          <EntitySet Name="MarketDataCredentials" EntityType="ToDoListDbModel.MarketDataCredential" />
-          <EntitySet Name="TransactionGroups" EntityType="ToDoListDbModel.TransactionGroup" />
           <AssociationSet Name="FK_TransactionTypes_Users" Association="ToDoListDbModel.FK_TransactionTypes_Users">
             <End Role="User" EntitySet="Users" />
             <End Role="TransactionGroup" EntitySet="TransactionGroups" />
           </AssociationSet>
-          <EntitySet Name="AugmentedCandles" EntityType="ToDoListDbModel.AugmentedCandle" />
-          <EntitySet Name="SignalResults" EntityType="ToDoListDbModel.SignalResult" />
-          <EntitySet Name="Signals" EntityType="ToDoListDbModel.Signal" />
-          <AssociationSet Name="FK_SignalResults_Signals" Association="ToDoListDbModel.FK_SignalResults_Signals">
-            <End Role="Signal" EntitySet="Signals" />
-            <End Role="SignalResult" EntitySet="SignalResults" />
+          <AssociationSet Name="FK_Transactions_Users" Association="ToDoListDbModel.FK_Transactions_Users">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Transaction" EntitySet="Transactions" />
           </AssociationSet>
-          <EntitySet Name="NotifyLogs" EntityType="ToDoListDbModel.NotifyLog" />
           </EntityContainer>
+        <EntityType Name="Account">
+          <Key>
+            <PropertyRef Name="NidAccount" />
+          </Key>
+          <Property Name="NidAccount" Type="Guid" Nullable="false" />
+          <Property Name="Title" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="LastModified" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Amount" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+          <Property Name="LendAmount" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="UserId" Type="Guid" Nullable="false" />
+          <Property Name="IsBackup" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="User" Relationship="ToDoListDbModel.FK_Accounts_Users" FromRole="Account" ToRole="User" />
+        </EntityType>
+        <EntityType Name="Transaction">
+          <Key>
+            <PropertyRef Name="NidTransaction" />
+          </Key>
+          <Property Name="NidTransaction" Type="Guid" Nullable="false" />
+          <Property Name="TransactionType" Type="Byte" Nullable="false" />
+          <Property Name="PayerAccount" Type="Guid" Nullable="false" />
+          <Property Name="RecieverAccount" Type="Guid" Nullable="false" />
+          <Property Name="Amount" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="TransactionReason" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="UserId" Type="Guid" Nullable="false" />
+          <Property Name="TransactionGroupId" Type="Guid" />
+          <NavigationProperty Name="User" Relationship="ToDoListDbModel.FK_Transactions_Users" FromRole="Transaction" ToRole="User" />
+        </EntityType>
+        <EntityType Name="MarketDataCredential">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Guid" Nullable="false" />
+          <Property Name="Symbol" Type="Int32" Nullable="false" />
+          <Property Name="Timeframe" Type="Int32" Nullable="false" />
+          <Property Name="ApiKey" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="true" />
+          <Property Name="Username" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Password" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CallCounter" Type="Int32" Nullable="false" />
+          <Property Name="RefreshDate" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="TransactionGroup">
+          <Key>
+            <PropertyRef Name="NidTransactionGroup" />
+          </Key>
+          <Property Name="NidTransactionGroup" Type="Guid" Nullable="false" />
+          <Property Name="Title" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="PaymentType" Type="Byte" Nullable="false" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="UserId" Type="Guid" Nullable="false" />
+          <Property Name="RelatedAccountId" Type="Guid" />
+          <NavigationProperty Name="User" Relationship="ToDoListDbModel.FK_TransactionTypes_Users" FromRole="TransactionGroup" ToRole="User" />
+        </EntityType>
+        <EntityType Name="SignalResult">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Guid" Nullable="false" />
+          <Property Name="SignalId" Type="Guid" Nullable="false" />
+          <Property Name="Status" Type="Int32" Nullable="false" />
+          <Property Name="ClosePrice" Type="Double" Nullable="false" />
+          <Property Name="ProfitPercentage" Type="Double" Nullable="false" />
+          <Property Name="Duration" Type="Int32" Nullable="false" />
+          <Property Name="CloseDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ClosureType" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Signal" Relationship="ToDoListDbModel.FK_SignalResults_Signals" FromRole="SignalResult" ToRole="Signal" />
+        </EntityType>
+        <EntityType Name="Signal">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Guid" Nullable="false" />
+          <Property Name="Symbol" Type="Int32" Nullable="false" />
+          <Property Name="Timeframe" Type="Int32" Nullable="false" />
+          <Property Name="SignalType" Type="Int32" Nullable="false" />
+          <Property Name="StartDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EnterPrice" Type="Double" Nullable="false" />
+          <Property Name="StopLostPrice" Type="Double" Nullable="false" />
+          <Property Name="TakeProfitPrice" Type="Double" Nullable="false" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="WinChanceEstimate" Type="Byte" Nullable="false" />
+          <Property Name="SignalProvider" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="SignalResults" Relationship="ToDoListDbModel.FK_SignalResults_Signals" FromRole="Signal" ToRole="SignalResult" />
+        </EntityType>
+        <Association Name="FK_SignalResults_Signals">
+          <End Type="ToDoListDbModel.Signal" Role="Signal" Multiplicity="1" />
+          <End Type="ToDoListDbModel.SignalResult" Role="SignalResult" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Signal">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="SignalResult">
+              <PropertyRef Name="SignalId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="NotifyLog">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Guid" Nullable="false" />
+          <Property Name="Symbol" Type="Int32" Nullable="false" />
+          <Property Name="Timeframe" Type="Int32" Nullable="false" />
+          <Property Name="LastNotify" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="AugmentedCandle">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Guid" Nullable="false" />
+          <Property Name="Symbol" Type="Int32" Nullable="false" />
+          <Property Name="Timeframe" Type="Int32" Nullable="false" />
+          <Property Name="Time" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Open" Type="Double" Nullable="false" />
+          <Property Name="High" Type="Double" Nullable="false" />
+          <Property Name="Low" Type="Double" Nullable="false" />
+          <Property Name="Close" Type="Double" Nullable="false" />
+          <Property Name="Volume" Type="Int32" Nullable="false" />
+          <Property Name="Sma50" Type="Double" Nullable="false" />
+          <Property Name="Sma100" Type="Double" Nullable="false" />
+          <Property Name="Ema12" Type="Double" Nullable="false" />
+          <Property Name="Ema26" Type="Double" Nullable="false" />
+          <Property Name="MACDLine" Type="Double" Nullable="false" />
+          <Property Name="SignalLine" Type="Double" Nullable="false" />
+          <Property Name="Histogram" Type="Double" Nullable="false" />
+          <Property Name="RSI" Type="Double" Nullable="false" />
+          <Property Name="Ema50" Type="Double" />
+          <Property Name="Ema100" Type="Double" />
+          <Property Name="Ema200" Type="Double" />
+        </EntityType>
         <EntityType Name="User">
           <Key>
             <PropertyRef Name="NidUser" />
@@ -779,17 +915,28 @@
           <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="LastLoginDate" Type="DateTime" Precision="3" />
           <Property Name="IsDisabled" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Accounts" Relationship="ToDoListDbModel.FK_Accounts_Users" FromRole="User" ToRole="Account" />
           <NavigationProperty Name="Goals" Relationship="ToDoListDbModel.FK_Goals_Users" FromRole="User" ToRole="Goal" />
           <NavigationProperty Name="NoteGroups" Relationship="ToDoListDbModel.FK_NoteGroups_Users" FromRole="User" ToRole="NoteGroup" />
           <NavigationProperty Name="Progresses" Relationship="ToDoListDbModel.FK_Progresses_Users" FromRole="User" ToRole="Progress" />
           <NavigationProperty Name="Routines" Relationship="ToDoListDbModel.FK_Routines_Users" FromRole="User" ToRole="Routine" />
           <NavigationProperty Name="Shields" Relationship="ToDoListDbModel.FK_Shields_Users" FromRole="User" ToRole="Shield" />
           <NavigationProperty Name="Tasks" Relationship="ToDoListDbModel.FK_Tasks_Users" FromRole="User" ToRole="Task" />
-          <NavigationProperty Name="Accounts" Relationship="ToDoListDbModel.FK_Accounts_Users" FromRole="User" ToRole="Account" />
-          <NavigationProperty Name="Transactions" Relationship="ToDoListDbModel.FK_Transactions_Users" FromRole="User" ToRole="Transaction" />
           <NavigationProperty Name="TransactionGroups" Relationship="ToDoListDbModel.FK_TransactionTypes_Users" FromRole="User" ToRole="TransactionGroup" />
-          <Property Name="ProfilePic" Type="Binary" MaxLength="Max" FixedLength="false" />
+          <NavigationProperty Name="Transactions" Relationship="ToDoListDbModel.FK_Transactions_Users" FromRole="User" ToRole="Transaction" />
         </EntityType>
+        <Association Name="FK_Accounts_Users">
+          <End Type="ToDoListDbModel.User" Role="User" Multiplicity="1" />
+          <End Type="ToDoListDbModel.Account" Role="Account" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="NidUser" />
+            </Principal>
+            <Dependent Role="Account">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Goals_Users">
           <End Type="ToDoListDbModel.User" Role="User" Multiplicity="1" />
           <End Type="ToDoListDbModel.Goal" Role="Goal" Multiplicity="*" />
@@ -862,86 +1009,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="Account">
-          <Key>
-            <PropertyRef Name="NidAccount" />
-          </Key>
-          <Property Name="NidAccount" Type="Guid" Nullable="false" />
-          <Property Name="Title" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="LastModified" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="Amount" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
-          <Property Name="LendAmount" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
-          <Property Name="IsActive" Type="Boolean" Nullable="false" />
-          <Property Name="UserId" Type="Guid" Nullable="false" />
-          <Property Name="IsBackup" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="User" Relationship="ToDoListDbModel.FK_Accounts_Users" FromRole="Account" ToRole="User" />
-        </EntityType>
-        <Association Name="FK_Accounts_Users">
-          <End Type="ToDoListDbModel.User" Role="User" Multiplicity="1" />
-          <End Type="ToDoListDbModel.Account" Role="Account" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="User">
-              <PropertyRef Name="NidUser" />
-            </Principal>
-            <Dependent Role="Account">
-              <PropertyRef Name="UserId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <EntityType Name="Transaction">
-          <Key>
-            <PropertyRef Name="NidTransaction" />
-          </Key>
-          <Property Name="NidTransaction" Type="Guid" Nullable="false" />
-          <Property Name="TransactionType" Type="Byte" Nullable="false" />
-          <Property Name="PayerAccount" Type="Guid" Nullable="false" />
-          <Property Name="RecieverAccount" Type="Guid" Nullable="false" />
-          <Property Name="Amount" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
-          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="TransactionReason" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="UserId" Type="Guid" Nullable="false" />
-          <Property Name="TransactionGroupId" Type="Guid" />
-          <NavigationProperty Name="User" Relationship="ToDoListDbModel.FK_Transactions_Users" FromRole="Transaction" ToRole="User" />
-        </EntityType>
-        <Association Name="FK_Transactions_Users">
-          <End Type="ToDoListDbModel.User" Role="User" Multiplicity="1" />
-          <End Type="ToDoListDbModel.Transaction" Role="Transaction" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="User">
-              <PropertyRef Name="NidUser" />
-            </Principal>
-            <Dependent Role="Transaction">
-              <PropertyRef Name="UserId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <EntityType Name="MarketDataCredential">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Guid" Nullable="false" />
-          <Property Name="Symbol" Type="Int32" Nullable="false" />
-          <Property Name="Timeframe" Type="Int32" Nullable="false" />
-          <Property Name="ApiKey" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="true" />
-          <Property Name="Username" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="Password" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="CallCounter" Type="Int32" Nullable="false" />
-          <Property Name="RefreshDate" Type="DateTime" Nullable="false" Precision="3" />
-        </EntityType>
-        <EntityType Name="TransactionGroup">
-          <Key>
-            <PropertyRef Name="NidTransactionGroup" />
-          </Key>
-          <Property Name="NidTransactionGroup" Type="Guid" Nullable="false" />
-          <Property Name="Title" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="PaymentType" Type="Byte" Nullable="false" />
-          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="IsActive" Type="Boolean" Nullable="false" />
-          <Property Name="UserId" Type="Guid" Nullable="false" />
-          <Property Name="RelatedAccountId" Type="Guid" />
-          <NavigationProperty Name="User" Relationship="ToDoListDbModel.FK_TransactionTypes_Users" FromRole="TransactionGroup" ToRole="User" />
-        </EntityType>
         <Association Name="FK_TransactionTypes_Users">
           <End Type="ToDoListDbModel.User" Role="User" Multiplicity="1" />
           <End Type="ToDoListDbModel.TransactionGroup" Role="TransactionGroup" Multiplicity="*" />
@@ -954,83 +1021,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="AugmentedCandle">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Guid" Nullable="false" />
-          <Property Name="Symbol" Type="Int32" Nullable="false" />
-          <Property Name="Timeframe" Type="Int32" Nullable="false" />
-          <Property Name="Time" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="Open" Type="Double" Nullable="false" />
-          <Property Name="High" Type="Double" Nullable="false" />
-          <Property Name="Low" Type="Double" Nullable="false" />
-          <Property Name="Close" Type="Double" Nullable="false" />
-          <Property Name="Volume" Type="Int32" Nullable="false" />
-          <Property Name="Sma50" Type="Double" Nullable="false" />
-          <Property Name="Sma100" Type="Double" Nullable="false" />
-          <Property Name="Ema12" Type="Double" Nullable="false" />
-          <Property Name="Ema26" Type="Double" Nullable="false" />
-          <Property Name="MACDLine" Type="Double" Nullable="false" />
-          <Property Name="SignalLine" Type="Double" Nullable="false" />
-          <Property Name="Histogram" Type="Double" Nullable="false" />
-          <Property Name="RSI" Type="Double" Nullable="false" />
-          <Property Name="Ema50" Type="Double" />
-        </EntityType>
-        <EntityType Name="SignalResult">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Guid" Nullable="false" />
-          <Property Name="SignalId" Type="Guid" Nullable="false" />
-          <Property Name="Status" Type="Int32" Nullable="false" />
-          <Property Name="ClosePrice" Type="Double" Nullable="false" />
-          <Property Name="ProfitPercentage" Type="Double" Nullable="false" />
-          <Property Name="Duration" Type="Int32" Nullable="false" />
-          <Property Name="CloseDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="ClosureType" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Signal" Relationship="ToDoListDbModel.FK_SignalResults_Signals" FromRole="SignalResult" ToRole="Signal" />
-        </EntityType>
-        <EntityType Name="Signal">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Guid" Nullable="false" />
-          <Property Name="Symbol" Type="Int32" Nullable="false" />
-          <Property Name="Timeframe" Type="Int32" Nullable="false" />
-          <Property Name="SignalType" Type="Int32" Nullable="false" />
-          <Property Name="StartDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="EnterPrice" Type="Double" Nullable="false" />
-          <Property Name="StopLostPrice" Type="Double" Nullable="false" />
-          <Property Name="TakeProfitPrice" Type="Double" Nullable="false" />
-          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="IsActive" Type="Boolean" Nullable="false" />
-          <Property Name="WinChanceEstimate" Type="Byte" Nullable="false" />
-          <Property Name="SignalProvider" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="SignalResults" Relationship="ToDoListDbModel.FK_SignalResults_Signals" FromRole="Signal" ToRole="SignalResult" />
-        </EntityType>
-        <Association Name="FK_SignalResults_Signals">
-          <End Type="ToDoListDbModel.Signal" Role="Signal" Multiplicity="1" />
-          <End Type="ToDoListDbModel.SignalResult" Role="SignalResult" Multiplicity="*" />
+        <Association Name="FK_Transactions_Users">
+          <End Type="ToDoListDbModel.User" Role="User" Multiplicity="1" />
+          <End Type="ToDoListDbModel.Transaction" Role="Transaction" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Signal">
-              <PropertyRef Name="Id" />
+            <Principal Role="User">
+              <PropertyRef Name="NidUser" />
             </Principal>
-            <Dependent Role="SignalResult">
-              <PropertyRef Name="SignalId" />
+            <Dependent Role="Transaction">
+              <PropertyRef Name="UserId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="NotifyLog">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Guid" Nullable="false" />
-          <Property Name="Symbol" Type="Int32" Nullable="false" />
-          <Property Name="Timeframe" Type="Int32" Nullable="false" />
-          <Property Name="LastNotify" Type="DateTime" Nullable="false" Precision="3" />
-        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1153,20 +1155,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Users">
-            <EntityTypeMapping TypeName="ToDoListDbModel.User">
-              <MappingFragment StoreEntitySet="Users">
-                <ScalarProperty Name="ProfilePic" ColumnName="ProfilePic" />
-                <ScalarProperty Name="IsDisabled" ColumnName="IsDisabled" />
-                <ScalarProperty Name="LastLoginDate" ColumnName="LastLoginDate" />
-                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
-                <ScalarProperty Name="IsAdmin" ColumnName="IsAdmin" />
-                <ScalarProperty Name="Password" ColumnName="Password" />
-                <ScalarProperty Name="Username" ColumnName="Username" />
-                <ScalarProperty Name="NidUser" ColumnName="NidUser" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Accounts">
             <EntityTypeMapping TypeName="ToDoListDbModel.Account">
               <MappingFragment StoreEntitySet="Accounts">
@@ -1224,30 +1212,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="AugmentedCandles">
-            <EntityTypeMapping TypeName="ToDoListDbModel.AugmentedCandle">
-              <MappingFragment StoreEntitySet="AugmentedCandles">
-                <ScalarProperty Name="Ema50" ColumnName="Ema50" />
-                <ScalarProperty Name="RSI" ColumnName="RSI" />
-                <ScalarProperty Name="Histogram" ColumnName="Histogram" />
-                <ScalarProperty Name="SignalLine" ColumnName="SignalLine" />
-                <ScalarProperty Name="MACDLine" ColumnName="MACDLine" />
-                <ScalarProperty Name="Ema26" ColumnName="Ema26" />
-                <ScalarProperty Name="Ema12" ColumnName="Ema12" />
-                <ScalarProperty Name="Sma100" ColumnName="Sma100" />
-                <ScalarProperty Name="Sma50" ColumnName="Sma50" />
-                <ScalarProperty Name="Volume" ColumnName="Volume" />
-                <ScalarProperty Name="Close" ColumnName="Close" />
-                <ScalarProperty Name="Low" ColumnName="Low" />
-                <ScalarProperty Name="High" ColumnName="High" />
-                <ScalarProperty Name="Open" ColumnName="Open" />
-                <ScalarProperty Name="Time" ColumnName="Time" />
-                <ScalarProperty Name="Timeframe" ColumnName="Timeframe" />
-                <ScalarProperty Name="Symbol" ColumnName="Symbol" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="SignalResults">
             <EntityTypeMapping TypeName="ToDoListDbModel.SignalResult">
               <MappingFragment StoreEntitySet="SignalResults">
@@ -1288,6 +1252,45 @@
                 <ScalarProperty Name="Timeframe" ColumnName="Timeframe" />
                 <ScalarProperty Name="Symbol" ColumnName="Symbol" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AugmentedCandles">
+            <EntityTypeMapping TypeName="ToDoListDbModel.AugmentedCandle">
+              <MappingFragment StoreEntitySet="AugmentedCandles">
+                <ScalarProperty Name="Ema200" ColumnName="Ema200" />
+                <ScalarProperty Name="Ema100" ColumnName="Ema100" />
+                <ScalarProperty Name="Ema50" ColumnName="Ema50" />
+                <ScalarProperty Name="RSI" ColumnName="RSI" />
+                <ScalarProperty Name="Histogram" ColumnName="Histogram" />
+                <ScalarProperty Name="SignalLine" ColumnName="SignalLine" />
+                <ScalarProperty Name="MACDLine" ColumnName="MACDLine" />
+                <ScalarProperty Name="Ema26" ColumnName="Ema26" />
+                <ScalarProperty Name="Ema12" ColumnName="Ema12" />
+                <ScalarProperty Name="Sma100" ColumnName="Sma100" />
+                <ScalarProperty Name="Sma50" ColumnName="Sma50" />
+                <ScalarProperty Name="Volume" ColumnName="Volume" />
+                <ScalarProperty Name="Close" ColumnName="Close" />
+                <ScalarProperty Name="Low" ColumnName="Low" />
+                <ScalarProperty Name="High" ColumnName="High" />
+                <ScalarProperty Name="Open" ColumnName="Open" />
+                <ScalarProperty Name="Time" ColumnName="Time" />
+                <ScalarProperty Name="Timeframe" ColumnName="Timeframe" />
+                <ScalarProperty Name="Symbol" ColumnName="Symbol" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Users">
+            <EntityTypeMapping TypeName="ToDoListDbModel.User">
+              <MappingFragment StoreEntitySet="Users">
+                <ScalarProperty Name="IsDisabled" ColumnName="IsDisabled" />
+                <ScalarProperty Name="LastLoginDate" ColumnName="LastLoginDate" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="IsAdmin" ColumnName="IsAdmin" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="NidUser" ColumnName="NidUser" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

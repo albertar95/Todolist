@@ -93,20 +93,25 @@ namespace Todolist.Services
 
         public T GetMax<T,TKEY>(Expression<Func<T, TKEY>> predicate, Expression<Func<T, bool>> condition, string Include = "") where T : class
         {
-            if (!string.IsNullOrEmpty(Include))
+            if (_context.Set<T>().Any())
             {
-                if (condition != null)
-                    return _context.Set<T>().Include(Include).Where(condition).OrderByDescending(predicate).FirstOrDefault();
+                if (!string.IsNullOrEmpty(Include))
+                {
+                    if (condition != null)
+                        return _context.Set<T>().Include(Include).Where(condition).OrderByDescending(predicate).FirstOrDefault();
+                    else
+                        return _context.Set<T>().Include(Include).OrderByDescending(predicate).FirstOrDefault();
+                }
                 else
-                    return _context.Set<T>().Include(Include).OrderByDescending(predicate).FirstOrDefault();
+                {
+                    if (condition != null)
+                        return _context.Set<T>().Where(condition).OrderByDescending(predicate).FirstOrDefault();
+                    else
+                        return _context.Set<T>().OrderByDescending(predicate).FirstOrDefault();
+                }
             }
             else
-            {
-                if (condition != null)
-                    return _context.Set<T>().Where(condition).OrderByDescending(predicate).FirstOrDefault();
-                else
-                    return _context.Set<T>().OrderByDescending(predicate).FirstOrDefault();
-            }
+                return null;
         }
         public bool AddBatch<T>(List<T> entities,int batchSize = 1000) where T : class
         {

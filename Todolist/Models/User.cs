@@ -16,15 +16,15 @@ namespace Todolist.Models
     {
         public User()
         {
+            this.Accounts = new HashSet<Account>();
             this.Goals = new HashSet<Goal>();
             this.NoteGroups = new HashSet<NoteGroup>();
             this.Progresses = new HashSet<Progress>();
             this.Routines = new HashSet<Routine>();
             this.Shields = new HashSet<Shield>();
             this.Tasks = new HashSet<Task>();
-            this.Accounts = new HashSet<Account>();
-            this.Transactions = new HashSet<Transaction>();
             this.TransactionGroups = new HashSet<TransactionGroup>();
+            this.Transactions = new HashSet<Transaction>();
         }
     
         public System.Guid NidUser { get; set; }
@@ -34,16 +34,15 @@ namespace Todolist.Models
         public System.DateTime CreateDate { get; set; }
         public Nullable<System.DateTime> LastLoginDate { get; set; }
         public bool IsDisabled { get; set; }
-        public byte[] ProfilePic { get; set; }
     
+        public virtual ICollection<Account> Accounts { get; set; }
         public virtual ICollection<Goal> Goals { get; set; }
         public virtual ICollection<NoteGroup> NoteGroups { get; set; }
         public virtual ICollection<Progress> Progresses { get; set; }
         public virtual ICollection<Routine> Routines { get; set; }
         public virtual ICollection<Shield> Shields { get; set; }
         public virtual ICollection<Task> Tasks { get; set; }
-        public virtual ICollection<Account> Accounts { get; set; }
-        public virtual ICollection<Transaction> Transactions { get; set; }
         public virtual ICollection<TransactionGroup> TransactionGroups { get; set; }
+        public virtual ICollection<Transaction> Transactions { get; set; }
     }
 }

@@ -24,23 +24,25 @@ namespace Todolist.Services
         private readonly List<AugmentedCandle> InitCandle = new List<AugmentedCandle>(){
             new AugmentedCandle(){
             Id = new Guid(),
-            Sma50 = 165.92F,
-            Sma100 = 166.50F,
-            Ema12 = 164.89F,
-            Ema26 = 165.34F,
-            Ema50 = 165.80F,
-            MACDLine = -0.45F,
-            SignalLine = -0.35F,
-            Histogram = -0.10F,
+            Sma50 = 141.24F,
+            Sma100 = 142.11F,
+            Ema12 = 140.98F,
+            Ema26 = 141.23F,
+            Ema50 = 141.38F,
+            Ema100 = 141.65,
+            Ema200 = 141.27,
+            MACDLine = -0.24F,
+            SignalLine = -0.07F,
+            Histogram = 0.17F,
             Timeframe = (int)Timeframe.M15,
             Symbol = (int)TradeModels.Symbol.SOLUSDT,
             Close = 164.26F,
             High = 164.58F,
             Low = 164.26F,
             Open = 164.54F,
-            Time = new DateTime(2024, 06, 02, 10, 0, 0),
+            Time = new DateTime(2024, 07, 11, 08, 0, 0),
             Volume = 0,
-            RSI = 30.17F
+            RSI = 41.02F
         },
             new AugmentedCandle(){
             Id = new Guid(),
@@ -101,6 +103,28 @@ namespace Todolist.Services
             Time = new DateTime(2024, 07, 22, 9, 30, 0),
             Volume = 0,
             RSI = 51.75F
+        },
+            new AugmentedCandle(){
+            Id = new Guid(),
+            Sma50 = 43318F,
+            Sma100 = 41824F,
+            Ema12 = 43811F,
+            Ema26 = 43511F,
+            Ema50 = 43079F,
+            Ema100 = 42125,
+            Ema200 = 41960,
+            MACDLine = 308F,
+            SignalLine = 308F,
+            Histogram = 0F,
+            Timeframe = (int)Timeframe.H4,
+            Symbol = (int)TradeModels.Symbol.BTCUSDT,
+            Close = 43966F,
+            High = 43966F,
+            Low = 43371F,
+            Open = 43592F,
+            Time = new DateTime(2022, 02, 17, 7, 30, 0),
+            Volume = 0,
+            RSI = 54.76F
         }
         };
         private readonly IDbRepository _dbRepository;
@@ -356,7 +380,7 @@ namespace Todolist.Services
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return new byte[0];
             }

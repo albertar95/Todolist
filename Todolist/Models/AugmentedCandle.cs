@@ -32,5 +32,7 @@ namespace Todolist.Models
         public double Histogram { get; set; }
         public double RSI { get; set; }
         public Nullable<double> Ema50 { get; set; }
+        public Nullable<double> Ema100 { get; set; }
+        public Nullable<double> Ema200 { get; set; }
     }
 }

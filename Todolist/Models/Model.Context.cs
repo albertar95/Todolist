@@ -34,14 +34,14 @@ namespace Todolist.Models
         public DbSet<Schedule> Schedules { get; set; }
         public DbSet<Shield> Shields { get; set; }
         public DbSet<Task> Tasks { get; set; }
-        public DbSet<User> Users { get; set; }
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<MarketDataCredential> MarketDataCredentials { get; set; }
         public DbSet<TransactionGroup> TransactionGroups { get; set; }
-        public DbSet<AugmentedCandle> AugmentedCandles { get; set; }
         public DbSet<SignalResult> SignalResults { get; set; }
         public DbSet<Signal> Signals { get; set; }
         public DbSet<NotifyLog> NotifyLogs { get; set; }
+        public DbSet<AugmentedCandle> AugmentedCandles { get; set; }
+        public DbSet<User> Users { get; set; }
     }
 }
