@@ -250,8 +250,11 @@ namespace Todolist.Services
                     return new Tuple<bool, string>(true, "");
                 if (Convert.ToInt32(DateTime.Now.ToLocalTime().Subtract(lastCandle.Time).TotalMinutes) < (int)timeframe)
                     return new Tuple<bool, string>(true,"");
-                if (Convert.ToInt32(DateTime.Now.ToLocalTime().Subtract(lastCandle.Time).TotalMinutes) > 60)
-                    return new Tuple<bool, string>(true, "");
+                if((int)timeframe < 60)
+                {
+                    if (Convert.ToInt32(DateTime.Now.ToLocalTime().Subtract(lastCandle.Time).TotalMinutes) > 60)
+                        return new Tuple<bool, string>(true, "");
+                }
                 if (DateTime.Now.DayOfWeek == DayOfWeek.Saturday || DateTime.Now.DayOfWeek == DayOfWeek.Sunday)
                     return new Tuple<bool, string>(true, "");
                 if (lastCandle == null)
@@ -319,16 +322,31 @@ namespace Todolist.Services
         {
             try
             {
-                var hostResponse = callSourceUrl(symbol.ToString(), ((int)tf).ToString());
+                Timeframe FetchTimeframe = tf;
+                if (tf >= Timeframe.H1)
+                    FetchTimeframe = Timeframe.M30;
+                var hostResponse = callSourceUrl(symbol.ToString(), ((int)FetchTimeframe).ToString());
                 var bins = overallReadbin(hostResponse);
                 List<Candle> result = new List<Candle>();
                 result = symbol.ToString().ToLower().EndsWith("usdt") ? parseResponse(bins, 100) : parseResponse(bins);
-                return result;
+                if (tf >= Timeframe.H1)
+                    result = ProcessUpperMinuteCandles(result,tf);
+                    return result;
             }
             catch (Exception)
             {
                 return new List<Candle>();
             }
+        }
+        private List<Candle> ProcessUpperMinuteCandles(List<Candle> candles,Timeframe target)
+        {
+            List<Candle> result = new List<Candle>();
+            var ratio = (int)target / 30;
+            for (int i = 0; i < candles.Count / ratio; i++)
+            {
+                result.Add(candles[i*ratio]);
+            }
+            return result;
         }
         private byte[] callSourceUrl(string symbol, string timeframe)
         {
@@ -474,6 +492,8 @@ namespace Todolist.Services
                     tmpAug.Ema12 = CommonTradeOperations.EmaCalculator(candles[i].Close, result[i - 1].Ema12, 12F);
                     tmpAug.Ema26 = CommonTradeOperations.EmaCalculator(candles[i].Close, result[i - 1].Ema26, 26F);
                     tmpAug.Ema50 = CommonTradeOperations.EmaCalculator(candles[i].Close, result[i - 1].Ema50 ?? 0F, 50F);
+                    tmpAug.Ema100 = CommonTradeOperations.EmaCalculator(candles[i].Close, result[i - 1].Ema100 ?? 0F, 100F);
+                    tmpAug.Ema200 = CommonTradeOperations.EmaCalculator(candles[i].Close, result[i - 1].Ema200 ?? 0F, 200F);
                     tmpAug.MACDLine = tmpAug.Ema12 - tmpAug.Ema26;
                     tmpAug.SignalLine = CommonTradeOperations.EmaCalculator(tmpAug.MACDLine, result[i - 1].SignalLine, 9F);
                     tmpAug.Histogram = tmpAug.SignalLine - tmpAug.MACDLine;
@@ -516,6 +536,8 @@ namespace Todolist.Services
                 tmpAug.Ema12 = CommonTradeOperations.EmaCalculator(candles.Close, init.Ema12, 12F);
                 tmpAug.Ema26 = CommonTradeOperations.EmaCalculator(candles.Close, init.Ema26, 26F);
                 tmpAug.Ema50 = CommonTradeOperations.EmaCalculator(candles.Close, init.Ema50 ?? 0F, 50F);
+                tmpAug.Ema100 = CommonTradeOperations.EmaCalculator(candles.Close, init.Ema100 ?? 0F, 100F);
+                tmpAug.Ema200 = CommonTradeOperations.EmaCalculator(candles.Close, init.Ema200 ?? 0F, 200F);
                 tmpAug.MACDLine = tmpAug.Ema12 - tmpAug.Ema26;
                 tmpAug.SignalLine = CommonTradeOperations.EmaCalculator(tmpAug.MACDLine, init.SignalLine, 9F);
                 tmpAug.Histogram = tmpAug.SignalLine - tmpAug.MACDLine;
