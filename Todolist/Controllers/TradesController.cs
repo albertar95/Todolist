@@ -102,5 +102,14 @@ namespace Todolist.Controllers
             _signalGenerator.AutoRefreshSignals();
             return Json(new { hasValue = true });
         }
+
+        //new sentiment
+        [AllowAnonymous]
+        [HttpGet]
+        public ActionResult NewProcess()
+        {
+            _signalGenerator.ProcessHighsAndLows(Symbol.BTCUSDT,Timeframe.H4);
+            return Json(new { hasValue = true });
+        }
     }
 }

@@ -465,5 +465,44 @@ namespace Todolist.Services
             });
         }
         #endregion
+        #region new_sentiment
+        public void ProcessHighsAndLows(Symbol symbol,Timeframe timeframe)
+        {
+            var candles = _dbRepository.GetList<AugmentedCandle>(p => p.Symbol == (int)symbol && p.Timeframe == (int)timeframe).OrderBy(q => q.Time).ToList();
+            Dictionary<AugmentedCandle, PriceActionStatus> preTags = new Dictionary<AugmentedCandle, PriceActionStatus>();
+            Trend currentTrend = Trend.NotSet;
+            preTags.Add(candles[0], PriceActionStatus.Moderate);
+            for (int i = 1; i <= candles.Count - 1; i++)
+            {
+                switch (currentTrend)
+                {
+                    case Trend.Bullish:
+                        if (candles[i].Close < candles[i - 1].Close)
+                        {
+                            currentTrend = Trend.Bearish;
+                            preTags.Remove(candles[i - 1]);
+                            preTags.Add(candles[i - 1], PriceActionStatus.High);
+                        }
+                        break;
+                    case Trend.Bearish:
+                        if (candles[i].Close > candles[i - 1].Close)
+                        {
+                            currentTrend = Trend.Bullish;
+                            preTags.Remove(candles[i - 1]);
+                            preTags.Add(candles[i - 1], PriceActionStatus.Low);
+                        }
+                        break;
+                    case Trend.NotSet:
+                        if (candles[i].Close >= candles[i - 1].Close)
+                            currentTrend = Trend.Bullish;
+                        else
+                            currentTrend = Trend.Bearish;
+                        break;
+                }
+                preTags.Add(candles[i],PriceActionStatus.Moderate);
+            }
+
+        }
+        #endregion
     }
 }

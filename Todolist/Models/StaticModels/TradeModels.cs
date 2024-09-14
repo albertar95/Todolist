@@ -114,5 +114,13 @@ namespace Todolist.Models
         {
             preSignal = 1,Signal = 2,Terminate = 3
         }
+        public enum PriceActionStatus
+        {
+            Low = 1, Moderate = 2,High = 3
+        }
+        public enum Trend
+        {
+            Bullish = 1, Bearish = 2, Sideway = 3, NotSet = 4
+        }
     }
 }
