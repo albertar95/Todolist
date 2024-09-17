@@ -1,0 +1,617 @@
+﻿@model Todolist.ViewModels.TradeDashboardViewModel
+@{
+    ViewBag.Title = "Trade Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="PageWrapper">
+    <div class="card shadow mb-4">
+        <!-- Card Header - Dropdown -->
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            @if (Model.candle != null)
+            {
+                <h6 class="m-0 font-weight-bold text-primary">@string.Format("{0}-{1}", Enum.GetName(typeof(Todolist.Models.TradeModels.Symbol), Model.candle.Symbol), Enum.GetName(typeof(Todolist.Models.TradeModels.Timeframe), Model.candle.Timeframe))</h6>
+            }
+            else
+            {
+                <h6 class="m-0 font-weight-bold text-primary"></h6>
+            }
+            <div class="dropdown no-arrow">
+                <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(-158px, 19px, 0px);">
+                    @foreach (var sym in (Todolist.Models.TradeModels.Symbol[])Enum.GetValues(typeof(Todolist.Models.TradeModels.Symbol)))
+                    {
+                        foreach (var tf in (Todolist.Models.TradeModels.Timeframe[])Enum.GetValues(typeof(Todolist.Models.TradeModels.Timeframe)))
+                        {
+                            <a class="dropdown-item" href="@Url.Action("TradeDashboard","Trades",new { symbol = sym, timeframe = tf })">@string.Format("{0}-{1}", sym.ToString(), tf.ToString())</a>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+        <!-- Card Body -->
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-12 mb-12 d-flex mb-4">
+                    <a class="btn btn-outline-success" href="@Url.Action("DefineOrderBlocks","Trades",new { symbol = Model.candle.Symbol,timeframe = Model.candle.Timeframe })">Add OD</a>
+                </div>
+                </div>
+            @if (Model.signal != null)
+            {
+                <div class="row">
+                    <div id="activeRow" class="col-xl-12 col-md-12">
+                        <div class="row d-flex">
+                            <div class="col-xl-3 col-md-3 mb-3">
+                                <div class="card border-left-warning shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-sm-left font-weight-bold text-warning text-uppercase mb-1">
+                                                    Symbol
+                                                </div>
+                                                <div class="h6 mb-0 text-gray-800 text-center">@Model.signal.Symbol.ToString()</div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-3 mb-3">
+                                <div class="card border-left-secondary shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-sm-left font-weight-bold text-secondary text-uppercase mb-1">
+                                                    TimeFrame
+                                                </div>
+                                                <div class="h6 mb-0 text-gray-800 text-center">@Model.signal.Timeframe.ToString()</div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-clock fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-3 mb-3">
+                                <div class="card border-left-dark shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-sm-left font-weight-bold text-dark text-uppercase mb-1">
+                                                    Start Date
+                                                </div>
+                                                <div class="h6 mb-0 text-gray-800 text-center">@Todolist.Helpers.CommonTradeOperations.ConvertToPersianDate(Model.signal.StartDate)</div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-running fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-3 mb-3">
+                                <div class="card border-left-primary shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-sm-left font-weight-bold text-dark text-uppercase mb-1">
+                                                    Signal Type
+                                                </div>
+                                                <div class="h6 mb-0 text-gray-800 text-center">@Model.signal.SignalType.ToString()</div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-bullhorn fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row d-flex">
+                            <div class="col-xl-3 col-md-3 mb-3">
+                                <div class="card border-left-info shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-sm-left font-weight-bold text-info text-uppercase mb-1">
+                                                    Enter Price
+                                                </div>
+                                                <div class="h6 mb-0 text-gray-800 text-center">@Model.signal.EnterPrice.ToString("0.0##")</div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-hourglass-start fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-3 mb-3">
+                                <div class="card border-left-danger shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-sm-left font-weight-bold text-danger text-uppercase mb-1">
+                                                    Stop Loss
+                                                </div>
+                                                <div class="h6 mb-0 text-gray-800 text-center">@Model.signal.StopLostPrice.ToString("0.0##")</div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-stop-circle fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-3 mb-3">
+                                <div class="card border-left-success shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-sm-left font-weight-bold text-success text-uppercase mb-1">
+                                                    Take Profit
+                                                </div>
+                                                <div class="h6 mb-0 text-gray-800 text-center">@Model.signal.TakeProfitPrice.ToString("0.0##")</div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-rocket fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-3 mb-3">
+                                <div class="card border-left-warning shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-sm-left font-weight-bold text-warning text-uppercase mb-1">
+                                                    Win Chance Estimate
+                                                </div>
+                                                <div class="h6 mb-0 text-gray-800 text-center">@Model.signal.WinChanceEstimate</div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-percentage fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xl-12 col-md-12 mb-3">
+                        <div class="card border-left-info shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-sm-left font-weight-bold text-info text-uppercase mb-1">
+                                            Current Candle
+                                        </div>
+                                        <div class="h6 mb-0 text-gray-800">
+
+                                            <table class="table table-bordered" id="dataTable1" width="100%" cellspacing="0">
+                                                <thead style="text-align:center;">
+                                                    <tr>
+                                                        <th>Time</th>
+                                                        <th>Close</th>
+                                                        <th>MACDLine</th>
+                                                        <th>SignalLine</th>
+                                                        <th>Ema50</th>
+                                                    </tr>
+                                                </thead>
+                                                <tfoot style="text-align:center;">
+                                                    <tr>
+                                                        <th>Time</th>
+                                                        <th>Close</th>
+                                                        <th>MACDLine</th>
+                                                        <th>SignalLine</th>
+                                                        <th>Ema50</th>
+                                                    </tr>
+                                                </tfoot>
+                                                <tbody>
+                                                    @if (Model.candle != null)
+                                                    {
+                                                        <tr class="text-center">
+                                                            <td>
+                                                                @Todolist.Helpers.CommonTradeOperations.ConvertToPersianDate(Model.candle.Time)
+                                                            </td>
+                                                            <td>
+                                                                @Model.candle.Close.ToString("0.0##")
+                                                            </td>
+                                                            <td>
+                                                                @Model.candle.MACDLine.ToString("0.0##")
+                                                            </td>
+                                                            <td>
+                                                                @Model.candle.SignalLine.ToString("0.0##")
+                                                            </td>
+                                                            @if (Model.candle.Ema50 != null)
+                                                            {
+                                                                <td>
+                                                                    @string.Format("{0}", (int)Model.candle.Ema50)
+                                                                </td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td></td>
+                                                            }
+                                                        </tr>
+                                                    }
+                                                    else
+                                                    {
+                                                        <tr class="text-center">
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-stopwatch fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xl-12 col-md-12 mb-12">
+                        <div class="card border-left-secondary shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-sm-left font-weight-bold text-secondary text-uppercase mb-1">
+                                            Current State
+                                        </div>
+                                        <div class="h6 mb-0 text-gray-800">
+
+                                            <table class="table table-bordered" id="dataTable2" width="100%" cellspacing="0">
+                                                <thead style="text-align:center;">
+                                                    <tr>
+                                                        <th>Duration</th>
+                                                        <th>Progress</th>
+                                                        <th>MacdMap</th>
+                                                        <th>Line Position</th>
+                                                        <th>ema Position</th>
+                                                        <th>Profit</th>
+                                                    </tr>
+                                                </thead>
+                                                <tfoot style="text-align:center;">
+                                                    <tr>
+                                                        <th>Duration</th>
+                                                        <th>Progress</th>
+                                                        <th>MacdMap</th>
+                                                        <th>Line Position</th>
+                                                        <th>ema Position</th>
+                                                        <th>Profit</th>
+                                                    </tr>
+                                                </tfoot>
+                                                <tbody>
+                                                    <tr class="text-center">
+                                                        <td>
+                                                            @Model.SignalProgress.Duration
+                                                        </td>
+                                                        <td>
+                                                            @Model.SignalProgress.PriceProgress
+                                                        </td>
+                                                        <td>
+                                                            @Model.SignalProgress.MacdMapPosition.ToString()
+                                                        </td>
+                                                        <td>
+                                                            @Model.SignalProgress.LinePosition.ToString()
+                                                        </td>
+                                                        <td>
+                                                            @Model.SignalProgress.CandlesToEMAPosition.ToString()
+                                                        </td>
+                                                        <td>
+                                                            @Model.SignalProgress.Profit
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-calculator fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="row">
+                    <div id="deactiveRow" style="opacity:0.5;" class="col-xl-12 col-md-12">
+                        <div class="row d-flex">
+                            <div class="col-xl-3 col-md-3 mb-3">
+                                <div class="card border-left-warning shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-sm-left font-weight-bold text-warning text-uppercase mb-1">
+                                                    Symbol
+                                                </div>
+                                                <div class="h6 mb-0 text-gray-800"></div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-3 mb-3">
+                                <div class="card border-left-secondary shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-sm-left font-weight-bold text-secondary text-uppercase mb-1">
+                                                    TimeFrame
+                                                </div>
+                                                <div class="h6 mb-0 text-gray-800"></div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-clock fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-3 mb-3">
+                                <div class="card border-left-dark shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-sm-left font-weight-bold text-dark text-uppercase mb-1">
+                                                    Start Date
+                                                </div>
+                                                <div class="h6 mb-0 text-gray-800"></div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-running fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-3 mb-3">
+                                <div class="card border-left-primary shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-sm-left font-weight-bold text-dark text-uppercase mb-1">
+                                                    Signal Type
+                                                </div>
+                                                <div class="h6 mb-0 text-gray-800"></div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-bullhorn fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row d-flex">
+                            <div class="col-xl-3 col-md-3 mb-3">
+                                <div class="card border-left-info shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-sm-left font-weight-bold text-info text-uppercase mb-1">
+                                                    Enter Price
+                                                </div>
+                                                <div class="h6 mb-0 text-gray-800"></div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-hourglass-start fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-3 mb-3">
+                                <div class="card border-left-danger shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-sm-left font-weight-bold text-danger text-uppercase mb-1">
+                                                    Stop Loss
+                                                </div>
+                                                <div class="h6 mb-0 text-gray-800"></div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-stop-circle fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-3 mb-3">
+                                <div class="card border-left-success shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-sm-left font-weight-bold text-success text-uppercase mb-1">
+                                                    Take Profit
+                                                </div>
+                                                <div class="h6 mb-0 text-gray-800"></div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-rocket fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-3 mb-3">
+                                <div class="card border-left-warning shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-sm-left font-weight-bold text-warning text-uppercase mb-1">
+                                                    Win Chance Estimate
+                                                </div>
+                                                <div class="h6 mb-0 text-gray-800"></div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-percentage fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xl-12 col-md-12 mb-3">
+                        <div class="card border-left-info shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-sm-left font-weight-bold text-info text-uppercase mb-1">
+                                            Current Candle
+                                        </div>
+                                        <div class="h6 mb-0 text-gray-800">
+
+                                            <table class="table table-bordered" id="dataTable1" width="100%" cellspacing="0">
+                                                <thead style="text-align:center;">
+                                                    <tr>
+                                                        <th>Time</th>
+                                                        <th>Close</th>
+                                                        <th>MACDLine</th>
+                                                        <th>SignalLine</th>
+                                                        <th>Sma50</th>
+                                                        <th>Sma100</th>
+                                                    </tr>
+                                                </thead>
+                                                <tfoot style="text-align:center;">
+                                                    <tr>
+                                                        <th>Time</th>
+                                                        <th>Close</th>
+                                                        <th>MACDLine</th>
+                                                        <th>SignalLine</th>
+                                                        <th>Sma50</th>
+                                                        <th>Sma100</th>
+                                                    </tr>
+                                                </tfoot>
+                                                <tbody>
+                                                    @if (Model.candle != null)
+                                                    {
+                                                        <tr class="text-center">
+                                                            <td>
+                                                                @Todolist.Helpers.CommonTradeOperations.ConvertToPersianDate(Model.candle.Time)
+                                                            </td>
+                                                            <td>
+                                                                @Model.candle.Close.ToString("0.0##")
+                                                            </td>
+                                                            <td>
+                                                                @Model.candle.MACDLine.ToString("0.0##")
+                                                            </td>
+                                                            <td>
+                                                                @Model.candle.SignalLine.ToString("0.0##")
+                                                            </td>
+                                                            <td>
+                                                                @Model.candle.Sma50.ToString("0.0##")
+                                                            </td>
+                                                            <td>
+                                                                @Model.candle.Sma100.ToString("0.0##")
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    else
+                                                    {
+                                                        <tr class="text-center">
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-stopwatch fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xl-12 col-md-12 mb-12">
+                        <div class="card border-left-secondary shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-sm-left font-weight-bold text-secondary text-uppercase mb-1">
+                                            Current State
+                                        </div>
+                                        <div class="h6 mb-0 text-gray-800">
+
+                                            <table class="table table-bordered" id="dataTable2" width="100%" cellspacing="0">
+                                                <thead style="text-align:center;">
+                                                    <tr>
+                                                        <th>Duration</th>
+                                                        <th>Progress</th>
+                                                        <th>MacdMap</th>
+                                                        <th>Line Position</th>
+                                                        <th>sma Position</th>
+                                                        <th>Profit</th>
+                                                    </tr>
+                                                </thead>
+                                                <tfoot style="text-align:center;">
+                                                    <tr>
+                                                        <th>Duration</th>
+                                                        <th>Progress</th>
+                                                        <th>MacdMap</th>
+                                                        <th>Line Position</th>
+                                                        <th>sma Position</th>
+                                                        <th>Profit</th>
+                                                    </tr>
+                                                </tfoot>
+                                                <tbody>
+                                                    <tr>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-calculator fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+

@@ -145,7 +145,6 @@
     <Content Include="App_Data\privatekey\8.txt" />
     <Content Include="App_Data\privatekey\9.txt" />
     <Content Include="App_Data\tmp\add columns.sql" />
-    <Content Include="App_Data\tmp\notifylogs.sql" />
     <Content Include="Contents\css\fonts.css" />
     <Content Include="Contents\css\sb-admin-2.min.css" />
     <Content Include="Contents\js\demo\chart-area-demo.js" />
@@ -2187,6 +2186,7 @@
     <Content Include="Views\Trades\MarketDataCredentials.cshtml" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Trades\SignalResults.cshtml" />
+    <Content Include="Views\Trades\TradeDashboard.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

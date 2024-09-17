@@ -84,6 +84,10 @@ namespace Todolist.Controllers
         {
             return File(Encoding.UTF8.GetBytes(_signalGenerator.GetSignalsWithResult(symbol, timeframe)), "text/csv", $"results_{symbol.ToString()}_{timeframe.ToString()}.csv");
         }
+        public ActionResult TradeDashboard(Symbol symbol = Symbol.BTCUSDT,Timeframe timeframe = Timeframe.H4)
+        {
+            return View(_requestProcessor.GetTradeDashboard_New(symbol, timeframe));
+        }
 
         //windows service methods
         [AllowAnonymous]
@@ -100,15 +104,6 @@ namespace Todolist.Controllers
         public ActionResult AutoRefreshSignals()
         {
             _signalGenerator.AutoRefreshSignals();
-            return Json(new { hasValue = true });
-        }
-
-        //new sentiment
-        [AllowAnonymous]
-        [HttpGet]
-        public ActionResult NewProcess()
-        {
-            _signalGenerator.ProcessHighsAndLows(Symbol.BTCUSDT,Timeframe.H4);
             return Json(new { hasValue = true });
         }
     }
