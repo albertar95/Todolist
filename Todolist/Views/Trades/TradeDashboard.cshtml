@@ -203,6 +203,8 @@
                                                         <th>MACDLine</th>
                                                         <th>SignalLine</th>
                                                         <th>Ema50</th>
+                                                        <th>Ema100</th>
+                                                        <th>Ema200</th>
                                                     </tr>
                                                 </thead>
                                                 <tfoot style="text-align:center;">
@@ -212,39 +214,63 @@
                                                         <th>MACDLine</th>
                                                         <th>SignalLine</th>
                                                         <th>Ema50</th>
+                                                        <th>Ema100</th>
+                                                        <th>Ema200</th>
                                                     </tr>
                                                 </tfoot>
                                                 <tbody>
                                                     @if (Model.candle != null)
                                                     {
-                                                        <tr class="text-center">
+                                                    <tr class="text-center">
+                                                        <td>
+                                                            @Todolist.Helpers.CommonTradeOperations.ConvertToPersianDate(Model.candle.Time)
+                                                        </td>
+                                                        <td>
+                                                            @Model.candle.Close.ToString("0.0##")
+                                                        </td>
+                                                        <td>
+                                                            @Model.candle.MACDLine.ToString("0.0##")
+                                                        </td>
+                                                        <td>
+                                                            @Model.candle.SignalLine.ToString("0.0##")
+                                                        </td>
+                                                        @if (Model.candle.Ema50 != null)
+                                                        {
                                                             <td>
-                                                                @Todolist.Helpers.CommonTradeOperations.ConvertToPersianDate(Model.candle.Time)
+                                                                @string.Format("{0}", (int)Model.candle.Ema50)
                                                             </td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td></td>
+                                                        }
+                                                        @if (Model.candle.Ema100 != null)
+                                                        {
                                                             <td>
-                                                                @Model.candle.Close.ToString("0.0##")
+                                                                @string.Format("{0}", (int)Model.candle.Ema100)
                                                             </td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td></td>
+                                                        }
+                                                        @if (Model.candle.Ema200 != null)
+                                                        {
                                                             <td>
-                                                                @Model.candle.MACDLine.ToString("0.0##")
+                                                                @string.Format("{0}", (int)Model.candle.Ema200)
                                                             </td>
-                                                            <td>
-                                                                @Model.candle.SignalLine.ToString("0.0##")
-                                                            </td>
-                                                            @if (Model.candle.Ema50 != null)
-                                                            {
-                                                                <td>
-                                                                    @string.Format("{0}", (int)Model.candle.Ema50)
-                                                                </td>
-                                                            }
-                                                            else
-                                                            {
-                                                                <td></td>
-                                                            }
-                                                        </tr>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td></td>
+                                                        }
+                                                    </tr>
                                                     }
                                                     else
                                                     {
                                                         <tr class="text-center">
+                                                            <td></td>
+                                                            <td></td>
                                                             <td></td>
                                                             <td></td>
                                                             <td></td>
