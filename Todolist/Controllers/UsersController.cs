@@ -102,5 +102,14 @@ namespace Todolist.Controllers
                 return RedirectToAction("Login", "Users");
             }
         }
+
+        public ActionResult DbMaintanence()
+        {
+            if (_requestProcessor.DbMaintanence())
+                TempData["UserSuccess"] = $"process excuted successfully";
+            else
+                TempData["UserError"] = $"an error occured while executing db scripts!";
+            return RedirectToAction("Users", "Users");
+        }
     }
 }

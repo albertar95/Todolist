@@ -15,6 +15,6 @@ namespace Todolist.Services.Contracts
         void GetSignalReport(Symbol symbol, Timeframe timeframe, SignalProviders provider);
         string GetSignalEstimates(Symbol symbol, Timeframe timeframe, int CandleCounts = 10000);
         void DeleteSignals(Symbol symbol, Timeframe timeframe, SignalProviders provider = SignalProviders.MaStrategyRevision);
-        void ProcessHighsAndLows(Symbol symbol, Timeframe timeframe);
+        //void ProcessHighsAndLows(Symbol symbol, Timeframe timeframe);
     }
 }

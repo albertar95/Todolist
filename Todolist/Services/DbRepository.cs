@@ -231,5 +231,9 @@ namespace Todolist.Services
         {
             return _context.Set<T>().Any(predicate);
         }
+        public int Raw(string script)
+        {
+            return _context.Database.ExecuteSqlCommand(script);
+        }
     }
 }

@@ -1563,5 +1563,18 @@ namespace Todolist.Services
                 return new Tuple<string, string>("", "");
             }
         }
+        public bool DbMaintanence()
+        {
+            try
+            {
+                _dbRepository.Raw("alter table AugmentedCandles add Ema100 float null");
+                _dbRepository.Raw("alter table AugmentedCandles add Ema200 float null");
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
     }
 }

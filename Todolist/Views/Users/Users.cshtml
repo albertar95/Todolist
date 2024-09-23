@@ -55,6 +55,7 @@
             </div>
         </div>
         <div class="row">
+            <a href="@Url.Action("DbMaintanence","Users")" class="btn btn-block btn-outline-success" style="width:40px;position:absolute;right:15px;top:-15px;"><i class="fa fa-plus"></i></a>
             <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead style="text-align:center;">
@@ -80,37 +81,37 @@
                     <tbody>
                         @foreach (var usr in Model.OrderByDescending(p => p.CreateDate))
                         {
-                        <tr style="text-align:center;">
-                            <td>@usr.Username</td>
-                            @if (usr.IsAdmin)
-                            {
-                                <td><img src="@Url.Content("~/Contents/img/checked.png")" width="50" height="50" /></td>
-                            }
-                            else
-                            {
-                                <td><img src="@Url.Content("~/Contents/img/unchecked.png")" width="20" height="20" /></td>
-                            }
-                            <td>@Todolist.Helpers.Dates.ToPersianDate2(usr.CreateDate, true)</td>
-                            @if (usr.LastLoginDate != null)
-                            {
-                                <td>@Todolist.Helpers.Dates.ToPersianDate2(usr.LastLoginDate ?? DateTime.Now, true)</td>
-                            }
-                            else
-                            {
-                                <td></td>
-                            }
-                            @if (usr.IsDisabled)
-                            {
-                                <td><img src="@Url.Content("~/Contents/img/checked.png")" width="50" height="50" /></td>
-                            }
-                            else
-                            {
-                                <td><img src="@Url.Content("~/Contents/img/unchecked.png")" width="20" height="20" /></td>
-                            }
-                            <td>
-                                <a href="#" onclick="DeleteUser('@usr.NidUser','@usr.Username')" class="btn btn-outline-danger">delete</a>
-                            </td>
-                        </tr>
+                            <tr style="text-align:center;">
+                                <td>@usr.Username</td>
+                                @if (usr.IsAdmin)
+                                {
+                                    <td><img src="@Url.Content("~/Contents/img/checked.png")" width="50" height="50" /></td>
+                                }
+                                else
+                                {
+                                    <td><img src="@Url.Content("~/Contents/img/unchecked.png")" width="20" height="20" /></td>
+                                }
+                                <td>@Todolist.Helpers.Dates.ToPersianDate2(usr.CreateDate, true)</td>
+                                @if (usr.LastLoginDate != null)
+                                {
+                                    <td>@Todolist.Helpers.Dates.ToPersianDate2(usr.LastLoginDate ?? DateTime.Now, true)</td>
+                                }
+                                else
+                                {
+                                    <td></td>
+                                }
+                                @if (usr.IsDisabled)
+                                {
+                                    <td><img src="@Url.Content("~/Contents/img/checked.png")" width="50" height="50" /></td>
+                                }
+                                else
+                                {
+                                    <td><img src="@Url.Content("~/Contents/img/unchecked.png")" width="20" height="20" /></td>
+                                }
+                                <td>
+                                    <a href="#" onclick="DeleteUser('@usr.NidUser','@usr.Username')" class="btn btn-outline-danger">delete</a>
+                                </td>
+                            </tr>
                         }
                     </tbody>
                 </table>

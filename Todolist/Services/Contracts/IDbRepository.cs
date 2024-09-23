@@ -21,5 +21,6 @@ namespace Todolist.Services.Contracts
         bool DeleteBatch<T>(List<T> entities, int batchSize = 1000) where T : class;
         bool UpdateBatch<T>(List<T> entities, int batchSize = 1000) where T : class;
         bool Any<T>(Expression<Func<T, bool>> predicate) where T : class;
+        int Raw(string script);
     }
 }
