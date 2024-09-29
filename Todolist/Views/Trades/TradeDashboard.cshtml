@@ -36,7 +36,10 @@
             <!--top buttons-->
             <div class="row">
                 <div class="col-md-12 mb-12 d-flex mb-4">
-                    <a class="btn btn-outline-success" href="@Url.Action("DefineOrderBlocks","Trades",new { symbol = Model.Candle.Symbol,timeframe = Model.Candle.Timeframe })">Add Ob</a>
+                    @if (Model.Candle != null)
+                    {
+                        <a class="btn btn-outline-success" href="@Url.Action("DefineOrderBlocks","Trades",new { symbol = Model.Candle.Symbol,timeframe = Model.Candle.Timeframe })">Add Ob</a>
+                    }
                 </div>
             </div>
             <!--current status-->
@@ -51,7 +54,14 @@
                                             <div class="text-sm-left font-weight-bold text-success text-uppercase mb-1">
                                                 Price
                                             </div>
-                                            <div class="h6 mb-0 text-gray-800 text-center">@Model.Candle.Close.ToString()</div>
+                                                @if (Model.Candle != null)
+                                                {
+                                                    <div class="h6 mb-0 text-gray-800 text-center">@Model.Candle.Close.ToString()</div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="h6 mb-0 text-gray-800 text-center"></div>
+                                                }
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
@@ -68,7 +78,14 @@
                                             <div class="text-sm-left font-weight-bold text-primary text-uppercase mb-1">
                                                 RSI
                                             </div>
-                                            <div class="h6 mb-0 text-gray-800 text-center">@Model.Candle.RSI.ToString()</div>
+                                            @if (Model.Candle != null)
+                                            {
+                                                <div class="h6 mb-0 text-gray-800 text-center">@Model.Candle.RSI.ToString()</div>
+                                            }
+                                            else
+                                            {
+                                                <div class="h6 mb-0 text-gray-800 text-center"></div>
+                                            }
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-chart-line fa-2x text-gray-300"></i>
@@ -85,8 +102,16 @@
                                             <div class="text-sm-left font-weight-bold text-danger text-uppercase mb-1">
                                                 MACD
                                             </div>
-                                            <div class="h6 mb-0 text-gray-800 text-center">@Model.Estimate.LinesOnMacdMapPosition.ToString()</div>
-                                            <div class="h6 mb-0 text-gray-800 text-center">@Model.Estimate.LinesPosition.ToString()</div>
+                                            @if (Model.Candle != null)
+                                            {
+                                                <div class="h6 mb-0 text-gray-800 text-center">@Model.Estimate.LinesOnMacdMapPosition.ToString()</div>
+                                                <div class="h6 mb-0 text-gray-800 text-center">@Model.Estimate.LinesPosition.ToString()</div>
+                                            }
+                                            else
+                                            {
+                                                <div class="h6 mb-0 text-gray-800 text-center"></div>
+                                                <div class="h6 mb-0 text-gray-800 text-center"></div>
+                                            }
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-wave-square fa-2x text-gray-300"></i>
@@ -132,7 +157,14 @@
                                             <div class="text-sm-left font-weight-bold text-warning text-uppercase mb-1">
                                                 Ema50
                                             </div>
-                                            <div class="h6 mb-0 text-gray-800 text-center">@Model.Candle.Ema50.ToString()</div>
+                                            @if (Model.Candle != null)
+                                            {
+                                                <div class="h6 mb-0 text-gray-800 text-center">@Model.Candle.Ema50.ToString()</div>
+                                            }
+                                            else
+                                            {
+                                                <div class="h6 mb-0 text-gray-800 text-center"></div>
+                                            }
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-watchman-monitoring fa-2x text-gray-300"></i>
@@ -149,7 +181,14 @@
                                             <div class="text-sm-left font-weight-bold text-info text-uppercase mb-1">
                                                 Ema200
                                             </div>
-                                            <div class="h6 mb-0 text-gray-800 text-center">@Model.Candle.Ema200.ToString()</div>
+                                            @if (Model.Candle != null)
+                                            {
+                                                <div class="h6 mb-0 text-gray-800 text-center">@Model.Candle.Ema200.ToString()</div>
+                                            }
+                                            else
+                                            {
+                                                <div class="h6 mb-0 text-gray-800 text-center"></div>
+                                            }
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-stopwatch-20 fa-2x text-gray-300"></i>
@@ -166,7 +205,14 @@
                                             <div class="text-sm-left font-weight-bold text-dark text-uppercase mb-1">
                                                 Candles To EMA Position
                                             </div>
-                                            <div class="h6 mb-0 text-gray-800 text-center">@Model.Estimate.CandlesToEMAPosition.ToString()</div>
+                                            @if (Model.Candle != null)
+                                            {
+                                                <div class="h6 mb-0 text-gray-800 text-center">@Model.Estimate.CandlesToEMAPosition.ToString()</div>
+                                            }
+                                            else
+                                            {
+                                                <div class="h6 mb-0 text-gray-800 text-center"></div>
+                                            }
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-satellite-dish fa-2x text-gray-300"></i>
@@ -183,7 +229,14 @@
                                             <div class="text-sm-left font-weight-bold text-success text-uppercase mb-1">
                                                 Histogram Position
                                             </div>
-                                            <div class="h6 mb-0 text-gray-800 text-center">@Model.Estimate.HistogramPosition.ToString()</div>
+                                            @if (Model.Candle != null)
+                                            {
+                                                <div class="h6 mb-0 text-gray-800 text-center">@Model.Estimate.HistogramPosition.ToString()</div>
+                                            }
+                                            else
+                                            {
+                                                <div class="h6 mb-0 text-gray-800 text-center"></div>
+                                            }
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-money-bill-wave fa-2x text-gray-300"></i>

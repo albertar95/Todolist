@@ -93,7 +93,7 @@ namespace Todolist.Controllers
 
         //windows service methods
         [AllowAnonymous]
-        [HttpGet]
+        [HttpPost]
         public ActionResult AutoRefreshCandles()
         {
             var result = _historicalDataGrabber.AutoRefreshCandles();
@@ -102,8 +102,25 @@ namespace Todolist.Controllers
             return Json(new { hasError = result.Item1, message = message });
         }
         [AllowAnonymous]
-        [HttpGet]
+        [HttpPost]
         public ActionResult AutoRefreshSignals()
+        {
+            _signalGenerator.AutoRefreshSignals(SignalProviders.RsiStrategy);
+            return Json(new { hasValue = true });
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        public ActionResult GetAutoRefreshCandles()
+        {
+            var result = _historicalDataGrabber.AutoRefreshCandles();
+            string message = "";
+            result.Item2.ForEach(x => { message += $"{x.Item1} - {x.Item2},"; });
+            return Json(new { hasError = result.Item1, message = message });
+        }
+        [AllowAnonymous]
+        [HttpGet]
+        public ActionResult GetAutoRefreshSignals()
         {
             _signalGenerator.AutoRefreshSignals(SignalProviders.RsiStrategy);
             return Json(new { hasValue = true });

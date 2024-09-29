@@ -1569,8 +1569,9 @@ namespace Todolist.Services
         {
             try
             {
-                _dbRepository.Raw("alter table AugmentedCandles add Ema100 float null");
-                _dbRepository.Raw("alter table AugmentedCandles add Ema200 float null");
+                _dbRepository.Raw("delete [TodolistDb].[dbo].[SignalResults]");
+                _dbRepository.Raw("delete [TodolistDb].[dbo].[Signals]");
+                _dbRepository.Raw("delete [TodolistDb].[dbo].[AugmentedCandles]");
                 return true;
             }
             catch (Exception)
