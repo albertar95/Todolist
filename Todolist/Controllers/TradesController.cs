@@ -102,10 +102,10 @@ namespace Todolist.Controllers
             return Json(new { hasError = result.Item1, message = message });
         }
         [AllowAnonymous]
-        [HttpPost]
+        [HttpGet]
         public ActionResult AutoRefreshSignals()
         {
-            _signalGenerator.AutoRefreshSignals();
+            _signalGenerator.AutoRefreshSignals(SignalProviders.RsiStrategy);
             return Json(new { hasValue = true });
         }
     }

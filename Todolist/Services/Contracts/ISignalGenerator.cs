@@ -9,8 +9,8 @@ namespace Todolist.Services.Contracts
 {
     public interface ISignalGenerator
     {
-        void AutoRefreshSignals();
-        void SeedSignals(Symbol symbol, Timeframe timeframe, bool clearPrevious = false);
+        void AutoRefreshSignals(SignalProviders provider = SignalProviders.MaStrategyRevision);
+        void SeedSignals(Symbol symbol, Timeframe timeframe, bool clearPrevious = false, SignalProviders provider = SignalProviders.MaStrategyRevision);
         string GetSignalsWithResult(Symbol symbol, Timeframe timeframe, SignalProviders provider = SignalProviders.MaStrategyRevision);
         void GetSignalReport(Symbol symbol, Timeframe timeframe, SignalProviders provider);
         string GetSignalEstimates(Symbol symbol, Timeframe timeframe, int CandleCounts = 10000);

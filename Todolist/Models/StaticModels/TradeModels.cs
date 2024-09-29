@@ -68,7 +68,7 @@ namespace Todolist.Models
         }
         public enum SignalProviders
         {
-            MaStrategy = 1, MaStrategyRevision = 2, RviStrategy = 3
+            RsiStrategy = 1, MaStrategyRevision = 2
         }
         public enum SignalResultStatus
         {
