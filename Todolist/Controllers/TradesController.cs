@@ -84,9 +84,11 @@ namespace Todolist.Controllers
         {
             return File(Encoding.UTF8.GetBytes(_signalGenerator.GetSignalsWithResult(symbol, timeframe)), "text/csv", $"results_{symbol.ToString()}_{timeframe.ToString()}.csv");
         }
-        public ActionResult TradeDashboard(Symbol symbol = Symbol.BTCUSDT,Timeframe timeframe = Timeframe.H4)
+        public ActionResult TradeDashboard(Symbol symbol = Symbol.BTCUSDT,Timeframe timeframe = Timeframe.H4, int Month = 0)
         {
-            return View(_requestProcessor.GetTradeDashboard_New(symbol, timeframe));
+            if (Month == 0)
+                Month = Helpers.Dates.CurrentMonth();
+            return View(_requestProcessor.GetTradeDashboard_New(symbol, timeframe,Month));
         }
 
         //windows service methods

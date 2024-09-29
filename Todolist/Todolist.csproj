@@ -1956,6 +1956,7 @@
     <Compile Include="ViewModels\IndexViewModel.cs" />
     <Compile Include="ViewModels\LendDetailViewModel.cs" />
     <Compile Include="ViewModels\MarketDataCredetialViewModel.cs" />
+    <Compile Include="ViewModels\NewTradeDashboardViewModel.cs" />
     <Compile Include="ViewModels\NotesViewModel.cs" />
     <Compile Include="ViewModels\ProgressViewModel.cs" />
     <Compile Include="ViewModels\RoutineViewModel.cs" />

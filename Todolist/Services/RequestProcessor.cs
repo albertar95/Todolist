@@ -1434,17 +1434,19 @@ namespace Todolist.Services
             }
             return result;
         }
-        public TradeDashboardViewModel GetTradeDashboard_New(Symbol symbol, Timeframe timeframe)
+        public NewTradeDashboardViewModel GetTradeDashboard_New(Symbol symbol, Timeframe timeframe,int month)
         {
-            TradeDashboardViewModel result = new TradeDashboardViewModel();
+            NewTradeDashboardViewModel result = new NewTradeDashboardViewModel();
             try
             {
                 var signal = _dbRepository.GetMax<Signal, DateTime>(q => q.CreateDate, p => p.Symbol == (int)symbol && p.Timeframe == (int)timeframe && p.IsActive == true);
                 if (signal != null)
-                    result.signal = CommonTradeOperations.CastSignalToDto(signal);
-                result.candle = _dbRepository.GetMax<AugmentedCandle, DateTime>(q => q.Time, p => p.Symbol == (int)symbol && p.Timeframe == (int)timeframe);
-                if (result.signal != null)
-                    result.SignalProgress = CommonTradeOperations.CalcSignalProgress(result.signal, result.candle);
+                    result.Signal = CommonTradeOperations.CastSignalToDto(signal);
+                result.Candle = _dbRepository.GetMax<AugmentedCandle, DateTime>(q => q.Time, p => p.Symbol == (int)symbol && p.Timeframe == (int)timeframe);
+                if (result.Signal != null)
+                    result.SignalProgress = CommonTradeOperations.CalcSignalProgress(result.Signal, result.Candle);
+                result.SignalResultsVM = GetSignalResults(symbol, timeframe, month);
+                result.Estimate = CommonTradeOperations.GenerateSignalEstimates(new List<AugmentedCandle>() { result.Candle }).FirstOrDefault().Value;
             }
             catch (Exception)
             {

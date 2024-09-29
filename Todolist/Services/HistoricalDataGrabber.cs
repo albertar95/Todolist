@@ -341,10 +341,11 @@ namespace Todolist.Services
         private List<Candle> ProcessUpperMinuteCandles(List<Candle> candles,Timeframe target)
         {
             List<Candle> result = new List<Candle>();
+            var candles2 = candles.OrderBy(p => p.Time).Skip(candles.FindIndex(q => q.Time.Hour % 4 == 0)).ToList();
             var ratio = (int)target / 30;
-            for (int i = 0; i < candles.Count / ratio; i++)
+            for (int i = 0; i < candles2.Count / ratio; i++)
             {
-                result.Add(candles[i*ratio]);
+                result.Add(candles2[i*ratio]);
             }
             return result;
         }
