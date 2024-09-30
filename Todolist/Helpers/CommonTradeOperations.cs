@@ -59,6 +59,51 @@ namespace Todolist.Helpers
             var rs = sumGain / sumLoss;
             return 100 - (100 / (1 + rs));
         }
+        public static List<AugmentedCandle> GroupCalculateRSI(List<AugmentedCandle> candles,int rsi_period = 14)
+        {
+            int candleCount = candles.Count;
+            if (candleCount < 14)
+                return null;
+            double[] positiveChanges = new double[candleCount];
+            double[] negativeChanges = new double[candleCount];
+            double[] averageGain = new double[candleCount];
+            double[] averageLoss = new double[candleCount];
+            double[] rsi = new double[candleCount];
+            for (int i = 0; i < candles.Count; i++)
+            {
+                double current_difference = 0.0;
+                if (i > 0)
+                {
+                    double previous_close = Convert.ToDouble(candles[i - 1].Close);
+                    double current_close = Convert.ToDouble(candles[i].Close);
+                    current_difference = current_close - previous_close;
+                }
+                positiveChanges[i] = current_difference > 0 ? current_difference : 0;
+                negativeChanges[i] = current_difference < 0 ? current_difference * -1 : 0;
+
+                if (i == Math.Max(1, rsi_period))
+                {
+                    double gain_sum = 0.0;
+                    double loss_sum = 0.0;
+                    for (int x = Math.Max(1, rsi_period); x > 0; x--)
+                    {
+                        gain_sum += positiveChanges[x];
+                        loss_sum += negativeChanges[x];
+                    }
+
+                    averageGain[i] = gain_sum / Math.Max(1, rsi_period);
+                    averageLoss[i] = loss_sum / Math.Max(1, rsi_period);
+
+                }
+                else if (i > Math.Max(1, rsi_period))
+                {
+                    averageGain[i] = (averageGain[i - 1] * (rsi_period - 1) + positiveChanges[i]) / Math.Max(1, rsi_period);
+                    averageLoss[i] = (averageLoss[i - 1] * (rsi_period - 1) + negativeChanges[i]) / Math.Max(1, rsi_period);
+                    candles[i].RSI = averageLoss[i] == 0 ? 100 : averageGain[i] == 0 ? 0 : Math.Round(100 - (100 / (1 + averageGain[i] / averageLoss[i])), 5);
+                }
+            }
+            return candles;
+        }
         public static LinesOnMacdPositions CalcLinesOnMacdMapPosition(double macd, double signal, double closenessMargin)
         {
             if (Math.Abs(macd) < closenessMargin && Math.Abs(signal) < closenessMargin)//near state

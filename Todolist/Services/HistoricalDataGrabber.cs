@@ -106,25 +106,25 @@ namespace Todolist.Services
         },
             new AugmentedCandle(){
             Id = new Guid(),
-            Sma50 = 43318F,
-            Sma100 = 41824F,
-            Ema12 = 43811F,
-            Ema26 = 43511F,
-            Ema50 = 43079F,
-            Ema100 = 42125,
-            Ema200 = 41960,
-            MACDLine = 308F,
-            SignalLine = 308F,
-            Histogram = 0F,
+            Sma50 = 26750F,
+            Sma100 = 26340F,
+            Ema12 = 26654F,
+            Ema26 = 26729F,
+            Ema50 = 26670F,
+            Ema100 = 26531F,
+            Ema200 = 26695F,
+            MACDLine = -76F,
+            SignalLine = -40F,
+            Histogram = -36F,
             Timeframe = (int)Timeframe.H4,
             Symbol = (int)TradeModels.Symbol.BTCUSDT,
-            Close = 43966F,
-            High = 43966F,
-            Low = 43371F,
-            Open = 43592F,
-            Time = new DateTime(2022, 02, 17, 7, 30, 0),
+            Close = 26578F,
+            High = 26587F,
+            Low = 26519F,
+            Open = 26531F,
+            Time = new DateTime(2023, 09, 23, 7, 30, 0),
             Volume = 0,
-            RSI = 54.76F
+            RSI = 43.07F
         }
         };
         private readonly IDbRepository _dbRepository;
@@ -217,6 +217,7 @@ namespace Todolist.Services
                 var convertedCandles = CandlesAugmentation(candles.Where(p => p.Time >= lastCandle.Time).OrderBy(q => q.Time).ToArray(), lastCandle, symbol, tf);
                 _dbRepository.AddBatch(convertedCandles);
                 DeleteKeepIntervalOverflowCandles(symbol, tf);
+                _dbRepository.UpdateBatch(CommonTradeOperations.GroupCalculateRSI(_dbRepository.GetList<AugmentedCandle>(p => p.Symbol == (int)symbol && p.Timeframe == (int)tf, 100000).OrderBy(p => p.Time).ToList()));
                 return true;
             }
             catch (Exception)
@@ -234,6 +235,7 @@ namespace Todolist.Services
                     var convertedCandles = CandlesAugmentation(candles.Where(p => p.Time >= InitCandle.FirstOrDefault(q => q.Symbol == (int)symbol && q.Timeframe == (int)tf).Time).OrderBy(q => q.Time).ToArray(), InitCandle.FirstOrDefault(q => q.Symbol == (int)symbol && q.Timeframe == (int)tf), symbol, tf);
                     _dbRepository.AddBatch<AugmentedCandle>(convertedCandles.OrderBy(p => p.Time).Skip(150).ToList().Where(q => q.Time >= DateTime.Now.Date.AddDays(keepDataInterval * -1)).ToList());
                     //DeleteKeepIntervalOverflowCandles(symbol, tf);
+                    _dbRepository.UpdateBatch(CommonTradeOperations.GroupCalculateRSI(_dbRepository.GetList<AugmentedCandle>(p => p.Symbol == (int)symbol && p.Timeframe == (int)tf,100000).OrderBy(p => p.Time).ToList()));
                 }
                 return true;
             }
@@ -296,6 +298,7 @@ namespace Todolist.Services
                                 new Tuple<bool, string>(false, "http error in calling api");
                         }
                         DeleteKeepIntervalOverflowCandles(symbol, timeframe);
+                        _dbRepository.UpdateBatch(CommonTradeOperations.GroupCalculateRSI(_dbRepository.GetList<AugmentedCandle>(p => p.Symbol == (int)symbol && p.Timeframe == (int)timeframe, 100000).OrderBy(p => p.Time).ToList()));
                     }
                     return new Tuple<bool, string>(true, "");
                 }
@@ -330,22 +333,52 @@ namespace Todolist.Services
                 List<Candle> result = new List<Candle>();
                 result = symbol.ToString().ToLower().EndsWith("usdt") ? parseResponse(bins, 100) : parseResponse(bins);
                 if (tf >= Timeframe.H1)
-                    result = ProcessUpperMinuteCandles(result,tf);
+                    result = ProcessUpperMinuteCandles(result,tf, symbol);
                     return result;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return new List<Candle>();
             }
         }
-        private List<Candle> ProcessUpperMinuteCandles(List<Candle> candles,Timeframe target)
+        private List<Candle> ProcessUpperMinuteCandles(List<Candle> candles,Timeframe target,Symbol sym)
         {
             List<Candle> result = new List<Candle>();
-            var candles2 = candles.OrderBy(p => p.Time).Skip(candles.FindIndex(q => q.Time.Hour % 4 == 0)).ToList();
             var ratio = (int)target / 30;
-            for (int i = 0; i < candles2.Count / ratio; i++)
+            #region normalizeCandles
+            int gapIndex = 0;
+            candles = candles.Where(r => r.Time >= InitCandle.FirstOrDefault(t => t.Timeframe == (int)target && t.Symbol == (int)sym).Time).OrderBy(p => p.Time).ToList();
+            for (int i = 1; i < candles.Count; i++)
             {
-                result.Add(candles2[i*ratio]);
+                if (candles[i-1].Time.AddMinutes(30) != candles[i].Time)
+                    gapIndex = i;
+            }
+            candles = candles.Skip(gapIndex).OrderBy(p => p.Time).ToList();
+            if (candles.Count % ratio != 0)
+                candles = candles.OrderByDescending(p => p.Time).Skip(candles.Count % ratio).OrderBy(q => q.Time).ToList();
+            #endregion
+            Candle tmpCandle = null;
+            Candle tmpCandle2 = null;
+            for (int i = 0; i < candles.Count; i = i+ratio)
+            {
+                tmpCandle = new Candle();
+                for (int j = 0; j < ratio; j++)
+                {
+                    tmpCandle2 = candles[i + j];
+                    if (j == 0)
+                        tmpCandle = tmpCandle2;
+                    else
+                    {
+                        if (tmpCandle.High <= tmpCandle2.High)
+                            tmpCandle.High = tmpCandle2.High;
+                        if (tmpCandle.Low >= tmpCandle2.Low)
+                            tmpCandle.Low = tmpCandle2.Low;
+                        tmpCandle.Volume += tmpCandle2.Volume;
+                        tmpCandle.Close = tmpCandle2.Close;
+                    }
+
+                }
+                result.Add(tmpCandle);
             }
             return result;
         }
@@ -498,10 +531,7 @@ namespace Todolist.Services
                     tmpAug.MACDLine = tmpAug.Ema12 - tmpAug.Ema26;
                     tmpAug.SignalLine = CommonTradeOperations.EmaCalculator(tmpAug.MACDLine, result[i - 1].SignalLine, 9F);
                     tmpAug.Histogram = tmpAug.SignalLine - tmpAug.MACDLine;
-                    if (i > 14)
-                        tmpAug.RSI = CommonTradeOperations.RSICalculator(candles.Skip(i - 14).Take(14).ToList());
-                    else
-                        tmpAug.RSI = 0F;
+                    tmpAug.RSI = 0F;
                     tmpAug.Symbol = (int)symbol;
                     tmpAug.Timeframe = (int)timeframe;
                     result.Add(tmpAug);

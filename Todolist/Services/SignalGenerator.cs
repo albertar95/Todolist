@@ -403,7 +403,10 @@ namespace Todolist.Services
                     SignalStatus = SignalCreationStatus.Observing;
                     SignalNotify(NotifyType.Terminate, est, SignalTypes.Bullish, res);
                 }
-                RsiBullSaturation = false;
+                if(est.Key.RSI >= 70)
+                    RsiBullSaturation = true;
+                else
+                    RsiBullSaturation = false;
                 RsiBearSaturation = false;
             }
         }
@@ -460,8 +463,12 @@ namespace Todolist.Services
                     SignalStatus = SignalCreationStatus.Observing;
                     SignalNotify(NotifyType.Terminate, est, SignalTypes.Bearish, res);
                 }
+                if(est.Key.RSI <= 30)
+                    RsiBearSaturation = true;
+                else
+                    RsiBearSaturation = false;
+
                 RsiBullSaturation = false;
-                RsiBearSaturation = false;
             }
         }
         #endregion
