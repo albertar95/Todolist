@@ -148,7 +148,8 @@ namespace Todolist.Services
                 {
                     foreach (var tf in Timeframes)
                     {
-                        var initial = _dbRepository.GetMax<AugmentedCandle, DateTime>(p => p.Time, q => q.Timeframe == (int)tf && q.Symbol == (int)sym);
+                        var initial = _dbRepository.GetMax<AugmentedCandle, DateTime>(p => p.Time, q => q.Timeframe == (int)tf 
+                        && q.Symbol == (int)sym);
                         if (initial != null)
                         {
                             if (!UpdateData(sym, tf, initial))
@@ -211,13 +212,18 @@ namespace Todolist.Services
         {
             try
             {
-                if (Convert.ToInt32(DateTime.Now.ToLocalTime().Subtract(lastCandle.Time).TotalMinutes) < 60)
+                if (Convert.ToInt32(DateTime.Now.ToLocalTime().Subtract(lastCandle.Time).TotalMinutes) < (int)tf)
                     return true;
+                if((int)tf < 60)
+                {
+                    if (Convert.ToInt32(DateTime.Now.ToLocalTime().Subtract(lastCandle.Time).TotalMinutes) < 60)
+                        return true;
+                }
                 var candles = GetCandlesFromHost(tf, symbol);
                 var convertedCandles = CandlesAugmentation(candles.Where(p => p.Time >= lastCandle.Time).OrderBy(q => q.Time).ToArray(), lastCandle, symbol, tf);
                 _dbRepository.AddBatch(convertedCandles);
                 DeleteKeepIntervalOverflowCandles(symbol, tf);
-                _dbRepository.UpdateBatch(CommonTradeOperations.GroupCalculateRSI(_dbRepository.GetList<AugmentedCandle>(p => p.Symbol == (int)symbol && p.Timeframe == (int)tf, 100000).OrderBy(p => p.Time).ToList()));
+                SecondaryAugmentation(symbol,tf);
                 return true;
             }
             catch (Exception)
@@ -235,7 +241,8 @@ namespace Todolist.Services
                     var convertedCandles = CandlesAugmentation(candles.Where(p => p.Time >= InitCandle.FirstOrDefault(q => q.Symbol == (int)symbol && q.Timeframe == (int)tf).Time).OrderBy(q => q.Time).ToArray(), InitCandle.FirstOrDefault(q => q.Symbol == (int)symbol && q.Timeframe == (int)tf), symbol, tf);
                     _dbRepository.AddBatch<AugmentedCandle>(convertedCandles.OrderBy(p => p.Time).Skip(150).ToList().Where(q => q.Time >= DateTime.Now.Date.AddDays(keepDataInterval * -1)).ToList());
                     //DeleteKeepIntervalOverflowCandles(symbol, tf);
-                    _dbRepository.UpdateBatch(CommonTradeOperations.GroupCalculateRSI(_dbRepository.GetList<AugmentedCandle>(p => p.Symbol == (int)symbol && p.Timeframe == (int)tf,100000).OrderBy(p => p.Time).ToList()));
+                    SecondaryAugmentation(symbol, tf);
+                    _dbRepository.DeleteBatch<AugmentedCandle>(_dbRepository.GetList<AugmentedCandle>(p => p.RSI == 0));
                 }
                 return true;
             }
@@ -298,7 +305,7 @@ namespace Todolist.Services
                                 new Tuple<bool, string>(false, "http error in calling api");
                         }
                         DeleteKeepIntervalOverflowCandles(symbol, timeframe);
-                        _dbRepository.UpdateBatch(CommonTradeOperations.GroupCalculateRSI(_dbRepository.GetList<AugmentedCandle>(p => p.Symbol == (int)symbol && p.Timeframe == (int)timeframe, 100000).OrderBy(p => p.Time).ToList()));
+                        SecondaryAugmentation(symbol, timeframe);
                     }
                     return new Tuple<bool, string>(true, "");
                 }
@@ -505,6 +512,7 @@ namespace Todolist.Services
             try
             {
                 result.Add(init);
+                List<AugmentedCandle> cndls = new List<AugmentedCandle>();
                 for (int i = 1; i <= candles.Length - 1; i++)
                 {
                     var tmpAug = new AugmentedCandle();
@@ -515,14 +523,8 @@ namespace Todolist.Services
                     tmpAug.Low = candles[i].Low;
                     tmpAug.Close = candles[i].Close;
                     tmpAug.Volume = candles[i].Volume;
-                    if (i < 50)
-                        tmpAug.Sma50 = 0;
-                    else
-                        tmpAug.Sma50 = float.Parse(candles.Skip(i - 50).Take(50).Sum(p => p.Close).ToString()) / 50F;
-                    if (i < 100)
-                        tmpAug.Sma100 = 0;
-                    else
-                        tmpAug.Sma100 = float.Parse(candles.Skip(i - 100).Take(100).Sum(p => p.Close).ToString()) / 100F;
+                    tmpAug.Sma50 = 0F;
+                    tmpAug.Sma100 = 0F;
                     tmpAug.Ema12 = CommonTradeOperations.EmaCalculator(candles[i].Close, result[i - 1].Ema12, 12F);
                     tmpAug.Ema26 = CommonTradeOperations.EmaCalculator(candles[i].Close, result[i - 1].Ema26, 26F);
                     tmpAug.Ema50 = CommonTradeOperations.EmaCalculator(candles[i].Close, result[i - 1].Ema50 ?? 0F, 50F);
@@ -555,15 +557,8 @@ namespace Todolist.Services
                 tmpAug.Low = candles.Low;
                 tmpAug.Close = candles.Close;
                 tmpAug.Volume = candles.Volume;
-                var cndls = _dbRepository.GetList<AugmentedCandle>(p => p.Symbol == (int)symbol && p.Timeframe == (int)timeframe).OrderByDescending(q => q.Time).Take(100);
-                if (cndls.Count() < 50)
-                    tmpAug.Sma50 = 0;
-                else
-                    tmpAug.Sma50 = float.Parse(cndls.Skip(50).Take(50).Sum(p => p.Close).ToString()) / 50F;
-                if (cndls.Count() < 100)
-                    tmpAug.Sma100 = 0;
-                else
-                    tmpAug.Sma100 = float.Parse(cndls.Sum(p => p.Close).ToString()) / 100F;
+                tmpAug.Sma50 = 0F;
+                tmpAug.Sma100 = 0F;
                 tmpAug.Ema12 = CommonTradeOperations.EmaCalculator(candles.Close, init.Ema12, 12F);
                 tmpAug.Ema26 = CommonTradeOperations.EmaCalculator(candles.Close, init.Ema26, 26F);
                 tmpAug.Ema50 = CommonTradeOperations.EmaCalculator(candles.Close, init.Ema50 ?? 0F, 50F);
@@ -708,6 +703,44 @@ namespace Todolist.Services
             catch (Exception)
             {
             }
+        }
+        private void UpdateRsi(Symbol symbol,Timeframe timeframe)
+        {
+            List<AugmentedCandle> candles = new List<AugmentedCandle>();
+            var minCandle = _dbRepository.GetMin<AugmentedCandle,DateTime>(p => p.Time,q => q.RSI == 0).Time;
+
+            _dbRepository.GetList<AugmentedCandle>(p => p.Symbol == (int)symbol && p.Timeframe == (int)timeframe 
+            && p.Time < minCandle,100000).OrderByDescending(r => r.Time).ToList().ForEach(x => { candles.Add(x); });
+            int toSkip = candles.Count;
+            _dbRepository.GetList<AugmentedCandle>(p => p.Symbol == (int)symbol && p.Timeframe == (int)timeframe 
+            && p.Time >= minCandle, 100000).ToList().ForEach(x => { candles.Add(x); });
+            var updated = CommonTradeOperations.GroupCalculateRSI(candles.OrderBy(p => p.Time).ToList());
+            _dbRepository.UpdateBatch(updated.OrderBy(p => p.Time).Skip(toSkip).ToList());
+        }
+        private void UpdateSma(Symbol symbol, Timeframe timeframe)
+        {
+            List<AugmentedCandle> candles = new List<AugmentedCandle>();
+            var minCandle = _dbRepository.GetMin<AugmentedCandle, DateTime>(p => p.Time, q => q.Sma100 == 0).Time;
+
+            _dbRepository.GetList<AugmentedCandle>(p => p.Symbol == (int)symbol && p.Timeframe == (int)timeframe
+            && p.Time < minCandle, 100000).OrderByDescending(r => r.Time).Take(100).ToList().ForEach(x => { candles.Add(x); });
+
+            _dbRepository.GetList<AugmentedCandle>(p => p.Symbol == (int)symbol && p.Timeframe == (int)timeframe
+            && p.Time >= minCandle, 100000).ToList().ForEach(x => { candles.Add(x); });
+            var candles2 = candles.OrderBy(p => p.Time).ToList();
+            for (int i = 1; i <= candles2.Count - 1; i++)
+            {
+                if (i > 50)
+                    candles2[i].Sma50 = float.Parse(candles2.Skip(i - 50).Take(50).Sum(p => p.Close).ToString()) / 50F;
+                if (i > 100)
+                    candles2[i].Sma100 = float.Parse(candles2.Skip(i - 100).Take(100).Sum(p => p.Close).ToString()) / 100F;
+            }
+            _dbRepository.UpdateBatch(candles2.OrderBy(p => p.Time).Skip(100).ToList());
+        }
+        private void SecondaryAugmentation(Symbol symbol, Timeframe timeframe)
+        {
+            UpdateRsi(symbol,timeframe);
+            UpdateSma(symbol, timeframe);
         }
         #endregion
     }

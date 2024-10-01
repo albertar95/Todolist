@@ -17,6 +17,8 @@ namespace Todolist.Services.Contracts
         T Get<T>(Expression<Func<T, bool>> predicate, string Include = "") where T : class;
         T GetMax<T>(Expression<Func<T, bool>> predicate, string Include = "") where T : class;
         T GetMax<T,TKEY>(Expression<Func<T, TKEY>> predicate, Expression<Func<T, bool>> condition, string Include = "") where T : class;
+        T GetMin<T>(Expression<Func<T, bool>> predicate, string Include = "") where T : class;
+        T GetMin<T, TKEY>(Expression<Func<T, TKEY>> predicate, Expression<Func<T, bool>> condition, string Include = "") where T : class;
         bool AddBatch<T>(List<T> entities, int batchSize = 1000) where T : class;
         bool DeleteBatch<T>(List<T> entities, int batchSize = 1000) where T : class;
         bool UpdateBatch<T>(List<T> entities, int batchSize = 1000) where T : class;

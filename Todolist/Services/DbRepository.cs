@@ -90,6 +90,13 @@ namespace Todolist.Services
             else
                 return _context.Set<T>().OrderByDescending(predicate).FirstOrDefault();
         }
+        public T GetMin<T>(Expression<Func<T, bool>> predicate, string Include = "") where T : class
+        {
+            if (!string.IsNullOrEmpty(Include))
+                return _context.Set<T>().Include(Include).OrderBy(predicate).FirstOrDefault();
+            else
+                return _context.Set<T>().OrderBy(predicate).FirstOrDefault();
+        }
 
         public T GetMax<T,TKEY>(Expression<Func<T, TKEY>> predicate, Expression<Func<T, bool>> condition, string Include = "") where T : class
         {
@@ -108,6 +115,28 @@ namespace Todolist.Services
                         return _context.Set<T>().Where(condition).OrderByDescending(predicate).FirstOrDefault();
                     else
                         return _context.Set<T>().OrderByDescending(predicate).FirstOrDefault();
+                }
+            }
+            else
+                return null;
+        }
+        public T GetMin<T, TKEY>(Expression<Func<T, TKEY>> predicate, Expression<Func<T, bool>> condition, string Include = "") where T : class
+        {
+            if (_context.Set<T>().Any())
+            {
+                if (!string.IsNullOrEmpty(Include))
+                {
+                    if (condition != null)
+                        return _context.Set<T>().Include(Include).Where(condition).OrderBy(predicate).FirstOrDefault();
+                    else
+                        return _context.Set<T>().Include(Include).OrderBy(predicate).FirstOrDefault();
+                }
+                else
+                {
+                    if (condition != null)
+                        return _context.Set<T>().Where(condition).OrderBy(predicate).FirstOrDefault();
+                    else
+                        return _context.Set<T>().OrderBy(predicate).FirstOrDefault();
                 }
             }
             else
