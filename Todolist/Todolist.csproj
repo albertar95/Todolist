@@ -2150,6 +2150,7 @@
       <DependentUpon>Model.edmx</DependentUpon>
     </Content>
     <Content Include="App_Data\tmp\up.zip" />
+    <Content Include="App_Data\tmp\tradingWs.zip" />
     <None Include="packages.config" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
