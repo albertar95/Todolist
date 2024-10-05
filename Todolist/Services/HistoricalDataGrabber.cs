@@ -125,6 +125,28 @@ namespace Todolist.Services
             Time = new DateTime(2023, 09, 23, 7, 30, 0),
             Volume = 0,
             RSI = 43.07F
+        },
+            new AugmentedCandle(){
+            Id = new Guid(),
+            Sma50 = 19.5F,
+            Sma100 = 19.16F,
+            Ema12 = 19.57F,
+            Ema26 = 19.62F,
+            Ema50 = 19.5F,
+            Ema100 = 19.49F,
+            Ema200 = 20F,
+            MACDLine = -0.04F,
+            SignalLine = 0.03F,
+            Histogram = -0.07F,
+            Timeframe = (int)Timeframe.H4,
+            Symbol = (int)TradeModels.Symbol.SOLUSDT,
+            Close = 19.51F,
+            High = 19.54F,
+            Low = 19.33F,
+            Open = 19.38F,
+            Time = new DateTime(2023, 09, 23, 7, 30, 0),
+            Volume = 0,
+            RSI = 47.43F
         }
         };
         private readonly IDbRepository _dbRepository;
