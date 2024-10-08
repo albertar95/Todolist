@@ -334,10 +334,15 @@ namespace Todolist.Helpers
 
         public static Dictionary<AugmentedCandle, SignalEstimate> GenerateSignalEstimates(List<AugmentedCandle> inputs)
         {
-            var tmpcandle = inputs.FirstOrDefault().Close;
-            return GenerateSignalEstimates(inputs, GetCloseness(linesOnMacdClosenessMargin,tmpcandle)
-                , GetCloseness(linesClosenessMargin, tmpcandle), GetCloseness(smaClosenessMargin, tmpcandle),
-                GetCloseness(smaAndCandleClosenessMargin, tmpcandle));
+            if (inputs.Count > 0)
+            {
+                var tmpcandle = inputs.FirstOrDefault().Close;
+                return GenerateSignalEstimates(inputs, GetCloseness(linesOnMacdClosenessMargin, tmpcandle)
+                    , GetCloseness(linesClosenessMargin, tmpcandle), GetCloseness(smaClosenessMargin, tmpcandle),
+                    GetCloseness(smaAndCandleClosenessMargin, tmpcandle));
+            }
+            else
+                return new Dictionary<AugmentedCandle, SignalEstimate>();
         }
         public static string DownloadSignals(List<SignalResult> signals)
         {

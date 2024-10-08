@@ -9,11 +9,12 @@ namespace Todolist.Models
     {
         public enum Timeframe
         {
-            M5 = 5, M15 = 15, M30 = 30, H1 = 60, H4 = 240
+            //M5 = 5, M15 = 15, M30 = 30, H1 = 60,
+            H4 = 240
         }
         public enum Symbol
         {
-            SOLUSDT = 1, BTCUSDT = 2, AVAXUSDT = 3, LINKUSDT = 4, AAVEUSDT = 5
+            SOLUSDT = 1, BTCUSDT = 2, AVAXUSDT = 3, LINKUSDT = 4
         }
         public class MarketDataCandle
         {

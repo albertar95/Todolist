@@ -22,88 +22,88 @@ namespace Todolist.Services
         #region Variables
         private readonly int keepDataInterval = int.Parse(ConfigurationManager.AppSettings["keepDataInterval"]);
         private readonly List<AugmentedCandle> InitCandle = new List<AugmentedCandle>(){
-            new AugmentedCandle(){
-            Id = new Guid(),
-            Sma50 = 141.24F,
-            Sma100 = 142.11F,
-            Ema12 = 140.98F,
-            Ema26 = 141.23F,
-            Ema50 = 141.38F,
-            Ema100 = 141.65,
-            Ema200 = 141.27,
-            MACDLine = -0.24F,
-            SignalLine = -0.07F,
-            Histogram = 0.17F,
-            Timeframe = (int)Timeframe.M15,
-            Symbol = (int)TradeModels.Symbol.SOLUSDT,
-            Close = 164.26F,
-            High = 164.58F,
-            Low = 164.26F,
-            Open = 164.54F,
-            Time = new DateTime(2024, 07, 11, 08, 0, 0),
-            Volume = 0,
-            RSI = 41.02F
-        },
-            new AugmentedCandle(){
-            Id = new Guid(),
-            Sma50 = 67713F,
-            Sma100 = 67693F,
-            Ema12 = 67594F,
-            Ema26 = 67657F,
-            Ema50 = 67682F,
-            MACDLine = -63F,
-            SignalLine = -30F,
-            Histogram = -33F,
-            Timeframe = (int)Timeframe.M15,
-            Symbol = (int)TradeModels.Symbol.BTCUSDT,
-            Close = 67446F,
-            High = 67531F,
-            Low = 67446F,
-            Open = 67482F,
-            Time = new DateTime(2024, 06, 02, 10, 0, 0),
-            Volume = 0,
-            RSI = 33.13F
-        },
-            new AugmentedCandle(){
-            Id = new Guid(),
-            Sma50 = 181.22F,
-            Sma100 = 182.52F,
-            Ema12 = 179.82F,
-            Ema26 = 180.30F,
-            Ema50 = 181.00F,
-            MACDLine = -0.48F,
-            SignalLine = -0.52F,
-            Histogram = 0.04F,
-            Timeframe = (int)Timeframe.M5,
-            Symbol = (int)TradeModels.Symbol.SOLUSDT,
-            Close = 179.44F,
-            High = 179.57F,
-            Low = 179.29F,
-            Open = 179.57F,
-            Time = new DateTime(2024, 07, 22, 6, 30, 0),
-            Volume = 0,
-            RSI = 37.72F
-        },
-            new AugmentedCandle(){
-            Id = new Guid(),
-            Sma50 = 67379F,
-            Sma100 = 67662F,
-            Ema12 = 67250F,
-            Ema26 = 67280F,
-            Ema50 = 67393F,
-            MACDLine = -31F,
-            SignalLine = -56F,
-            Histogram = 25F,
-            Timeframe = (int)Timeframe.M5,
-            Symbol = (int)TradeModels.Symbol.BTCUSDT,
-            Close = 67303F,
-            High = 67321F,
-            Low = 67263F,
-            Open = 67314F,
-            Time = new DateTime(2024, 07, 22, 9, 30, 0),
-            Volume = 0,
-            RSI = 51.75F
-        },
+        //    new AugmentedCandle(){
+        //    Id = new Guid(),
+        //    Sma50 = 141.24F,
+        //    Sma100 = 142.11F,
+        //    Ema12 = 140.98F,
+        //    Ema26 = 141.23F,
+        //    Ema50 = 141.38F,
+        //    Ema100 = 141.65,
+        //    Ema200 = 141.27,
+        //    MACDLine = -0.24F,
+        //    SignalLine = -0.07F,
+        //    Histogram = 0.17F,
+        //    Timeframe = (int)Timeframe.M15,
+        //    Symbol = (int)TradeModels.Symbol.SOLUSDT,
+        //    Close = 164.26F,
+        //    High = 164.58F,
+        //    Low = 164.26F,
+        //    Open = 164.54F,
+        //    Time = new DateTime(2024, 07, 11, 08, 0, 0),
+        //    Volume = 0,
+        //    RSI = 41.02F
+        //},
+        //    new AugmentedCandle(){
+        //    Id = new Guid(),
+        //    Sma50 = 67713F,
+        //    Sma100 = 67693F,
+        //    Ema12 = 67594F,
+        //    Ema26 = 67657F,
+        //    Ema50 = 67682F,
+        //    MACDLine = -63F,
+        //    SignalLine = -30F,
+        //    Histogram = -33F,
+        //    Timeframe = (int)Timeframe.M15,
+        //    Symbol = (int)TradeModels.Symbol.BTCUSDT,
+        //    Close = 67446F,
+        //    High = 67531F,
+        //    Low = 67446F,
+        //    Open = 67482F,
+        //    Time = new DateTime(2024, 06, 02, 10, 0, 0),
+        //    Volume = 0,
+        //    RSI = 33.13F
+        //},
+        //    new AugmentedCandle(){
+        //    Id = new Guid(),
+        //    Sma50 = 181.22F,
+        //    Sma100 = 182.52F,
+        //    Ema12 = 179.82F,
+        //    Ema26 = 180.30F,
+        //    Ema50 = 181.00F,
+        //    MACDLine = -0.48F,
+        //    SignalLine = -0.52F,
+        //    Histogram = 0.04F,
+        //    Timeframe = (int)Timeframe.M5,
+        //    Symbol = (int)TradeModels.Symbol.SOLUSDT,
+        //    Close = 179.44F,
+        //    High = 179.57F,
+        //    Low = 179.29F,
+        //    Open = 179.57F,
+        //    Time = new DateTime(2024, 07, 22, 6, 30, 0),
+        //    Volume = 0,
+        //    RSI = 37.72F
+        //},
+        //    new AugmentedCandle(){
+        //    Id = new Guid(),
+        //    Sma50 = 67379F,
+        //    Sma100 = 67662F,
+        //    Ema12 = 67250F,
+        //    Ema26 = 67280F,
+        //    Ema50 = 67393F,
+        //    MACDLine = -31F,
+        //    SignalLine = -56F,
+        //    Histogram = 25F,
+        //    Timeframe = (int)Timeframe.M5,
+        //    Symbol = (int)TradeModels.Symbol.BTCUSDT,
+        //    Close = 67303F,
+        //    High = 67321F,
+        //    Low = 67263F,
+        //    Open = 67314F,
+        //    Time = new DateTime(2024, 07, 22, 9, 30, 0),
+        //    Volume = 0,
+        //    RSI = 51.75F
+        //},
             new AugmentedCandle(){
             Id = new Guid(),
             Sma50 = 26750F,
@@ -147,50 +147,52 @@ namespace Todolist.Services
             Time = new DateTime(2023, 09, 23, 7, 30, 0),
             Volume = 0,
             RSI = 47.43F
-        },
+        }
+        //    ,
+        //    new AugmentedCandle(){
+        //    Id = new Guid(),
+        //    Sma50 = 61.13F,
+        //    Sma100 = 57.88F,
+        //    Ema12 = 63.55F,
+        //    Ema26 = 62.87F,
+        //    Ema50 = 61.28F,
+        //    Ema100 = 59.38F,
+        //    Ema200 = 59.05F,
+        //    MACDLine = 0.76F,
+        //    SignalLine = 0.92F,
+        //    Histogram = -0.16F,
+        //    Timeframe = (int)Timeframe.H4,
+        //    Symbol = (int)TradeModels.Symbol.AAVEUSDT,
+        //    Close = 63.82F,
+        //    High = 64.23F,
+        //    Low = 63.54F,
+        //    Open = 63.78F,
+        //    Time = new DateTime(2023, 09, 23, 7, 30, 0),
+        //    Volume = 0,
+        //    RSI = 57.24F
+        //}
+            ,
             new AugmentedCandle(){
             Id = new Guid(),
-            Sma50 = 61.13F,
-            Sma100 = 57.88F,
-            Ema12 = 63.55F,
-            Ema26 = 62.87F,
-            Ema50 = 61.28F,
-            Ema100 = 59.38F,
-            Ema200 = 59.05F,
-            MACDLine = 0.76F,
-            SignalLine = 0.92F,
-            Histogram = -0.16F,
-            Timeframe = (int)Timeframe.H4,
-            Symbol = (int)TradeModels.Symbol.AAVEUSDT,
-            Close = 63.82F,
-            High = 64.23F,
-            Low = 63.54F,
-            Open = 63.78F,
-            Time = new DateTime(2023, 09, 23, 7, 30, 0),
-            Volume = 0,
-            RSI = 57.24F
-        },
-            new AugmentedCandle(){
-            Id = new Guid(),
-            Sma50 = 9.15F,
-            Sma100 = 9.37F,
-            Ema12 = 8.9F,
-            Ema26 = 8.98F,
-            Ema50 = 9.1F,
-            Ema100 = 9.35F,
-            Ema200 = 9.89F,
-            MACDLine = -0.08F,
-            SignalLine = -0.09F,
+            Sma50 = 8.94F,
+            Sma100 = 9.12F,
+            Ema12 = 8.99F,
+            Ema26 = 8.97F,
+            Ema50 = 9F,
+            Ema100 = 9.17F,
+            Ema200 = 9.65F,
+            MACDLine = 0.02F,
+            SignalLine = 0.01F,
             Histogram = 0.01F,
             Timeframe = (int)Timeframe.H4,
             Symbol = (int)TradeModels.Symbol.AVAXUSDT,
-            Close = 8.91F,
-            High = 8.92F,
+            Close = 9.1F,
+            High = 9.12F,
             Low = 8.83F,
-            Open = 8.86F,
-            Time = new DateTime(2023, 09, 23, 7, 30, 0),
+            Open = 8.97F,
+            Time = new DateTime(2023, 09, 28, 7, 30, 0),
             Volume = 0,
-            RSI = 44.37F
+            RSI = 57.5F
         },
             new AugmentedCandle(){
             Id = new Guid(),
@@ -329,7 +331,7 @@ namespace Todolist.Services
         {
             try
             {
-                var candles = GetCandlesFromHost(tf, symbol, InitCandle.FirstOrDefault(t => t.Timeframe == (int)tf && t.Symbol == (int)symbol).Time.AddDays(-1));
+                var candles = GetCandlesFromHost(tf, symbol, InitCandle.FirstOrDefault(t => t.Timeframe == (int)tf && t.Symbol == (int)symbol).Time.AddDays(-5));
                 if (candles.Min(p => p.Time) <= InitCandle.FirstOrDefault(q => q.Symbol == (int)symbol && q.Timeframe == (int)tf).Time)
                 {
                     var convertedCandles = CandlesAugmentation(candles.Where(p => p.Time >= InitCandle.FirstOrDefault(q => q.Symbol == (int)symbol && q.Timeframe == (int)tf).Time).OrderBy(q => q.Time).ToArray(), InitCandle.FirstOrDefault(q => q.Symbol == (int)symbol && q.Timeframe == (int)tf), symbol, tf);
@@ -429,14 +431,14 @@ namespace Todolist.Services
         {
             try
             {
-                Timeframe FetchTimeframe = tf;
-                if (tf >= Timeframe.H1)
-                    FetchTimeframe = Timeframe.M30;
-                var hostResponse = callSourceUrl(symbol.ToString(), ((int)FetchTimeframe).ToString());
+                int FetchTimeframe = (int)tf;
+                if ((int)tf >= 60)
+                    FetchTimeframe = 30;
+                var hostResponse = callSourceUrl(symbol.ToString(), (FetchTimeframe).ToString());
                 var bins = overallReadbin(hostResponse);
                 List<Candle> result = new List<Candle>();
                 result = symbol.ToString().ToLower().EndsWith("usdt") ? parseResponse(bins, 100) : parseResponse(bins);
-                if (tf >= Timeframe.H1)
+                if ((int)tf >= 60)
                     result = ProcessUpperMinuteCandles2(result,tf, symbol,init);
                     return result;
             }

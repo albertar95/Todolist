@@ -22,7 +22,7 @@ namespace Todolist.Controllers
             _historicalDataGrabber = historicalDataGrabber;
             _signalGenerator = signalGenerator;
         }
-        public ActionResult Index(Symbol symbol = Symbol.SOLUSDT, Timeframe timeframe = Timeframe.M15)
+        public ActionResult Index(Symbol symbol = Symbol.SOLUSDT, Timeframe timeframe = Timeframe.H4)
         {
             return View(_requestProcessor.GetTradeDashboard(symbol,timeframe));
         }
@@ -36,7 +36,7 @@ namespace Todolist.Controllers
             var lastCandle = _historicalDataGrabber.GetLastCandle(symbol, timeframe);
             return Json(new { hasValue = true, lastCandle = lastCandle == DateTime.MinValue ? "" : lastCandle.ToString() });
         }
-        public ActionResult MarketDataCredentials(Symbol symbol = Symbol.SOLUSDT, Timeframe timeframe = Timeframe.M15)
+        public ActionResult MarketDataCredentials(Symbol symbol = Symbol.SOLUSDT, Timeframe timeframe = Timeframe.H4)
         {
             return View(_requestProcessor.GetMarketDataCredentials(symbol, timeframe));
         }
@@ -49,7 +49,7 @@ namespace Todolist.Controllers
                 TempData["CredentialError"] = "error occured in creating credential.try again later";
             return RedirectToAction("MarketDataCredentials", "Trades",new { symbol = credential.Symbol, timeframe = credential.Timeframe });
         }
-        public ActionResult DeleteCredential(Guid id, Symbol symbol = Symbol.SOLUSDT, Timeframe timeframe = Timeframe.M15)
+        public ActionResult DeleteCredential(Guid id, Symbol symbol = Symbol.SOLUSDT, Timeframe timeframe = Timeframe.H4)
         {
             if (_requestProcessor.DeleteMarketDataCredential(id))
                 TempData["CredentialSuccess"] = "credential deleted successfully";
@@ -57,7 +57,7 @@ namespace Todolist.Controllers
                 TempData["CredentialError"] = "error occured in deleted credential.try again later";
             return RedirectToAction("MarketDataCredentials","Trades",new { symbol = symbol, timeframe = timeframe });
         }
-        public ActionResult SignalResults(Symbol symbol = Symbol.SOLUSDT, Timeframe timeframe = Timeframe.M15,int Month = 0)
+        public ActionResult SignalResults(Symbol symbol = Symbol.SOLUSDT, Timeframe timeframe = Timeframe.H4,int Month = 0)
         {
             if (Month == 0)
                 Month = Helpers.Dates.CurrentMonth();
@@ -70,7 +70,7 @@ namespace Todolist.Controllers
             return RedirectToAction("Index","Trades", new { symbol = symbol, timeframe = timeframe });
         }
         [HttpGet]
-        public ActionResult GetSignalEstimates(Symbol symbol = Symbol.SOLUSDT,Timeframe timeframe = Timeframe.M5)
+        public ActionResult GetSignalEstimates(Symbol symbol = Symbol.SOLUSDT,Timeframe timeframe = Timeframe.H4)
         {
             //System.IO.File.WriteAllText(@"D:\tmp\estimates.csv", _signalGenerator.GetSignalEstimates(Symbol.SOLUSDT,Timeframe.M5));
             return File(Encoding.UTF8.GetBytes(_signalGenerator.GetSignalEstimates(symbol,timeframe)), "text/csv", "estimates.csv");
