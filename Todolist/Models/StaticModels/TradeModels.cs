@@ -13,7 +13,7 @@ namespace Todolist.Models
         }
         public enum Symbol
         {
-            SOLUSDT = 1, BTCUSDT = 2
+            SOLUSDT = 1, BTCUSDT = 2, AVAXUSDT = 3, LINKUSDT = 4, AAVEUSDT = 5
         }
         public class MarketDataCandle
         {

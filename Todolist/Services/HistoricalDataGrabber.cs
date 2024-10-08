@@ -147,6 +147,72 @@ namespace Todolist.Services
             Time = new DateTime(2023, 09, 23, 7, 30, 0),
             Volume = 0,
             RSI = 47.43F
+        },
+            new AugmentedCandle(){
+            Id = new Guid(),
+            Sma50 = 61.13F,
+            Sma100 = 57.88F,
+            Ema12 = 63.55F,
+            Ema26 = 62.87F,
+            Ema50 = 61.28F,
+            Ema100 = 59.38F,
+            Ema200 = 59.05F,
+            MACDLine = 0.76F,
+            SignalLine = 0.92F,
+            Histogram = -0.16F,
+            Timeframe = (int)Timeframe.H4,
+            Symbol = (int)TradeModels.Symbol.AAVEUSDT,
+            Close = 63.82F,
+            High = 64.23F,
+            Low = 63.54F,
+            Open = 63.78F,
+            Time = new DateTime(2023, 09, 23, 7, 30, 0),
+            Volume = 0,
+            RSI = 57.24F
+        },
+            new AugmentedCandle(){
+            Id = new Guid(),
+            Sma50 = 9.15F,
+            Sma100 = 9.37F,
+            Ema12 = 8.9F,
+            Ema26 = 8.98F,
+            Ema50 = 9.1F,
+            Ema100 = 9.35F,
+            Ema200 = 9.89F,
+            MACDLine = -0.08F,
+            SignalLine = -0.09F,
+            Histogram = 0.01F,
+            Timeframe = (int)Timeframe.H4,
+            Symbol = (int)TradeModels.Symbol.AVAXUSDT,
+            Close = 8.91F,
+            High = 8.92F,
+            Low = 8.83F,
+            Open = 8.86F,
+            Time = new DateTime(2023, 09, 23, 7, 30, 0),
+            Volume = 0,
+            RSI = 44.37F
+        },
+            new AugmentedCandle(){
+            Id = new Guid(),
+            Sma50 = 6.58F,
+            Sma100 = 6.34F,
+            Ema12 = 6.86F,
+            Ema26 = 6.77F,
+            Ema50 = 6.62F,
+            Ema100 = 6.45F,
+            Ema200 = 6.41F,
+            MACDLine = 0.09F,
+            SignalLine = 0.08F,
+            Histogram = 0.01F,
+            Timeframe = (int)Timeframe.H4,
+            Symbol = (int)TradeModels.Symbol.LINKUSDT,
+            Close = 7.03F,
+            High = 7.06F,
+            Low = 6.94F,
+            Open = 6.99F,
+            Time = new DateTime(2023, 09, 23, 7, 30, 0),
+            Volume = 0,
+            RSI = 67.89F
         }
         };
         private readonly IDbRepository _dbRepository;
@@ -188,15 +254,21 @@ namespace Todolist.Services
                                 hasError = true;
                             }
                         }
-                        initial = _dbRepository.GetMax<AugmentedCandle, DateTime>(p => p.Time, q => q.Timeframe == (int)tf && q.Symbol == (int)sym);
-                        var lastHourResult = GetLastHourData(sym, tf, initial).GetAwaiter().GetResult();
-                        if (lastHourResult.Item1)
-                            resultMessage.Add(new Tuple<int, string>((int)sym, "success"));
-                        else
+                        if((int)tf < 60)
                         {
-                            resultMessage.Add(new Tuple<int, string>((int)sym, lastHourResult.Item2));
-                            hasError = true;
-                        }
+                            initial = _dbRepository.GetMax<AugmentedCandle, DateTime>(p => p.Time, q => q.Timeframe == (int)tf && q.Symbol == (int)sym);
+                            Tuple<bool, string> lastHourResult = new Tuple<bool, string>(true, "");
+                            if (initial != null)
+                                lastHourResult = GetLastHourData(sym, tf, initial).GetAwaiter().GetResult();
+                            if (lastHourResult.Item1)
+                                resultMessage.Add(new Tuple<int, string>((int)sym, "success"));
+                            else
+                            {
+                                resultMessage.Add(new Tuple<int, string>((int)sym, lastHourResult.Item2));
+                                hasError = true;
+                            }
+                        }else
+                            resultMessage.Add(new Tuple<int, string>((int)sym, "success"));
                     }
                 }
             }
@@ -241,7 +313,7 @@ namespace Todolist.Services
                     if (Convert.ToInt32(DateTime.Now.ToLocalTime().Subtract(lastCandle.Time).TotalMinutes) < 60)
                         return true;
                 }
-                var candles = GetCandlesFromHost(tf, symbol);
+                var candles = GetCandlesFromHost(tf, symbol,lastCandle.Time);
                 var convertedCandles = CandlesAugmentation(candles.Where(p => p.Time >= lastCandle.Time).OrderBy(q => q.Time).ToArray(), lastCandle, symbol, tf);
                 _dbRepository.AddBatch(convertedCandles);
                 DeleteKeepIntervalOverflowCandles(symbol, tf);
@@ -257,11 +329,14 @@ namespace Todolist.Services
         {
             try
             {
-                var candles = GetCandlesFromHost(tf, symbol);
+                var candles = GetCandlesFromHost(tf, symbol, InitCandle.FirstOrDefault(t => t.Timeframe == (int)tf && t.Symbol == (int)symbol).Time.AddDays(-1));
                 if (candles.Min(p => p.Time) <= InitCandle.FirstOrDefault(q => q.Symbol == (int)symbol && q.Timeframe == (int)tf).Time)
                 {
                     var convertedCandles = CandlesAugmentation(candles.Where(p => p.Time >= InitCandle.FirstOrDefault(q => q.Symbol == (int)symbol && q.Timeframe == (int)tf).Time).OrderBy(q => q.Time).ToArray(), InitCandle.FirstOrDefault(q => q.Symbol == (int)symbol && q.Timeframe == (int)tf), symbol, tf);
-                    _dbRepository.AddBatch<AugmentedCandle>(convertedCandles.OrderBy(p => p.Time).Skip(150).ToList().Where(q => q.Time >= DateTime.Now.Date.AddDays(keepDataInterval * -1)).ToList());
+                    int skip = 0;
+                    if (convertedCandles.Count > 150)
+                        skip = 150;
+                    _dbRepository.AddBatch<AugmentedCandle>(convertedCandles.OrderBy(p => p.Time).Skip(skip).ToList().Where(q => q.Time >= DateTime.Now.Date.AddDays(keepDataInterval * -1)).ToList());
                     //DeleteKeepIntervalOverflowCandles(symbol, tf);
                     SecondaryAugmentation(symbol, tf);
                     _dbRepository.DeleteBatch<AugmentedCandle>(_dbRepository.GetList<AugmentedCandle>(p => p.RSI == 0));
@@ -350,7 +425,7 @@ namespace Todolist.Services
         }
         #endregion
         #region PrivateSubMethods
-        private List<Candle> GetCandlesFromHost(Timeframe tf, Symbol symbol)
+        private List<Candle> GetCandlesFromHost(Timeframe tf, Symbol symbol, DateTime init)
         {
             try
             {
@@ -362,7 +437,7 @@ namespace Todolist.Services
                 List<Candle> result = new List<Candle>();
                 result = symbol.ToString().ToLower().EndsWith("usdt") ? parseResponse(bins, 100) : parseResponse(bins);
                 if (tf >= Timeframe.H1)
-                    result = ProcessUpperMinuteCandles(result,tf, symbol);
+                    result = ProcessUpperMinuteCandles2(result,tf, symbol,init);
                     return result;
             }
             catch (Exception ex)
@@ -376,7 +451,9 @@ namespace Todolist.Services
             var ratio = (int)target / 30;
             #region normalizeCandles
             int gapIndex = 0;
-            candles = candles.Where(r => r.Time >= InitCandle.FirstOrDefault(t => t.Timeframe == (int)target && t.Symbol == (int)sym).Time).OrderBy(p => p.Time).ToList();
+            candles = candles
+                //.Where(r => r.Time >= InitCandle.FirstOrDefault(t => t.Timeframe == (int)target && t.Symbol == (int)sym).Time)
+                .OrderBy(p => p.Time).ToList();
             for (int i = 1; i < candles.Count; i++)
             {
                 if (candles[i-1].Time.AddMinutes(30) != candles[i].Time)
@@ -408,6 +485,44 @@ namespace Todolist.Services
 
                 }
                 result.Add(tmpCandle);
+            }
+            return result;
+        }
+        private List<Candle> ProcessUpperMinuteCandles2(List<Candle> candles, Timeframe target, Symbol sym,DateTime init)
+        {
+            List<Candle> result = new List<Candle>();
+            List<Candle> tmpResult = new List<Candle>();
+            int period = (int)(DateTime.Now - init).TotalMinutes / (int)target;
+            for (int i = 0; i < period; i++)
+            {
+                tmpResult.Add(new Candle() {  Time = init.AddMinutes(i*(int)target)});
+            }
+            var ratio = (int)target / 30;
+            foreach (var res in tmpResult.OrderBy(p => p.Time))
+            {
+                var chunks = candles.Where(p => p.Time >= res.Time && p.Time < res.Time.AddMinutes((int)target)).OrderBy(q => q.Time).ToList();
+                if(chunks.Count() == ratio)
+                {
+                    Candle tmpCandle = null;
+                    Candle tmpCandle2 = null;
+                    for (int j = 0; j < ratio; j++)
+                    {
+                        if (j == 0)
+                            tmpCandle = chunks[j];
+                        else
+                        {
+                            tmpCandle2 = chunks[j];
+                            if (tmpCandle.High <= tmpCandle2.High)
+                                tmpCandle.High = tmpCandle2.High;
+                            if (tmpCandle.Low >= tmpCandle2.Low)
+                                tmpCandle.Low = tmpCandle2.Low;
+                            tmpCandle.Volume += tmpCandle2.Volume;
+                            tmpCandle.Close = tmpCandle2.Close;
+                        }
+
+                    }
+                    result.Add(tmpCandle);
+                }
             }
             return result;
         }
