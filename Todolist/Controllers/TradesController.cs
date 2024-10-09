@@ -116,14 +116,14 @@ namespace Todolist.Controllers
             var result = _historicalDataGrabber.AutoRefreshCandles();
             string message = "";
             result.Item2.ForEach(x => { message += $"{x.Item1} - {x.Item2},"; });
-            return Json(new { hasError = result.Item1, message = message });
+            return View(new JsonResults { HasValue = result.Item1, Message = message });
         }
         [AllowAnonymous]
         [HttpGet]
         public ActionResult GetAutoRefreshSignals()
         {
             _signalGenerator.AutoRefreshSignals(SignalProviders.RsiStrategy);
-            return Json(new { hasValue = true });
+            return Json(new JsonResults { HasValue = true, Message = "success" });
         }
     }
 }

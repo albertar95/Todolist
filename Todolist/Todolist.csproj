@@ -2187,6 +2187,8 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Trades\SignalResults.cshtml" />
     <Content Include="Views\Trades\TradeDashboard.cshtml" />
+    <Content Include="Views\Trades\GetAutoRefreshCandles.cshtml" />
+    <Content Include="Views\Trades\GetAutoRefreshSignals.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
