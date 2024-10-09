@@ -15,5 +15,7 @@ namespace Todolist.ViewModels
         public SignalEstimate Estimate { get; set; }
         public SignalDto Signal { get; set; }
         public SignalProgress SignalProgress { get; set; }
+        public Tuple<int, int, int, int> AllTimeStat { get; set; }
+        public Tuple<double, double, double, double> AllTimeStatPercentage { get; set; }
     }
 }

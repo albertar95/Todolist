@@ -91,7 +91,7 @@ namespace Todolist.Services.Contracts
         MarketDataCredetialViewModel GetMarketDataCredentials(Symbol symbol, Timeframe timeframe);
         bool PostMarketDataCredential(MarketDataCredential credential);
         bool DeleteMarketDataCredential(Guid nidCredential);
-        SignalResultsViewModel GetSignalResults(Symbol symbol, Timeframe timeframe, int currentMonth);
+        SignalResultsViewModel GetSignalResults(Symbol symbol, Timeframe timeframe, int currentMonth, SignalProviders providers = SignalProviders.RsiStrategy);
         bool DbMaintanence();
     }
 }

@@ -54,14 +54,15 @@
                                             <div class="text-sm-left font-weight-bold text-success text-uppercase mb-1">
                                                 Price
                                             </div>
-                                                @if (Model.Candle != null)
-                                                {
-                                                    <div class="h6 mb-0 text-gray-800 text-center">@Model.Candle.Close.ToString()</div>
-                                                }
-                                                else
-                                                {
-                                                    <div class="h6 mb-0 text-gray-800 text-center"></div>
-                                                }
+                                            @if (Model.Candle != null)
+                                            {
+                                                <div class="h6 mb-0 text-gray-800 text-center">@Model.Candle.Close.ToString()</div>
+                                                <div class="h6 mb-0 text-gray-800 text-center">@Todolist.Helpers.CommonTradeOperations.ConvertToPersianDate(Model.Candle.Time)</div>
+                                            }
+                                            else
+                                            {
+                                                <div class="h6 mb-0 text-gray-800 text-center"></div>
+                                            }
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
@@ -409,6 +410,111 @@
             }
             <hr />
             <h4 class="header-control mb-4">Statistics</h4>
+            <hr />
+            <div class="row">
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        AllTime Signals
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">count   : @Model.AllTimeStat.Item1 </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">profit  : @Model.AllTimeStatPercentage.Item1.ToString("0.0##") %</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-database fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-success shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                        AllTime Wins
+                                    </div>
+                                    @if (Model.AllTimeStat.Item1 != 0)
+                                    {
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">count    : @Model.AllTimeStat.Item2 </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">Win Rate : @string.Format("{0}", Math.Round(Convert.ToDecimal(Model.AllTimeStat.Item2) / Convert.ToDecimal(Model.AllTimeStat.Item1) * 100)) % </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">profit   : @Model.AllTimeStatPercentage.Item2.ToString("0.0##") %</div>
+                                    }
+                                    else
+                                    {
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">count    : N/A </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">Win Rate : N/A </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">profit   : N/A </div>
+                                    }
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-arrow-up fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-warning shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                        AllTime Evens
+                                    </div>
+                                    @if (Model.AllTimeStat.Item1 != 0)
+                                    {
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">count     : @Model.AllTimeStat.Item3 </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">Even Rate : @string.Format("{0}", Math.Round(Convert.ToDecimal(Model.AllTimeStat.Item3) / Convert.ToDecimal(Model.AllTimeStat.Item1) * 100)) % </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">profit    : @Model.AllTimeStatPercentage.Item3.ToString("0.0##") %</div>
+                                    }
+                                    else
+                                    {
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">count     : N/A </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">Even Rate : N/A </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">profit    : N/A </div>
+                                    }
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-bell fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-danger shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                        AllTime Losses
+                                    </div>
+                                    @if (Model.AllTimeStat.Item1 != 0)
+                                    {
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">count     : @Model.AllTimeStat.Item4 </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">Lose Rate : @string.Format("{0}", Math.Round(Convert.ToDecimal(Model.AllTimeStat.Item4) / Convert.ToDecimal(Model.AllTimeStat.Item1) * 100)) % </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">profit    : @Model.AllTimeStatPercentage.Item4.ToString("0.0##") %</div>
+                                    }
+                                    else
+                                    {
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">count     : N/A </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">Lose Rate : N/A </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">profit    : N/A </div>
+                                    }
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-arrow-down fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <!--statistics-->
             <div class="row" id="statistics">
                 <div class="form-group d-flex">

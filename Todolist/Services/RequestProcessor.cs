@@ -1447,6 +1447,8 @@ namespace Todolist.Services
                     result.SignalProgress = CommonTradeOperations.CalcSignalProgress(result.Signal, result.Candle);
                 result.SignalResultsVM = GetSignalResults(symbol, timeframe, month);
                 result.Estimate = CommonTradeOperations.GenerateSignalEstimates(new List<AugmentedCandle>() { result.Candle }).FirstOrDefault().Value;
+                result.AllTimeStat = GetAllTimeSignalResults(symbol, timeframe);
+                result.AllTimeStatPercentage = GetAllTimeSignalResultsPercentage(symbol, timeframe);
             }
             catch (Exception)
             {
@@ -1498,7 +1500,7 @@ namespace Todolist.Services
                 return false;
             }
         }
-        public SignalResultsViewModel GetSignalResults(Symbol symbol, Timeframe timeframe,int currentMonth)
+        public SignalResultsViewModel GetSignalResults(Symbol symbol, Timeframe timeframe,int currentMonth,SignalProviders providers = SignalProviders.RsiStrategy)
         {
             SignalResultsViewModel result = new SignalResultsViewModel();
             result.Symbol = symbol;
@@ -1512,6 +1514,7 @@ namespace Todolist.Services
             {
                 var signals = _dbRepository.GetList<SignalResult>(p => p.Signal.Symbol == (int)symbol && p.Signal.Timeframe == (int)timeframe && p.Signal.IsActive == false
                 && p.Signal.StartDate >= startAndEndOfMonth.Item1.Date && p.Signal.StartDate <= startAndEndOfMonth.Item2.Date
+                && p.Signal.SignalProvider == (int)providers
                 , 10000,"Signal");
                 if (signals != null)
                     signals.ForEach(x => { result.SignalResults.Add(CommonTradeOperations.CastSignalResultToDto(x)); });
@@ -1528,6 +1531,54 @@ namespace Todolist.Services
                     signals.Where(p => p.Status == 3).Sum(q => q.ProfitPercentage)
                     );
                 result.SignalResultsAreaChart = SignalResultAreaCalc(signals);
+            }
+            catch (Exception)
+            {
+            }
+            return result;
+        }
+        private Tuple<int, int, int, int> GetAllTimeSignalResults(Symbol symbol, Timeframe timeframe,SignalProviders providers = SignalProviders.RsiStrategy)
+        {
+            var result = new Tuple<int, int, int, int>(0, 0, 0, 0);
+            try
+            {
+                var signals = _dbRepository.GetList<SignalResult>
+                    (p => p.Signal.Symbol == (int)symbol && p.Signal.Timeframe == (int)timeframe && p.Signal.IsActive == false
+                    && p.Signal.SignalProvider == (int)providers
+                , 10000, "Signal");
+                if(signals != null)
+                {
+                    result = new Tuple<int, int, int, int>(
+                    signals.Count(),
+                    signals.Where(p => p.Status == 1).Count(),
+                    signals.Where(p => p.Status == 2).Count(),
+                    signals.Where(p => p.Status == 3).Count()
+                    );
+                }
+            }
+            catch (Exception)
+            {
+            }
+            return result;
+        }
+        private Tuple<double, double, double, double> GetAllTimeSignalResultsPercentage(Symbol symbol, Timeframe timeframe, SignalProviders providers = SignalProviders.RsiStrategy)
+        {
+            var result = new Tuple<double, double, double, double>(0, 0, 0, 0);
+            try
+            {
+                var signals = _dbRepository.GetList<SignalResult>
+                    (p => p.Signal.Symbol == (int)symbol && p.Signal.Timeframe == (int)timeframe && p.Signal.IsActive == false
+                    && p.Signal.SignalProvider == (int)providers
+                , 10000, "Signal");
+                if (signals != null)
+                {
+                    result = new Tuple<double, double, double, double>(
+                               signals.Sum(q => q.ProfitPercentage),
+                               signals.Where(p => p.Status == 1).Sum(q => q.ProfitPercentage),
+                               signals.Where(p => p.Status == 2).Sum(q => q.ProfitPercentage),
+                               signals.Where(p => p.Status == 3).Sum(q => q.ProfitPercentage)
+                               );
+                }
             }
             catch (Exception)
             {
