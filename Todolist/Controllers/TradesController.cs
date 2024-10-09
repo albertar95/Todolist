@@ -78,7 +78,7 @@ namespace Todolist.Controllers
         public ActionResult DeleteSignals(Symbol symbol, Timeframe timeframe,SignalProviders providers = SignalProviders.RsiStrategy)
         {
             _signalGenerator.DeleteSignals(symbol, timeframe,providers);
-            return RedirectToAction("SignalResults", "Trades",new { symbol = symbol, timeframe = timeframe });
+            return RedirectToAction("TradeDashboard", "Trades",new { symbol = symbol, timeframe = timeframe });
         }
         public ActionResult DownloadSignalResult(Symbol symbol, Timeframe timeframe)
         {

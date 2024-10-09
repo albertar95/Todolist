@@ -146,6 +146,9 @@
     <Content Include="App_Data\privatekey\9.txt" />
     <Content Include="Contents\css\fonts.css" />
     <Content Include="Contents\css\sb-admin-2.min.css" />
+    <Content Include="Contents\img\bg1.jpg" />
+    <Content Include="Contents\img\bg2.jpg" />
+    <Content Include="Contents\img\bg0.jpg" />
     <Content Include="Contents\js\demo\chart-area-demo.js" />
     <Content Include="Contents\js\demo\chart-bar-demo.js" />
     <Content Include="Contents\js\demo\chart-pie-demo.js" />

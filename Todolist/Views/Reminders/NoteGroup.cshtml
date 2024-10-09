@@ -42,7 +42,7 @@
 @for (var i = 0; i <= Model.Notes.Count / 3; i++)
 {
     <div class="row" style="padding:25px;">
-        @foreach (var note in Model.Notes.OrderBy(p => p.ModifiedDate).Skip(i * 3).Take(3))
+        @foreach (var note in Model.Notes.OrderByDescending(p => p.ModifiedDate).Skip(i * 3).Take(3))
         {
             <div class="col-xl-4">
                 <div class="card shadow mb-4 d-flex">
