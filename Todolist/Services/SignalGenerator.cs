@@ -384,7 +384,10 @@ namespace Todolist.Services
                 if (newSignalResult.ProfitPercentage < (FixedSlPercentage * -1))
                     newSignalResult.ProfitPercentage = (FixedSlPercentage * -1);
                 if (newSignalResult.Duration <= 0)
+                {
                     newSignalResult.Status = (int)SignalResultStatus.equal;
+                    newSignalResult.ProfitPercentage = 0;
+                }
                 else
                 {
                     if (newSignalResult.ProfitPercentage <= EvenSignalResultLimit && newSignalResult.ProfitPercentage >= 0)
@@ -444,7 +447,10 @@ namespace Todolist.Services
                 if (newSignalResult.ProfitPercentage < (FixedSlPercentage * -1))
                     newSignalResult.ProfitPercentage = (FixedSlPercentage * -1);
                 if (newSignalResult.Duration <= 0)
+                {
                     newSignalResult.Status = (int)SignalResultStatus.equal;
+                    newSignalResult.ProfitPercentage = 0;
+                }
                 else
                 {
                     if (newSignalResult.ProfitPercentage <= EvenSignalResultLimit && newSignalResult.ProfitPercentage >= 0)
