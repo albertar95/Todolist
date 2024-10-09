@@ -635,7 +635,7 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                <a class="btn btn-danger" href="@Url.Action("DeleteSignals","Trades",new { symbol = Model.Symbol,timeframe = Model.Timeframe })" id="btnMDelete">Delete</a>
+                <a class="btn btn-danger" href="@Url.Action("DeleteSignals","Trades",new { symbol = Model.SignalResultsVM.Symbol,timeframe = Model.SignalResultsVM.Timeframe })" id="btnMDelete">Delete</a>
             </div>
         </div>
     </div>

@@ -75,9 +75,9 @@ namespace Todolist.Controllers
             //System.IO.File.WriteAllText(@"D:\tmp\estimates.csv", _signalGenerator.GetSignalEstimates(Symbol.SOLUSDT,Timeframe.M5));
             return File(Encoding.UTF8.GetBytes(_signalGenerator.GetSignalEstimates(symbol,timeframe)), "text/csv", "estimates.csv");
         }
-        public ActionResult DeleteSignals(Symbol symbol, Timeframe timeframe)
+        public ActionResult DeleteSignals(Symbol symbol, Timeframe timeframe,SignalProviders providers = SignalProviders.RsiStrategy)
         {
-            _signalGenerator.DeleteSignals(symbol, timeframe);
+            _signalGenerator.DeleteSignals(symbol, timeframe,providers);
             return RedirectToAction("SignalResults", "Trades",new { symbol = symbol, timeframe = timeframe });
         }
         public ActionResult DownloadSignalResult(Symbol symbol, Timeframe timeframe)
