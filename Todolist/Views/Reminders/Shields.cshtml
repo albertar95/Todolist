@@ -26,10 +26,19 @@
             <div class="col-lg-12">
                 <div class="p-9">
                     <div class="text-center">
-                        <h1 class="h4 text-gray-900 mb-4">User Information</h1>
+                        <h1 class="h4 text-gray-900 mb-4">Shields</h1>
                     </div>
-                    <a href="@Url.Action("AddShield","Reminders")" style="width:120px;margin:15px;" class="btn btn-block btn-outline-success">add shield</a>
-                    @*<a href="@Url.Action("ConvertShields","Home")" style="width:120px;margin:15px;" class="btn btn-block btn-outline-success">Convert shield</a>*@
+                    <div class="row d-flex">
+                        <a href="@Url.Action("AddShield","Reminders")" style="width:120px;margin:15px;" class="btn btn-block btn-outline-success">add shield</a>
+                        @if (!bool.Parse(TempData["HasMaster"].ToString()))
+                        {
+                            <a href="#" onclick="ShowMasterPasswordForm(event,3,'1')" style="width:120px;margin:15px;" class="btn btn-block btn-outline-danger"><i class="fa fa-lock-open"></i></a>
+                        }
+                        else
+                        {
+                            <a href="@Url.Action("RemovePersistenceShieldMaster", "Reminders")" style="width:120px;margin:15px;" class="btn btn-block btn-outline-success"><i class="fa fa-lock"></i></a>
+                        }
+                    </div>
                 </div>
             </div>
         </div>
@@ -113,9 +122,20 @@
 @section Scripts
     {
     <script type="text/javascript">
+        let hasMaster = false;
         $(function () {
             $(".modal").on('shown.bs.modal', function () {
                 $(this).find('[autofocus]').focus();
+            });
+            if ('@TempData["HasMaster"]' == "True")
+            {
+                hasMaster = true;
+            }
+            $("#txtMasterPass").keypress(function (e) {
+                // Enter pressed?
+                if (e.which == 10 || e.which == 13) {
+                    SubmitMasterPasswordWithoutEvent();
+                }
             });
             if ('@TempData["ShieldSuccess"]' != "") {
                 $("#successDiv").removeAttr('hidden');
@@ -141,10 +161,20 @@
         function ShowMasterPasswordForm(e, action, nid)
         {
             e.preventDefault();
-            $("#txtMasterPass").val('');
-            $("#txtActionType").val(action);
-            $("#txtNidShield").val(nid);
-            $("#masterPassModal").modal();
+            if (hasMaster) {
+                if (action == "1") {
+                    window.location = '@Url.Action("EditShield", "Reminders")' + '?NidShield=' + nid;
+                }
+                if (action == "2") {
+                    window.location = '@Url.Action("ShieldDetail", "Reminders")' + '?NidShield=' + nid;
+                }
+            } else
+            {
+                $("#txtMasterPass").val('');
+                $("#txtActionType").val(action);
+                $("#txtNidShield").val(nid);
+                $("#masterPassModal").modal();
+            }
         }
         function SubmitMasterPassword(e)
         {
@@ -154,6 +184,20 @@
             }
             if ($("#txtActionType").val() == "2") {
                 window.location = '@Url.Action("ShieldDetail", "Reminders")' + '?NidShield=' + $("#txtNidShield").val() + '&masterPassword=' + $("#txtMasterPass").val();
+            }
+            if ($("#txtActionType").val() == "3") {
+                window.location = '@Url.Action("PersistenceShieldMaster", "Reminders")' + '?masterPassword=' + $("#txtMasterPass").val();
+            }
+        }
+        function SubmitMasterPasswordWithoutEvent() {
+            if ($("#txtActionType").val() == "1") {
+                window.location = '@Url.Action("EditShield", "Reminders")' + '?NidShield=' + $("#txtNidShield").val() + '&masterPassword=' + $("#txtMasterPass").val();
+            }
+            if ($("#txtActionType").val() == "2") {
+                window.location = '@Url.Action("ShieldDetail", "Reminders")' + '?NidShield=' + $("#txtNidShield").val() + '&masterPassword=' + $("#txtMasterPass").val();
+            }
+            if ($("#txtActionType").val() == "3") {
+                window.location = '@Url.Action("PersistenceShieldMaster", "Reminders")' + '?masterPassword=' + $("#txtMasterPass").val();
             }
         }
     </script>

@@ -6,6 +6,7 @@
 <div class="row" style="padding:25px;">
     <div class="col-lg-6 d-flex">
         <a href="@Url.Action("AddNote","Reminders",new { NidGroup = Model.Group.NidGroup })" class="btn btn-block btn-outline-success" style="width:200px;justify-content:right;height:38px;overflow:hidden;">add new note</a>
+        <a href="@Url.Action("NoteGroups","Reminders")" class="btn btn-outline-secondary" style="width:200px;justify-content:right;margin-left:1rem;height:38px;overflow:hidden;">Return</a>
     </div>
     <div class="col-lg-6">
         <div class="alert alert-success alert-dismissible fade show" style="width:fit-content;float:right;" role="alert" id="successDiv" hidden>

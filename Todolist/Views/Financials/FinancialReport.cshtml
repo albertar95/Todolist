@@ -35,6 +35,10 @@
                         </div>
                     </div>
                     <div id="monthlyReports">
+                        <h4 class="header-control mb-4">groups spence report</h4>
+                        <div class="chart-bar">
+                            <canvas id="GroupMonthlySpenceBar"></canvas>
+                        </div>
                         <h4 class="header-control mb-4">spence report</h4>
                         <div class="chart-bar">
                             <canvas id="MonthlySpenceBar"></canvas>
@@ -209,6 +213,7 @@
         {
             $("#sltCurrentMonth").val(@Model.CurrentMonth).change();
             var t1 = @Html.Raw(Model.MonthlySpenceBarChart.Item1);
+            SetBarChart('GroupMonthlySpenceBar', @Html.Raw(Model.GroupMonthlySpenceBarChart.Item1), @Html.Raw(Model.GroupMonthlySpenceBarChart.Item2), @Html.Raw(Model.GroupMonthlySpenceBarChart.Item3));
             SetBarChart('MonthlySpenceBar', @Html.Raw(Model.MonthlySpenceBarChart.Item1), @Html.Raw(Model.MonthlySpenceBarChart.Item2), @Html.Raw(Model.MonthlySpenceBarChart.Item3));
             SetBarChart('MonthlyIncomeBar', @Html.Raw(Model.MonthlyIncomeBarChart.Item1), @Html.Raw(Model.MonthlyIncomeBarChart.Item2), @Html.Raw(Model.MonthlyIncomeBarChart.Item3));
             SetBarChart('MonthSpencesBar', @Html.Raw(Model.MonthSpencesBarChart.Item1), @Html.Raw(Model.MonthSpencesBarChart.Item2), @Html.Raw(Model.MonthSpencesBarChart.Item3));

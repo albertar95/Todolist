@@ -481,6 +481,17 @@ namespace Todolist.Services
                 return new List<Shield>();
             }
         }
+        public Shield GetMinShield(Guid nidUser)
+        {
+            try
+            {
+                return _dbRepository.GetList<Shield>(p => p.UserId == nidUser).FirstOrDefault();
+            }
+            catch (Exception)
+            {
+                return new Shield();
+            }
+        }
 
         public Task GetTask(Guid nidTask)
         {
@@ -1090,11 +1101,13 @@ namespace Todolist.Services
         public FinancialReportViewModel GetFinancialReport(Guid nidUser)
         {
             var result = new FinancialReportViewModel();
+            var currentM = Helpers.Dates.CurrentMonth();
             try
             {
                 result.CurrentMonth = Helpers.Dates.CurrentMonth();
-                result.MonthlySpenceBarChart = MonthlySpenceBarCalc(Helpers.Dates.CurrentMonth());
-                result.MonthlyIncomeBarChart = MonthlyIncomeBarCalc(Helpers.Dates.CurrentMonth());
+                result.GroupMonthlySpenceBarChart = GroupMonthlySpenceBarCalc(currentM);
+                result.MonthlySpenceBarChart = MonthlySpenceBarCalc(currentM);
+                result.MonthlyIncomeBarChart = MonthlyIncomeBarCalc(currentM);
                 result.MonthSpencesBarChart = MonthSpencesBarCalc();
                 result.TopFiveGroupBarChart = TopFiveGroupBarCalc();
                 result.GroupSpenceBarChart = new Tuple<string, string, decimal>("[]", "[]", 0);
@@ -1112,6 +1125,33 @@ namespace Todolist.Services
             }
             return result;
         }
+        public Tuple<string, string, decimal> GroupMonthlySpenceBarCalc(int month)
+        {
+            try
+            {
+                var startofmonth = Helpers.Dates.GetStartAndEndOfMonth(month);
+                var currentMonthSpenceTransactions = _dbRepository.GetList<Transaction>(p => p.CreateDate >= startofmonth.Item1 && p.CreateDate <= startofmonth.Item2)
+                    .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true).Select(r => r.NidAccount).Contains(q.RecieverAccount))
+                    .GroupBy(a => a.TransactionGroupId).Select(m => new { agg = m.Key, totalAmount = m.Sum(o => o.Amount) }).ToList();
+                if (!currentMonthSpenceTransactions.Any())
+                    return new Tuple<string, string, decimal>("[]", "[]", 0);
+                string groupNames = "[";
+                string values = "[";
+                var groups = _dbRepository.GetList<TransactionGroup>();
+                foreach (var tr in currentMonthSpenceTransactions.OrderByDescending(p => p.totalAmount))
+                {
+                    groupNames += "'" + groups.FirstOrDefault(p => p.NidTransactionGroup == tr.agg).Title + "',";
+                    values += "'" + tr.totalAmount + "',";
+                }
+                groupNames = groupNames.Remove(groupNames.Length - 1, 1) + "]";
+                values = values.Remove(values.Length - 1, 1) + "]";
+                return new Tuple<string, string, decimal>(groupNames, values, currentMonthSpenceTransactions.Max(p => p.totalAmount));
+            }
+            catch (Exception)
+            {
+                return new Tuple<string, string, decimal>("", "", 0);
+            }
+        }
         public Tuple<string, string, decimal> MonthlySpenceBarCalc(int month)
         {
             try
@@ -1125,7 +1165,7 @@ namespace Todolist.Services
                 string accNames = "[";
                 string values = "[";
                 var accounts = _dbRepository.GetList<Account>();
-                foreach (var tr in currentMonthSpenceTransactions)
+                foreach (var tr in currentMonthSpenceTransactions.OrderByDescending(p => p.totalAmount))
                 {
                     accNames += "'" + accounts.FirstOrDefault(p => p.NidAccount == tr.acc).Title + "',";
                     values += "'" + tr.totalAmount + "',";
@@ -1152,7 +1192,7 @@ namespace Todolist.Services
                 string accNames = "[";
                 string values = "[";
                 var accounts = _dbRepository.GetList<Account>();
-                foreach (var tr in currentMonthIncomeTransactions)
+                foreach (var tr in currentMonthIncomeTransactions.OrderByDescending(p => p.totalAmount))
                 {
                     accNames += "'" + accounts.FirstOrDefault(p => p.NidAccount == tr.acc).Title + "',";
                     values += "'" + tr.totalAmount + "',";

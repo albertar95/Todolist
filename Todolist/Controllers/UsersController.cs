@@ -72,6 +72,14 @@ namespace Todolist.Controllers
                 };
                 Response.Cookies.Add(c);
             }
+            if (Request.Cookies["TodolistShieldCookie"] != null)
+            {
+                var c = new HttpCookie("TodolistShieldCookie")
+                {
+                    Expires = DateTime.Now.AddDays(-1)
+                };
+                Response.Cookies.Add(c);
+            }
 
             return RedirectToAction("Login", "Users");
         }

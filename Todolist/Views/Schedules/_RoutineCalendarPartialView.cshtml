@@ -123,7 +123,7 @@
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
-                        <div class="text-sm-left font-weight-bold text-dangertext-uppercase mb-1">
+                        <div class="text-sm-left font-weight-bold text-danger text-uppercase mb-1">
                             WEDNESDAY
                         </div>
                         @foreach (var rot in Model.Routines.Where(p => (p.RepeatDays.Split(',').Contains("5") || p.RepeatDays.Split(',').Contains("0")) && p.FromDate <= Model.StartDate.AddDays(4).Date && p.Todate >= Model.StartDate.AddDays(4).Date))

@@ -1963,6 +1963,7 @@
     <Compile Include="ViewModels\NotesViewModel.cs" />
     <Compile Include="ViewModels\ProgressViewModel.cs" />
     <Compile Include="ViewModels\RoutineViewModel.cs" />
+    <Compile Include="ViewModels\ShieldsViewModel.cs" />
     <Compile Include="ViewModels\SignalResultsViewModel.cs" />
     <Compile Include="ViewModels\TradeDashboardViewModel.cs" />
   </ItemGroup>

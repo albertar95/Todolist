@@ -26,6 +26,25 @@ namespace Todolist.Controllers
                 return _userId;
             }
         }
+        private string _masterPass = string.Empty;
+        public string MasterPass
+        {
+            get
+            {
+                if (_masterPass == string.Empty)
+                {
+                    if(UserId != Guid.Empty)
+                    {
+                        if (Request.Cookies.AllKeys.Contains("TodolistShieldCookie"))
+                        {
+                            if (Guid.Parse(Request.Cookies["TodolistShieldCookie"].Values["NidUser"]) == _userId)
+                                _masterPass = Helpers.Encryption.DecryptString(Request.Cookies["TodolistShieldCookie"].Values["MasterPass"]);
+                        }
+                    }
+                }
+                return _masterPass;
+            }
+        }
         private readonly IRequestProcessor _requestProcessor;
         public RemindersController(IRequestProcessor requestProcessor)
         {
@@ -116,6 +135,7 @@ namespace Todolist.Controllers
         //shield section
         public ActionResult Shields(bool IncludeAll = false)
         {
+            TempData["HasMaster"] = $"{!string.IsNullOrEmpty(MasterPass)}";
             return View(_requestProcessor.GetShields(UserId));
         }
         public ActionResult AddShield()
@@ -150,6 +170,8 @@ namespace Todolist.Controllers
         public ActionResult EditShield(Guid NidShield, string masterPassword = "")
         {
             var shield = _requestProcessor.GetShield(NidShield);
+            if (masterPassword == "")
+                masterPassword = MasterPass;
             var decrypt = Helpers.Encryption.RSADecrypt(shield.Password, masterPassword);
             if (!string.IsNullOrEmpty(decrypt))
             {
@@ -165,6 +187,8 @@ namespace Todolist.Controllers
         public ActionResult ShieldDetail(Guid NidShield, string masterPassword = "")
         {
             var shield = _requestProcessor.GetShield(NidShield);
+            if (masterPassword == "")
+                masterPassword = MasterPass;
             var decrypt = Helpers.Encryption.RSADecrypt(shield.Password, masterPassword);
             if (!string.IsNullOrEmpty(decrypt))
             {
@@ -183,6 +207,49 @@ namespace Todolist.Controllers
                 TempData["ShieldSuccess"] = $"Shield converted successfully";
             else
                 TempData["ShieldError"] = $"an error occured while converting Shield!";
+            return RedirectToAction("Shields", "Reminders");
+        }
+        public ActionResult PersistenceShieldMaster(string masterPassword = "")
+        {
+            var shield = _requestProcessor.GetMinShield(UserId);
+            if(shield != null)
+            {
+                var decrypt = Helpers.Encryption.RSADecrypt(shield.Password, masterPassword);
+                if (!string.IsNullOrEmpty(decrypt))
+                {
+                    if (Request.Cookies["TodolistShieldCookie"] != null)
+                    {
+                        var c = new HttpCookie("TodolistShieldCookie")
+                        {
+                            Expires = DateTime.Now.AddDays(-1)
+                        };
+                        Response.Cookies.Add(c);
+                    }
+                    var userDataCookie = new HttpCookie("TodolistShieldCookie");
+                    userDataCookie.Values.Add("NidUser", _userId.ToString());
+                    userDataCookie.Values.Add("MasterPass", Helpers.Encryption.EncryptString(masterPassword));
+                    userDataCookie.Secure = true;
+                    userDataCookie.HttpOnly = true;
+                    userDataCookie.Expires = DateTime.Now.AddHours(8);
+                    Response.Cookies.Add(userDataCookie);
+                }
+                else
+                {
+                    TempData["ShieldError"] = $"wrong master password";
+                }
+            }
+            return RedirectToAction("Shields", "Reminders");
+        }
+        public ActionResult RemovePersistenceShieldMaster()
+        {
+            if (Request.Cookies["TodolistShieldCookie"] != null)
+            {
+                var c = new HttpCookie("TodolistShieldCookie")
+                {
+                    Expires = DateTime.Now.AddDays(-1)
+                };
+                Response.Cookies.Add(c);
+            }
             return RedirectToAction("Shields", "Reminders");
         }
     }
