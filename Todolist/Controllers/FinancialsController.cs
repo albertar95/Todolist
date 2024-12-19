@@ -188,8 +188,19 @@ namespace Todolist.Controllers
                 {
                     CurrentMonth = month,
                     MonthlySpenceBarChart = _requestProcessor.MonthlySpenceBarCalc(month),
-                    MonthlyIncomeBarChart = _requestProcessor.MonthlyIncomeBarCalc(month)
+                    MonthlyIncomeBarChart = _requestProcessor.MonthlyIncomeBarCalc(month),
+                    TotalCurrentMonthIncome = _requestProcessor.GetMonthIncomeAmounts(month),
+                    TotalCurrentMonthSpence = _requestProcessor.GetMonthSpenceAmounts(month)
                 })
+            });
+        }
+        public ActionResult GroupTransations(Guid transactionGroupId)
+        {
+            return Json(new JsonResults()
+            {
+                HasValue = true,
+                Html = Helpers.ViewHelper.RenderViewToString(this, "_GroupTransactionList",
+                _requestProcessor.GetTransactionByGroupId(UserId,transactionGroupId))
             });
         }
         public ActionResult GroupDetailReport(Guid NidGroup)

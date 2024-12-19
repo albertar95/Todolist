@@ -1,0 +1,28 @@
+﻿@model Todolist.ViewModels.FinanceViewModel
+
+<div class="table-responsive">
+    <table class="table table-bordered" id="dataTable1" width="100%" cellspacing="0">
+        <thead style="text-align:center;">
+            <tr>
+                <th>From Acc</th>
+                <th>To Acc</th>
+                <th>Amount</th>
+                <th>Create Date</th>
+                <th>Reason</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var tr in Model.Transactions.OrderByDescending(p => p.CreateDate))
+            {
+                <tr style="text-align:center;">
+                    <td>@Model.Accounts.FirstOrDefault(p => p.NidAccount == tr.PayerAccount).Title</td>
+                    <td>@Model.Accounts.FirstOrDefault(p => p.NidAccount == tr.RecieverAccount).Title</td>
+                    <td>@string.Format("{0:n0}", tr.Amount) $</td>
+                    <td>@Todolist.Helpers.Dates.ToPersianDate2(tr.CreateDate, true)</td>
+                    <td>@tr.TransactionReason</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+

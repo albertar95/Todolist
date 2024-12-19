@@ -13,10 +13,10 @@
             </a>
             <!-- Card Content - Collapse -->
             <div class="collapse show" id="collapseCardMonth" style="">
-                <div class="card-body">
-                    <div class="form-group">
-                        <label class="control-label col-md-2">month : </label>
-                        <div class="col-md-10">
+                <div class="card-body" id="monthlyReports">
+                    <div class="form-group d-flex">
+                        <label class="control-label">month : </label>
+                        <div class="col-md-4" style="margin-top:-.5rem;">
                             <select id="sltCurrentMonth" class="form-control">
                                 <option disabled>select month</option>
                                 <option value="1">1-farvardin</option>
@@ -33,11 +33,17 @@
                                 <option value="12">12-esfand</option>
                             </select>
                         </div>
+                        <label class="control-label col-md-3">spence : @string.Format("{0:n0}", Model.TotalCurrentMonthSpence) $</label>
+                        <label class="control-label col-md-3">income : @string.Format("{0:n0}", Model.TotalCurrentMonthIncome) $</label>
                     </div>
-                    <div id="monthlyReports">
+                    <div>
                         <h4 class="header-control mb-4">groups spence report</h4>
                         <div class="chart-bar">
                             <canvas id="GroupMonthlySpenceBar"></canvas>
+                        </div>
+                        <h4 class="header-control mb-4">groups income report</h4>
+                        <div class="chart-bar">
+                            <canvas id="GroupMonthlyIncomeBar"></canvas>
                         </div>
                         <h4 class="header-control mb-4">spence report</h4>
                         <div class="chart-bar">
@@ -168,12 +174,12 @@
             <div class="collapse show" id="collapseCardGroup" style="">
                 <div class="card-body">
                     <label class="control-label col-md-2">Top 5 groups : </label>
-                    <div class="chart-bar">
+                    <div class="chart-bar" style="margin-bottom:1.5rem;">
                         <canvas id="TopFiveGroupBar"></canvas>
                     </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-2">group : </label>
-                        <div class="col-md-10">
+                    <div class="form-group d-flex">
+                        <label class="control-label">group : </label>
+                        <div class="col-md-6" style="margin-top:-.5rem;">
                             <select id="sltTransactionGroup" class="form-control">
                                 <option value="0" disabled selected>select group</option>
                                 @foreach (var acc in Model.Groups.Where(p => p.IsActive).OrderBy(q => q.Title).ToList())
@@ -182,6 +188,7 @@
                                 }
                             </select>
                         </div>
+                        <a href="#" class="col-md-3" onclick="ShowGroupTransactions(event)">Transactions</a>
                     </div>
                     <div id="groupDetailReport">
                         <label class="control-label col-md-2"><b id="grpName"></b> Spences : </label>
@@ -199,10 +206,27 @@
     </div>
 </div>
 
-
+<div class="modal fade" id="freportModal" tabindex="-1" role="dialog" aria-labelledby="freportModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="freportModalLabel"></h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row" id="transactionList"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
 @section scripts
     {
-    <!-- Page level plugins -->
+    <!-- Page level plugins  -->
     <script src="@Url.Content("~/Contents/vendor/chart.js/Chart.min.js")"></script>
     <!-- Page level custom scripts -->
     <script src="@Url.Content("~/Contents/js/demo/chart-area-demo.js")"></script>
@@ -212,8 +236,8 @@
         $(function ()
         {
             $("#sltCurrentMonth").val(@Model.CurrentMonth).change();
-            var t1 = @Html.Raw(Model.MonthlySpenceBarChart.Item1);
             SetBarChart('GroupMonthlySpenceBar', @Html.Raw(Model.GroupMonthlySpenceBarChart.Item1), @Html.Raw(Model.GroupMonthlySpenceBarChart.Item2), @Html.Raw(Model.GroupMonthlySpenceBarChart.Item3));
+            SetBarChart('GroupMonthlyIncomeBar', @Html.Raw(Model.GroupMonthlyIncomeBarChart.Item1), @Html.Raw(Model.GroupMonthlyIncomeBarChart.Item2), @Html.Raw(Model.GroupMonthlyIncomeBarChart.Item3));
             SetBarChart('MonthlySpenceBar', @Html.Raw(Model.MonthlySpenceBarChart.Item1), @Html.Raw(Model.MonthlySpenceBarChart.Item2), @Html.Raw(Model.MonthlySpenceBarChart.Item3));
             SetBarChart('MonthlyIncomeBar', @Html.Raw(Model.MonthlyIncomeBarChart.Item1), @Html.Raw(Model.MonthlyIncomeBarChart.Item2), @Html.Raw(Model.MonthlyIncomeBarChart.Item3));
             SetBarChart('MonthSpencesBar', @Html.Raw(Model.MonthSpencesBarChart.Item1), @Html.Raw(Model.MonthSpencesBarChart.Item2), @Html.Raw(Model.MonthSpencesBarChart.Item3));
@@ -260,5 +284,28 @@
                 });
             });
         });
+        function ShowGroupTransactions(e)
+        {
+            e.preventDefault();
+            $("#transactionList").html('');
+            $("#freportModalLabel").text('');
+            $.ajax(
+                {
+                    url:'@Url.Action("GroupTransations", "Financials")',
+                    type:'post',
+                    datatype:'json',
+                    data: { transactionGroupId: $("#sltTransactionGroup").find(':selected').val() },
+                    success:function(result)
+                    {
+                        if (result.HasValue)
+                        {
+                            $("#transactionList").html(result.Html);
+                            $("#freportModalLabel").text($("#sltTransactionGroup").find(':selected').text());
+                            $("#freportModal").modal();
+                        }
+                    },
+                    error:function(){}
+                });
+        }
     </script>
 }

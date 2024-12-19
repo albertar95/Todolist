@@ -1106,6 +1106,7 @@ namespace Todolist.Services
             {
                 result.CurrentMonth = Helpers.Dates.CurrentMonth();
                 result.GroupMonthlySpenceBarChart = GroupMonthlySpenceBarCalc(currentM);
+                result.GroupMonthlyIncomeBarChart = GroupMonthlyIncomeBarCalc(currentM);
                 result.MonthlySpenceBarChart = MonthlySpenceBarCalc(currentM);
                 result.MonthlyIncomeBarChart = MonthlyIncomeBarCalc(currentM);
                 result.MonthSpencesBarChart = MonthSpencesBarCalc();
@@ -1118,6 +1119,9 @@ namespace Todolist.Services
                 GetInitialYearAmounts().Sum(o => o.Amount)/*initial fund*/,
                 GetYearIncomeAmounts()/*total in fund*/,
                 GetYearSpenceAmounts()/*total out fund*/);
+                result.TotalCurrentMonthIncome = GetMonthIncomeAmounts(currentM);
+                result.TotalCurrentMonthSpence = GetMonthSpenceAmounts(currentM);
+
                 result.Groups = _dbRepository.GetList<TransactionGroup>();
             }
             catch (Exception)
@@ -1132,6 +1136,33 @@ namespace Todolist.Services
                 var startofmonth = Helpers.Dates.GetStartAndEndOfMonth(month);
                 var currentMonthSpenceTransactions = _dbRepository.GetList<Transaction>(p => p.CreateDate >= startofmonth.Item1 && p.CreateDate <= startofmonth.Item2)
                     .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true).Select(r => r.NidAccount).Contains(q.RecieverAccount))
+                    .GroupBy(a => a.TransactionGroupId).Select(m => new { agg = m.Key, totalAmount = m.Sum(o => o.Amount) }).ToList();
+                if (!currentMonthSpenceTransactions.Any())
+                    return new Tuple<string, string, decimal>("[]", "[]", 0);
+                string groupNames = "[";
+                string values = "[";
+                var groups = _dbRepository.GetList<TransactionGroup>();
+                foreach (var tr in currentMonthSpenceTransactions.OrderByDescending(p => p.totalAmount))
+                {
+                    groupNames += "'" + groups.FirstOrDefault(p => p.NidTransactionGroup == tr.agg).Title + "',";
+                    values += "'" + tr.totalAmount + "',";
+                }
+                groupNames = groupNames.Remove(groupNames.Length - 1, 1) + "]";
+                values = values.Remove(values.Length - 1, 1) + "]";
+                return new Tuple<string, string, decimal>(groupNames, values, currentMonthSpenceTransactions.Max(p => p.totalAmount));
+            }
+            catch (Exception)
+            {
+                return new Tuple<string, string, decimal>("", "", 0);
+            }
+        }
+        public Tuple<string, string, decimal> GroupMonthlyIncomeBarCalc(int month)
+        {
+            try
+            {
+                var startofmonth = Helpers.Dates.GetStartAndEndOfMonth(month);
+                var currentMonthSpenceTransactions = _dbRepository.GetList<Transaction>(p => p.CreateDate >= startofmonth.Item1 && p.CreateDate <= startofmonth.Item2)
+                    .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true).Select(r => r.NidAccount).Contains(q.PayerAccount))
                     .GroupBy(a => a.TransactionGroupId).Select(m => new { agg = m.Key, totalAmount = m.Sum(o => o.Amount) }).ToList();
                 if (!currentMonthSpenceTransactions.Any())
                     return new Tuple<string, string, decimal>("[]", "[]", 0);
@@ -1425,6 +1456,34 @@ namespace Todolist.Services
                 return 0;
             }
         }
+        public decimal GetMonthIncomeAmounts(int month)
+        {
+            try
+            {
+                var startofmonth = Helpers.Dates.GetStartAndEndOfMonth(month);
+                return _dbRepository.GetList<Transaction>(p => p.CreateDate >= startofmonth.Item1 && p.CreateDate <= startofmonth.Item2)
+                .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true && w.IsActive == true).Select(r => r.NidAccount).Contains(q.PayerAccount))
+                .Sum(u => u.Amount);
+            }
+            catch (Exception)
+            {
+                return 0;
+            }
+        }
+        public decimal GetMonthSpenceAmounts(int month)
+        {
+            try
+            {
+                var startofmonth = Helpers.Dates.GetStartAndEndOfMonth(month);
+                return _dbRepository.GetList<Transaction>(p => p.CreateDate >= startofmonth.Item1 && p.CreateDate <= startofmonth.Item2)
+                .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true && w.IsActive == true).Select(r => r.NidAccount).Contains(q.RecieverAccount))
+                .Sum(u => u.Amount);
+            }
+            catch (Exception)
+            {
+                return 0;
+            }
+        }
         private string GetMonthName(int month)
         {
             switch (month)
@@ -1669,6 +1728,20 @@ namespace Todolist.Services
             {
                 return false;
             }
+        }
+        public FinanceViewModel GetTransactionByGroupId(Guid nidUser,Guid transactionGroupId)
+        {
+            var result = new FinanceViewModel();
+            try
+            {
+                result.Accounts = _dbRepository.GetList<Account>(p => p.UserId == nidUser);
+                result.Transactions = _dbRepository.GetList<Transaction>(p => p.UserId == nidUser && p.TransactionGroupId == transactionGroupId);
+                result.Groups = _dbRepository.GetList<TransactionGroup>();
+            }
+            catch (Exception)
+            {
+            }
+            return result;
         }
     }
 }

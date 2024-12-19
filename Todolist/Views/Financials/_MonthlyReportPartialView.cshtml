@@ -1,12 +1,35 @@
 ﻿@model Todolist.ViewModels.FinancialReportViewModel
-
-<h4 class="header-control mb-4">spence report</h4>
-<div class="chart-bar">
-    <canvas id="MonthlySpenceBar"></canvas>
+<div class="form-group d-flex">
+    <label class="control-label">month : </label>
+    <div class="col-md-4" style="margin-top:-.5rem;">
+        <select id="sltCurrentMonth" class="form-control">
+            <option disabled>select month</option>
+            <option value="1">1-farvardin</option>
+            <option value="2">2-ordibehesht</option>
+            <option value="3">3-khordad</option>
+            <option value="4">4-tir</option>
+            <option value="5">5-mordad</option>
+            <option value="6">6-shahrivar</option>
+            <option value="7">7-mehr</option>
+            <option value="8">8-aban</option>
+            <option value="9">9-azar</option>
+            <option value="10">10-dey</option>
+            <option value="11">11-bahman</option>
+            <option value="12">12-esfand</option>
+        </select>
+    </div>
+    <label class="control-label col-md-3">spence : @string.Format("{0:n0}", Model.TotalCurrentMonthSpence) $</label>
+    <label class="control-label col-md-3">income : @string.Format("{0:n0}", Model.TotalCurrentMonthIncome) $</label>
 </div>
-<h4 class="header-control mb-4">income report</h4>
-<div class="chart-bar">
-    <canvas id="MonthlyIncomeBar"></canvas>
+<div>
+    <h4 class="header-control mb-4">spence report</h4>
+    <div class="chart-bar">
+        <canvas id="MonthlySpenceBar"></canvas>
+    </div>
+    <h4 class="header-control mb-4">income report</h4>
+    <div class="chart-bar">
+        <canvas id="MonthlyIncomeBar"></canvas>
+    </div>
 </div>
 <script src="@Url.Content("~/Contents/vendor/chart.js/Chart.min.js")"></script>
 <script src="@Url.Content("~/Contents/js/demo/chart-bar-demo.js")"></script>
@@ -15,5 +38,24 @@
             {
             SetBarChart('MonthlySpenceBar', @Html.Raw(Model.MonthlySpenceBarChart.Item1), @Html.Raw(Model.MonthlySpenceBarChart.Item2), @Html.Raw(Model.MonthlySpenceBarChart.Item3));
             SetBarChart('MonthlyIncomeBar', @Html.Raw(Model.MonthlyIncomeBarChart.Item1), @Html.Raw(Model.MonthlyIncomeBarChart.Item2), @Html.Raw(Model.MonthlyIncomeBarChart.Item3));
+                $("#sltCurrentMonth").change(function ()
+                {
+                    $.ajax(
+                    {
+                        url:'@Url.Action("MonthlySpenceAndIncomeReport", "Financials")',
+                        type:'post',
+                        datatype:'json',
+                        data: { month: $("#sltCurrentMonth").find(':selected').val() },
+                        success:function(result)
+                        {
+                            if (result.HasValue)
+                            {
+                                $("#monthlyReports").html(result.Html);
+                            }
+                        },
+                        error:function(){}
+                    });
+                    $("#PayerAccount").find(':selected').val();
+                });
             });
 </script>

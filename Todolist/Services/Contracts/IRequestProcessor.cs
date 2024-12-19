@@ -87,6 +87,8 @@ namespace Todolist.Services.Contracts
         Tuple<string, string, decimal> MonthlyIncomeBarCalc(int month);
         Tuple<string, string, decimal> GroupSpenceBarCalc(Guid NidGroup);
         Tuple<string, string, decimal> GroupIncomeBarCalc(Guid NidGroup);
+        decimal GetMonthIncomeAmounts(int month);
+        decimal GetMonthSpenceAmounts(int month);
         TradeDashboardViewModel GetTradeDashboard(Symbol symbol, Timeframe timeframe);
         NewTradeDashboardViewModel GetTradeDashboard_New(Symbol symbol, Timeframe timeframe, int month);
         MarketDataCredetialViewModel GetMarketDataCredentials(Symbol symbol, Timeframe timeframe);
@@ -94,5 +96,6 @@ namespace Todolist.Services.Contracts
         bool DeleteMarketDataCredential(Guid nidCredential);
         SignalResultsViewModel GetSignalResults(Symbol symbol, Timeframe timeframe, int currentMonth, SignalProviders providers = SignalProviders.RsiStrategy);
         bool DbMaintanence();
+        FinanceViewModel GetTransactionByGroupId(Guid nidUser, Guid transactionGroupId);
     }
 }
