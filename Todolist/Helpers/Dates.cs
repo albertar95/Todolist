@@ -34,8 +34,14 @@ namespace Todolist.Helpers
         public static Tuple<DateTime, DateTime> GetStartAndEndOfMonth(int month)
         {
             PersianCalendar pc = new PersianCalendar();
-            var StartOfMonth = pc.ToDateTime(pc.GetYear(DateTime.Now), month, 1, 0, 0, 0, 0);
-            var EndOfMonth = pc.ToDateTime(pc.GetYear(StartOfMonth.AddMonths(1).AddDays(-1)), pc.GetMonth(StartOfMonth.AddMonths(1).AddDays(-1)), pc.GetDayOfMonth(StartOfMonth.AddMonths(1).AddDays(-1)), 23, 59, 59, 999);
+            var currentYear = pc.GetYear(DateTime.Now);
+            var StartOfMonth = pc.ToDateTime(currentYear, month, 1, 0, 0, 0, 0);
+            var EndOfMonthDay = 30;
+            if (month == 12 && !pc.IsLeapYear(currentYear))
+                EndOfMonthDay = 29;
+            if (month >= 1 && month <= 6)
+                EndOfMonthDay = 31;
+            var EndOfMonth = pc.ToDateTime(currentYear, month, EndOfMonthDay, 23, 59, 59, 999);
             return new Tuple<DateTime, DateTime>(StartOfMonth,EndOfMonth);
         }
         public static DateTime GetStartOfYear()

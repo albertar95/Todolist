@@ -190,8 +190,10 @@ namespace Todolist.Controllers
                     MonthlySpenceBarChart = _requestProcessor.MonthlySpenceBarCalc(month),
                     MonthlyIncomeBarChart = _requestProcessor.MonthlyIncomeBarCalc(month),
                     TotalCurrentMonthIncome = _requestProcessor.GetMonthIncomeAmounts(month),
-                    TotalCurrentMonthSpence = _requestProcessor.GetMonthSpenceAmounts(month)
-                })
+                    TotalCurrentMonthSpence = _requestProcessor.GetMonthSpenceAmounts(month),
+                    GroupMonthlySpenceBarChart = _requestProcessor.GroupMonthlySpenceBarCalc(month),
+                    GroupMonthlyIncomeBarChart = _requestProcessor.GroupMonthlyIncomeBarCalc(month)
+        })
             });
         }
         public ActionResult GroupTransations(Guid transactionGroupId)

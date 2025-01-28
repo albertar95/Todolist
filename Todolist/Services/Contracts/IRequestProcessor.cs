@@ -97,5 +97,7 @@ namespace Todolist.Services.Contracts
         SignalResultsViewModel GetSignalResults(Symbol symbol, Timeframe timeframe, int currentMonth, SignalProviders providers = SignalProviders.RsiStrategy);
         bool DbMaintanence();
         FinanceViewModel GetTransactionByGroupId(Guid nidUser, Guid transactionGroupId);
+        Tuple<string, string, decimal> GroupMonthlySpenceBarCalc(int month);
+        Tuple<string, string, decimal> GroupMonthlyIncomeBarCalc(int month);
     }
 }

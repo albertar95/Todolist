@@ -22,6 +22,14 @@
     <label class="control-label col-md-3">income : @string.Format("{0:n0}", Model.TotalCurrentMonthIncome) $</label>
 </div>
 <div>
+    <h4 class="header-control mb-4">groups spence report</h4>
+    <div class="chart-bar">
+        <canvas id="GroupMonthlySpenceBar"></canvas>
+    </div>
+    <h4 class="header-control mb-4">groups income report</h4>
+    <div class="chart-bar">
+        <canvas id="GroupMonthlyIncomeBar"></canvas>
+    </div>
     <h4 class="header-control mb-4">spence report</h4>
     <div class="chart-bar">
         <canvas id="MonthlySpenceBar"></canvas>
@@ -38,6 +46,8 @@
             {
             SetBarChart('MonthlySpenceBar', @Html.Raw(Model.MonthlySpenceBarChart.Item1), @Html.Raw(Model.MonthlySpenceBarChart.Item2), @Html.Raw(Model.MonthlySpenceBarChart.Item3));
             SetBarChart('MonthlyIncomeBar', @Html.Raw(Model.MonthlyIncomeBarChart.Item1), @Html.Raw(Model.MonthlyIncomeBarChart.Item2), @Html.Raw(Model.MonthlyIncomeBarChart.Item3));
+            SetBarChart('GroupMonthlySpenceBar', @Html.Raw(Model.GroupMonthlySpenceBarChart.Item1), @Html.Raw(Model.GroupMonthlySpenceBarChart.Item2), @Html.Raw(Model.GroupMonthlySpenceBarChart.Item3));
+            SetBarChart('GroupMonthlyIncomeBar', @Html.Raw(Model.GroupMonthlyIncomeBarChart.Item1), @Html.Raw(Model.GroupMonthlyIncomeBarChart.Item2), @Html.Raw(Model.GroupMonthlyIncomeBarChart.Item3));
                 $("#sltCurrentMonth").change(function ()
                 {
                     $.ajax(
