@@ -44,6 +44,7 @@
 <script type="text/javascript">
             $(function ()
             {
+            $("#sltCurrentMonth").val(@Model.CurrentMonth);
             SetBarChart('MonthlySpenceBar', @Html.Raw(Model.MonthlySpenceBarChart.Item1), @Html.Raw(Model.MonthlySpenceBarChart.Item2), @Html.Raw(Model.MonthlySpenceBarChart.Item3));
             SetBarChart('MonthlyIncomeBar', @Html.Raw(Model.MonthlyIncomeBarChart.Item1), @Html.Raw(Model.MonthlyIncomeBarChart.Item2), @Html.Raw(Model.MonthlyIncomeBarChart.Item3));
             SetBarChart('GroupMonthlySpenceBar', @Html.Raw(Model.GroupMonthlySpenceBarChart.Item1), @Html.Raw(Model.GroupMonthlySpenceBarChart.Item2), @Html.Raw(Model.GroupMonthlySpenceBarChart.Item3));
