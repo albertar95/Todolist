@@ -1743,5 +1743,21 @@ namespace Todolist.Services
             }
             return result;
         }
+
+        public decimal GetGroupTotalIncome(Guid NidGroup)
+        {
+            var start = Dates.GetStartOfYear();
+            return _dbRepository.GetList<Transaction>(p => p.TransactionGroupId == NidGroup && p.CreateDate >= start)
+                .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true && w.IsActive == true).Select(r => r.NidAccount).Contains(q.PayerAccount))
+                .Sum(u => u.Amount);
+        }
+
+        public decimal GetGroupTotalSpence(Guid NidGroup)
+        {
+            var start = Dates.GetStartOfYear();
+            return _dbRepository.GetList<Transaction>(p => p.TransactionGroupId == NidGroup && p.CreateDate >= start)
+            .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true && w.IsActive == true).Select(r => r.NidAccount).Contains(q.RecieverAccount))
+            .Sum(u => u.Amount);
+        }
     }
 }

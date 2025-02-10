@@ -23,5 +23,7 @@ namespace Todolist.ViewModels
         public List<TransactionGroup> Groups { get; set; }
         public decimal TotalCurrentMonthSpence { get; set; }
         public decimal TotalCurrentMonthIncome { get; set; }
+        public decimal TotalGroupSpence { get; set; }
+        public decimal TotalGroupIncome { get; set; }
     }
 }

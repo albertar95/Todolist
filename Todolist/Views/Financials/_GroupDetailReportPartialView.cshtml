@@ -1,11 +1,11 @@
 ﻿@model Todolist.ViewModels.FinancialReportViewModel
 
 
-<label class="control-label col-md-2"><b id="grpName"></b> Spences : </label>
+<label class="control-label col-md-2"><b id="grpName"></b> Spences : @string.Format("{0:n0}", Model.TotalGroupSpence) $</label>
 <div class="chart-bar">
     <canvas id="GroupSpenceBar"></canvas>
 </div>
-<label class="control-label col-md-2"><b id="grpName"></b> Incomes : </label>
+<label class="control-label col-md-2"><b id="grpName"></b> Incomes : @string.Format("{0:n0}", Model.TotalGroupIncome) $</label>
 <div class="chart-bar">
     <canvas id="GroupIncomeBar"></canvas>
 </div>

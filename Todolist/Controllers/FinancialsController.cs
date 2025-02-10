@@ -214,7 +214,9 @@ namespace Todolist.Controllers
                 new FinancialReportViewModel()
                 {
                     GroupSpenceBarChart = _requestProcessor.GroupSpenceBarCalc(NidGroup),
-                    GroupIncomeBarChart = _requestProcessor.GroupIncomeBarCalc(NidGroup)
+                    GroupIncomeBarChart = _requestProcessor.GroupIncomeBarCalc(NidGroup),
+                    TotalGroupIncome = _requestProcessor.GetGroupTotalIncome(NidGroup),
+                    TotalGroupSpence = _requestProcessor.GetGroupTotalSpence(NidGroup)
                 })
             });
         }

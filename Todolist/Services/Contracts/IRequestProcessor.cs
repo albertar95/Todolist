@@ -99,5 +99,7 @@ namespace Todolist.Services.Contracts
         FinanceViewModel GetTransactionByGroupId(Guid nidUser, Guid transactionGroupId);
         Tuple<string, string, decimal> GroupMonthlySpenceBarCalc(int month);
         Tuple<string, string, decimal> GroupMonthlyIncomeBarCalc(int month);
+        decimal GetGroupTotalIncome(Guid NidGroup);
+        decimal GetGroupTotalSpence(Guid NidGroup);
     }
 }
