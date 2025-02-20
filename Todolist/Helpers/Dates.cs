@@ -52,11 +52,10 @@ namespace Todolist.Helpers
         public static List<Tuple<DateTime,DateTime>> GetMonthsOfYear()
         {
             var result = new List<Tuple<DateTime, DateTime>>();
-            var pc = new PersianCalendar();
-            var currentYear = pc.GetYear(DateTime.Now);
-            for (int i = 1; i <= CurrentMonth(); i++)
+            var currentMonth = CurrentMonth();
+            for (int i = 1; i <= currentMonth; i++)
             {
-                result.Add(new Tuple<DateTime, DateTime>(pc.ToDateTime(currentYear,i,1,0,0,0,0), pc.ToDateTime(currentYear, i+1, 1, 23, 59, 59, 999).AddDays(-1)));
+                result.Add(GetStartAndEndOfMonth(i));
             }
             return result;
         }

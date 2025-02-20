@@ -1153,7 +1153,7 @@ namespace Todolist.Services
             }
             catch (Exception)
             {
-                return new Tuple<string, string, decimal>("", "", 0);
+                return new Tuple<string, string, decimal>("[]", "[]", 0);
             }
         }
         public Tuple<string, string, decimal> GroupMonthlyIncomeBarCalc(int month)
@@ -1180,7 +1180,7 @@ namespace Todolist.Services
             }
             catch (Exception)
             {
-                return new Tuple<string, string, decimal>("", "", 0);
+                return new Tuple<string, string, decimal>("[]", "[]", 0);
             }
         }
         public Tuple<string, string, decimal> MonthlySpenceBarCalc(int month)
@@ -1207,7 +1207,7 @@ namespace Todolist.Services
             }
             catch (Exception)
             {
-                return new Tuple<string, string, decimal>("","",0);
+                return new Tuple<string, string, decimal>("[]", "[]", 0);
             }
         }
         public Tuple<string, string, decimal> MonthlyIncomeBarCalc(int month)
@@ -1234,7 +1234,7 @@ namespace Todolist.Services
             }
             catch (Exception)
             {
-                return new Tuple<string, string, decimal>("","",0);
+                return new Tuple<string, string, decimal>("[]", "[]", 0);
             }
         }
         private Tuple<string, string, decimal> MonthSpencesBarCalc()
@@ -1263,7 +1263,7 @@ namespace Todolist.Services
             }
             catch (Exception)
             {
-                return new Tuple<string, string, decimal>("","",0);
+                return new Tuple<string, string, decimal>("[]", "[]", 0);
             }
         }
         private Tuple<string, string, decimal> TopFiveGroupBarCalc()
@@ -1289,7 +1289,7 @@ namespace Todolist.Services
             }
             catch (Exception)
             {
-                return new Tuple<string, string, decimal>("","",0);
+                return new Tuple<string, string, decimal>("[]", "[]", 0);
             }
         }
         public Tuple<string, string, decimal> GroupSpenceBarCalc(Guid NidGroup)
@@ -1319,7 +1319,7 @@ namespace Todolist.Services
             }
             catch (Exception)
             {
-                return new Tuple<string, string, decimal>("","",0);
+                return new Tuple<string, string, decimal>("[]", "[]", 0);
             }
         }
         public Tuple<string, string, decimal> GroupIncomeBarCalc(Guid NidGroup)
@@ -1349,7 +1349,7 @@ namespace Todolist.Services
             }
             catch (Exception)
             {
-                return new Tuple<string, string, decimal>("","",0);
+                return new Tuple<string, string, decimal>("[]", "[]", 0);
             }
         }
         private Tuple<string, string> FundDistributionPieCalc()
@@ -1373,7 +1373,7 @@ namespace Todolist.Services
             }
             catch (Exception)
             {
-                return new Tuple<string, string>("","");
+                return new Tuple<string, string>("[]","[]");
             }
         }
         private Tuple<string, string> FundAccumulationAreaCalc()
@@ -1404,7 +1404,7 @@ namespace Todolist.Services
             }
             catch (Exception)
             {
-                return new Tuple<string, string>("","");
+                return new Tuple<string, string>("[]","[]");
             }
         }
         private List<Account> GetInitialYearAmounts()
