@@ -15,6 +15,7 @@ namespace Todolist.Services
     public class RequestProcessor : IRequestProcessor
     {
         private readonly IDbRepository _dbRepository;
+        public int _CurrentYear = 1404;
         public RequestProcessor(IDbRepository dbRepository)
         {
             _dbRepository = dbRepository;
@@ -1098,17 +1099,19 @@ namespace Todolist.Services
             }
             return result;
         }
-        public FinancialReportViewModel GetFinancialReport(Guid nidUser)
+        public FinancialReportViewModel GetFinancialReport(Guid nidUser, int Year = 1404)
         {
             var result = new FinancialReportViewModel();
-            var currentM = Helpers.Dates.CurrentMonth();
+            _CurrentYear = Year;
+            int currentM = Year == 1404 ? Helpers.Dates.CurrentMonth() : 12;
             try
             {
-                result.CurrentMonth = Helpers.Dates.CurrentMonth();
-                result.GroupMonthlySpenceBarChart = GroupMonthlySpenceBarCalc(currentM);
-                result.GroupMonthlyIncomeBarChart = GroupMonthlyIncomeBarCalc(currentM);
-                result.MonthlySpenceBarChart = MonthlySpenceBarCalc(currentM);
-                result.MonthlyIncomeBarChart = MonthlyIncomeBarCalc(currentM);
+                result.CurrentYear = _CurrentYear;
+                result.CurrentMonth = currentM;
+                result.GroupMonthlySpenceBarChart = GroupMonthlySpenceBarCalc(currentM, _CurrentYear);
+                result.GroupMonthlyIncomeBarChart = GroupMonthlyIncomeBarCalc(currentM, _CurrentYear);
+                result.MonthlySpenceBarChart = MonthlySpenceBarCalc(currentM, _CurrentYear);
+                result.MonthlyIncomeBarChart = MonthlyIncomeBarCalc(currentM, _CurrentYear);
                 result.MonthSpencesBarChart = MonthSpencesBarCalc();
                 result.TopFiveGroupBarChart = TopFiveGroupBarCalc();
                 result.GroupSpenceBarChart = new Tuple<string, string, decimal>("[]", "[]", 0);
@@ -1119,8 +1122,8 @@ namespace Todolist.Services
                 GetInitialYearAmounts().Sum(o => o.Amount)/*initial fund*/,
                 GetYearIncomeAmounts()/*total in fund*/,
                 GetYearSpenceAmounts()/*total out fund*/);
-                result.TotalCurrentMonthIncome = GetMonthIncomeAmounts(currentM);
-                result.TotalCurrentMonthSpence = GetMonthSpenceAmounts(currentM);
+                result.TotalCurrentMonthIncome = GetMonthIncomeAmounts(currentM, _CurrentYear);
+                result.TotalCurrentMonthSpence = GetMonthSpenceAmounts(currentM, _CurrentYear);
 
                 result.Groups = _dbRepository.GetList<TransactionGroup>();
             }
@@ -1129,11 +1132,12 @@ namespace Todolist.Services
             }
             return result;
         }
-        public Tuple<string, string, decimal> GroupMonthlySpenceBarCalc(int month)
+        public Tuple<string, string, decimal> GroupMonthlySpenceBarCalc(int month, int year = 1404)
         {
             try
             {
-                var startofmonth = Helpers.Dates.GetStartAndEndOfMonth(month);
+                _CurrentYear = year;
+                var startofmonth = Helpers.Dates.GetStartAndEndOfMonth(month,_CurrentYear);
                 var currentMonthSpenceTransactions = _dbRepository.GetList<Transaction>(p => p.CreateDate >= startofmonth.Item1 && p.CreateDate <= startofmonth.Item2)
                     .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true).Select(r => r.NidAccount).Contains(q.RecieverAccount))
                     .GroupBy(a => a.TransactionGroupId).Select(m => new { agg = m.Key, totalAmount = m.Sum(o => o.Amount) }).ToList();
@@ -1156,11 +1160,12 @@ namespace Todolist.Services
                 return new Tuple<string, string, decimal>("[]", "[]", 0);
             }
         }
-        public Tuple<string, string, decimal> GroupMonthlyIncomeBarCalc(int month)
+        public Tuple<string, string, decimal> GroupMonthlyIncomeBarCalc(int month, int year = 1404)
         {
             try
             {
-                var startofmonth = Helpers.Dates.GetStartAndEndOfMonth(month);
+                _CurrentYear = year;
+                var startofmonth = Helpers.Dates.GetStartAndEndOfMonth(month,_CurrentYear);
                 var currentMonthSpenceTransactions = _dbRepository.GetList<Transaction>(p => p.CreateDate >= startofmonth.Item1 && p.CreateDate <= startofmonth.Item2)
                     .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true).Select(r => r.NidAccount).Contains(q.PayerAccount))
                     .GroupBy(a => a.TransactionGroupId).Select(m => new { agg = m.Key, totalAmount = m.Sum(o => o.Amount) }).ToList();
@@ -1183,11 +1188,12 @@ namespace Todolist.Services
                 return new Tuple<string, string, decimal>("[]", "[]", 0);
             }
         }
-        public Tuple<string, string, decimal> MonthlySpenceBarCalc(int month)
+        public Tuple<string, string, decimal> MonthlySpenceBarCalc(int month,int year = 1404)
         {
             try
             {
-                var startofmonth = Helpers.Dates.GetStartAndEndOfMonth(month);
+                _CurrentYear = year;
+                var startofmonth = Helpers.Dates.GetStartAndEndOfMonth(month,_CurrentYear);
                 var currentMonthSpenceTransactions = _dbRepository.GetList<Transaction>(p => p.CreateDate >= startofmonth.Item1 && p.CreateDate <= startofmonth.Item2)
                     .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true).Select(r => r.NidAccount).Contains(q.RecieverAccount))
                     .GroupBy(a => a.PayerAccount).Select(m => new { acc = m.Key, totalAmount = m.Sum(o => o.Amount) }).ToList();
@@ -1210,11 +1216,12 @@ namespace Todolist.Services
                 return new Tuple<string, string, decimal>("[]", "[]", 0);
             }
         }
-        public Tuple<string, string, decimal> MonthlyIncomeBarCalc(int month)
+        public Tuple<string, string, decimal> MonthlyIncomeBarCalc(int month, int year = 1404)
         {
             try
             {
-                var startofmonth = Helpers.Dates.GetStartAndEndOfMonth(month);
+                _CurrentYear = year;
+                var startofmonth = Helpers.Dates.GetStartAndEndOfMonth(month,_CurrentYear);
                 var currentMonthIncomeTransactions = _dbRepository.GetList<Transaction>(p => p.CreateDate >= startofmonth.Item1 && p.CreateDate <= startofmonth.Item2)
                     .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true).Select(r => r.NidAccount).Contains(q.PayerAccount))
                     .GroupBy(a => a.RecieverAccount).Select(m => new { acc = m.Key, totalAmount = m.Sum(o => o.Amount) });
@@ -1241,7 +1248,7 @@ namespace Todolist.Services
         {
             try
             {
-                var months = Helpers.Dates.GetMonthsOfYear();
+                var months = Helpers.Dates.GetMonthsOfYear(_CurrentYear);
                 var accounts = _dbRepository.GetList<Account>();
                 var pc = new PersianCalendar();
                 string accNames = "[";
@@ -1270,8 +1277,8 @@ namespace Todolist.Services
         {
             try
             {
-                var year = Helpers.Dates.GetStartOfYear();
-                var currentYearSpenceTransactions = _dbRepository.GetList<Transaction>(p => p.CreateDate >= year)
+                var year = Helpers.Dates.GetStartAndEndOfYear(_CurrentYear);
+                var currentYearSpenceTransactions = _dbRepository.GetList<Transaction>(p => p.CreateDate >= year.Item1 && p.CreateDate <= year.Item2)
                     .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true).Select(r => r.NidAccount).Contains(q.RecieverAccount))
                     .GroupBy(a => a.TransactionGroupId).Select(m => new { acc = m.Key, totalAmount = m.Sum(o => o.Amount) })
                     .OrderByDescending(b => b.totalAmount).Take(5);
@@ -1292,11 +1299,12 @@ namespace Todolist.Services
                 return new Tuple<string, string, decimal>("[]", "[]", 0);
             }
         }
-        public Tuple<string, string, decimal> GroupSpenceBarCalc(Guid NidGroup)
+        public Tuple<string, string, decimal> GroupSpenceBarCalc(Guid NidGroup, int year = 1404)
         {
             try
             {
-                var months = Helpers.Dates.GetMonthsOfYear();
+                _CurrentYear = year;
+                var months = Helpers.Dates.GetMonthsOfYear(_CurrentYear);
                 var accounts = _dbRepository.GetList<Account>();
                 var pc = new PersianCalendar();
                 string accNames = "[";
@@ -1322,11 +1330,12 @@ namespace Todolist.Services
                 return new Tuple<string, string, decimal>("[]", "[]", 0);
             }
         }
-        public Tuple<string, string, decimal> GroupIncomeBarCalc(Guid NidGroup)
+        public Tuple<string, string, decimal> GroupIncomeBarCalc(Guid NidGroup, int year = 1404)
         {
             try
             {
-                var months = Helpers.Dates.GetMonthsOfYear();
+                _CurrentYear = year;
+                var months = Helpers.Dates.GetMonthsOfYear(_CurrentYear);
                 var accounts = _dbRepository.GetList<Account>();
                 var pc = new PersianCalendar();
                 string accNames = "[";
@@ -1356,7 +1365,7 @@ namespace Todolist.Services
         {
             try
             {
-                var months = Helpers.Dates.GetMonthsOfYear();
+                var months = Helpers.Dates.GetMonthsOfYear(_CurrentYear);
                 var accounts = _dbRepository.GetList<Account>(p => p.IsBackup == false && p.IsActive == true);
                 var totalFund = accounts.Sum(p => p.Amount);
                 var pc = new PersianCalendar();
@@ -1380,7 +1389,7 @@ namespace Todolist.Services
         {
             try
             {
-                var months = Helpers.Dates.GetMonthsOfYear();
+                var months = Helpers.Dates.GetMonthsOfYear(_CurrentYear);
                 var accounts = _dbRepository.GetList<Account>(p => p.IsBackup == false && p.IsActive == true);
                 var initialYearAccounts = GetInitialYearAmounts().Sum(o => o.Amount);
                 var pc = new PersianCalendar();
@@ -1412,13 +1421,13 @@ namespace Todolist.Services
             var result = new List<Account>();
             try
             {
-                var year = Helpers.Dates.GetStartOfYear();
+                var year = Helpers.Dates.GetStartAndEndOfYear(_CurrentYear);
                 var accounts = _dbRepository.GetList<Account>(p => p.IsBackup == false && p.IsActive == true);
                 foreach (var acc in accounts)
                 {
-                    var spences = _dbRepository.GetList<Transaction>(p => p.CreateDate >= year)
+                    var spences = _dbRepository.GetList<Transaction>(p => p.CreateDate >= year.Item1)
                     .Where(q => q.PayerAccount == acc.NidAccount).Sum(u => u.Amount);
-                    var Incomes = _dbRepository.GetList<Transaction>(p => p.CreateDate >= year)
+                    var Incomes = _dbRepository.GetList<Transaction>(p => p.CreateDate >= year.Item1)
                     .Where(q => q.RecieverAccount == acc.NidAccount).Sum(u => u.Amount);
                     result.Add(new Account() { NidAccount = acc.NidAccount, Title = acc.Title, Amount = acc.Amount + spences - Incomes });
                 }
@@ -1432,8 +1441,8 @@ namespace Todolist.Services
         {
             try
             {
-                var year = Helpers.Dates.GetStartOfYear();
-                return _dbRepository.GetList<Transaction>(p => p.CreateDate >= year)
+                var year = Helpers.Dates.GetStartAndEndOfYear(_CurrentYear);
+                return _dbRepository.GetList<Transaction>(p => p.CreateDate >= year.Item1 && p.CreateDate <= year.Item2)
                 .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true && w.IsActive == true).Select(r => r.NidAccount).Contains(q.PayerAccount))
                 .Sum(u => u.Amount);
             }
@@ -1446,8 +1455,8 @@ namespace Todolist.Services
         {
             try
             {
-                var year = Helpers.Dates.GetStartOfYear();
-                return _dbRepository.GetList<Transaction>(p => p.CreateDate >= year)
+                var year = Helpers.Dates.GetStartAndEndOfYear(_CurrentYear);
+                return _dbRepository.GetList<Transaction>(p => p.CreateDate >= year.Item1 && p.CreateDate <= year.Item2)
                 .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true && w.IsActive == true).Select(r => r.NidAccount).Contains(q.RecieverAccount))
                 .Sum(u => u.Amount);
             }
@@ -1456,11 +1465,12 @@ namespace Todolist.Services
                 return 0;
             }
         }
-        public decimal GetMonthIncomeAmounts(int month)
+        public decimal GetMonthIncomeAmounts(int month, int year = 1404)
         {
             try
             {
-                var startofmonth = Helpers.Dates.GetStartAndEndOfMonth(month);
+                _CurrentYear = year;
+                var startofmonth = Helpers.Dates.GetStartAndEndOfMonth(month,_CurrentYear);
                 return _dbRepository.GetList<Transaction>(p => p.CreateDate >= startofmonth.Item1 && p.CreateDate <= startofmonth.Item2)
                 .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true && w.IsActive == true).Select(r => r.NidAccount).Contains(q.PayerAccount))
                 .Sum(u => u.Amount);
@@ -1470,11 +1480,12 @@ namespace Todolist.Services
                 return 0;
             }
         }
-        public decimal GetMonthSpenceAmounts(int month)
+        public decimal GetMonthSpenceAmounts(int month, int year = 1404)
         {
             try
             {
-                var startofmonth = Helpers.Dates.GetStartAndEndOfMonth(month);
+                _CurrentYear = year;
+                var startofmonth = Helpers.Dates.GetStartAndEndOfMonth(month,_CurrentYear);
                 return _dbRepository.GetList<Transaction>(p => p.CreateDate >= startofmonth.Item1 && p.CreateDate <= startofmonth.Item2)
                 .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true && w.IsActive == true).Select(r => r.NidAccount).Contains(q.RecieverAccount))
                 .Sum(u => u.Amount);
@@ -1729,13 +1740,15 @@ namespace Todolist.Services
                 return false;
             }
         }
-        public FinanceViewModel GetTransactionByGroupId(Guid nidUser,Guid transactionGroupId)
+        public FinanceViewModel GetTransactionByGroupId(Guid nidUser,Guid transactionGroupId,int year = 1404)
         {
             var result = new FinanceViewModel();
             try
             {
+                _CurrentYear = year;
+                var start = Dates.GetStartAndEndOfYear(_CurrentYear);
                 result.Accounts = _dbRepository.GetList<Account>(p => p.UserId == nidUser);
-                result.Transactions = _dbRepository.GetList<Transaction>(p => p.UserId == nidUser && p.TransactionGroupId == transactionGroupId);
+                result.Transactions = _dbRepository.GetList<Transaction>(p => p.UserId == nidUser && p.TransactionGroupId == transactionGroupId && p.CreateDate >= start.Item1 && p.CreateDate <= start.Item2);
                 result.Groups = _dbRepository.GetList<TransactionGroup>();
             }
             catch (Exception)
@@ -1744,18 +1757,20 @@ namespace Todolist.Services
             return result;
         }
 
-        public decimal GetGroupTotalIncome(Guid NidGroup)
+        public decimal GetGroupTotalIncome(Guid NidGroup, int year = 1404)
         {
-            var start = Dates.GetStartOfYear();
-            return _dbRepository.GetList<Transaction>(p => p.TransactionGroupId == NidGroup && p.CreateDate >= start)
+            _CurrentYear = year;
+            var start = Dates.GetStartAndEndOfYear(_CurrentYear);
+            return _dbRepository.GetList<Transaction>(p => p.TransactionGroupId == NidGroup && p.CreateDate >= start.Item1 && p.CreateDate <= start.Item2)
                 .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true && w.IsActive == true).Select(r => r.NidAccount).Contains(q.PayerAccount))
                 .Sum(u => u.Amount);
         }
 
-        public decimal GetGroupTotalSpence(Guid NidGroup)
+        public decimal GetGroupTotalSpence(Guid NidGroup, int year = 1404)
         {
-            var start = Dates.GetStartOfYear();
-            return _dbRepository.GetList<Transaction>(p => p.TransactionGroupId == NidGroup && p.CreateDate >= start)
+            _CurrentYear = year;
+            var start = Dates.GetStartAndEndOfYear(_CurrentYear);
+            return _dbRepository.GetList<Transaction>(p => p.TransactionGroupId == NidGroup && p.CreateDate >= start.Item1 && p.CreateDate <= start.Item2)
             .Where(q => _dbRepository.GetList<Account>(w => w.IsBackup == true && w.IsActive == true).Select(r => r.NidAccount).Contains(q.RecieverAccount))
             .Sum(u => u.Amount);
         }

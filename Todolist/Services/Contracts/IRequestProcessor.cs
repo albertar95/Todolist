@@ -82,13 +82,13 @@ namespace Todolist.Services.Contracts
         TransactionGroup GetTransactionGroup(Guid nidTransactionGroup);
         bool DeleteTransactionGroup(Guid nidTransactionGroup);
         EditTransactionViewModel GetEditTransaction(Guid nidTransaction, Guid nidUser);
-        FinancialReportViewModel GetFinancialReport(Guid nidUser);
-        Tuple<string, string, decimal> MonthlySpenceBarCalc(int month);
-        Tuple<string, string, decimal> MonthlyIncomeBarCalc(int month);
-        Tuple<string, string, decimal> GroupSpenceBarCalc(Guid NidGroup);
-        Tuple<string, string, decimal> GroupIncomeBarCalc(Guid NidGroup);
-        decimal GetMonthIncomeAmounts(int month);
-        decimal GetMonthSpenceAmounts(int month);
+        FinancialReportViewModel GetFinancialReport(Guid nidUser,int Year = 1404);
+        Tuple<string, string, decimal> MonthlySpenceBarCalc(int month, int year = 1404);
+        Tuple<string, string, decimal> MonthlyIncomeBarCalc(int month, int year = 1404);
+        Tuple<string, string, decimal> GroupSpenceBarCalc(Guid NidGroup, int year = 1404);
+        Tuple<string, string, decimal> GroupIncomeBarCalc(Guid NidGroup, int year = 1404);
+        decimal GetMonthIncomeAmounts(int month, int year = 1404);
+        decimal GetMonthSpenceAmounts(int month, int year = 1404);
         TradeDashboardViewModel GetTradeDashboard(Symbol symbol, Timeframe timeframe);
         NewTradeDashboardViewModel GetTradeDashboard_New(Symbol symbol, Timeframe timeframe, int month);
         MarketDataCredetialViewModel GetMarketDataCredentials(Symbol symbol, Timeframe timeframe);
@@ -96,10 +96,10 @@ namespace Todolist.Services.Contracts
         bool DeleteMarketDataCredential(Guid nidCredential);
         SignalResultsViewModel GetSignalResults(Symbol symbol, Timeframe timeframe, int currentMonth, SignalProviders providers = SignalProviders.RsiStrategy);
         bool DbMaintanence();
-        FinanceViewModel GetTransactionByGroupId(Guid nidUser, Guid transactionGroupId);
-        Tuple<string, string, decimal> GroupMonthlySpenceBarCalc(int month);
-        Tuple<string, string, decimal> GroupMonthlyIncomeBarCalc(int month);
-        decimal GetGroupTotalIncome(Guid NidGroup);
-        decimal GetGroupTotalSpence(Guid NidGroup);
+        FinanceViewModel GetTransactionByGroupId(Guid nidUser, Guid transactionGroupId, int year = 1404);
+        Tuple<string, string, decimal> GroupMonthlySpenceBarCalc(int month, int year = 1404);
+        Tuple<string, string, decimal> GroupMonthlyIncomeBarCalc(int month, int year = 1404);
+        decimal GetGroupTotalIncome(Guid NidGroup, int year = 1404);
+        decimal GetGroupTotalSpence(Guid NidGroup, int year = 1404);
     }
 }

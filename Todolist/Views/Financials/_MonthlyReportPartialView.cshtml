@@ -56,7 +56,7 @@
                         url:'@Url.Action("MonthlySpenceAndIncomeReport", "Financials")',
                         type:'post',
                         datatype:'json',
-                        data: { month: $("#sltCurrentMonth").find(':selected').val() },
+                        data: { month: $("#sltCurrentMonth").find(':selected').val(), year : @Model.CurrentYear },
                         success:function(result)
                         {
                             if (result.HasValue)

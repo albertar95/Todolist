@@ -8,6 +8,7 @@ namespace Todolist.ViewModels
 {
     public class FinancialReportViewModel
     {
+        public int CurrentYear { get; set; }
         public int CurrentMonth { get; set; }
         public Tuple<string, string,decimal> MonthlySpenceBarChart { get; set; }
         public Tuple<string, string, decimal> GroupMonthlySpenceBarChart { get; set; }

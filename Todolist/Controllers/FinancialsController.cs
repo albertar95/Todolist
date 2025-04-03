@@ -173,12 +173,12 @@ namespace Todolist.Controllers
         }
 
         //financial report
-        public ActionResult FinancialReport()
+        public ActionResult FinancialReport(int year = 1404)
         {
-            return View(_requestProcessor.GetFinancialReport(UserId));
+            return View(_requestProcessor.GetFinancialReport(UserId,year));
         }
         [HttpPost]
-        public ActionResult MonthlySpenceAndIncomeReport(int month)
+        public ActionResult MonthlySpenceAndIncomeReport(int month,int year = 1404)
         {
             return Json(new JsonResults()
             {
@@ -187,25 +187,26 @@ namespace Todolist.Controllers
                 new FinancialReportViewModel()
                 {
                     CurrentMonth = month,
-                    MonthlySpenceBarChart = _requestProcessor.MonthlySpenceBarCalc(month),
-                    MonthlyIncomeBarChart = _requestProcessor.MonthlyIncomeBarCalc(month),
-                    TotalCurrentMonthIncome = _requestProcessor.GetMonthIncomeAmounts(month),
-                    TotalCurrentMonthSpence = _requestProcessor.GetMonthSpenceAmounts(month),
-                    GroupMonthlySpenceBarChart = _requestProcessor.GroupMonthlySpenceBarCalc(month),
-                    GroupMonthlyIncomeBarChart = _requestProcessor.GroupMonthlyIncomeBarCalc(month)
+                    CurrentYear = year,
+                    MonthlySpenceBarChart = _requestProcessor.MonthlySpenceBarCalc(month,year),
+                    MonthlyIncomeBarChart = _requestProcessor.MonthlyIncomeBarCalc(month, year),
+                    TotalCurrentMonthIncome = _requestProcessor.GetMonthIncomeAmounts(month, year),
+                    TotalCurrentMonthSpence = _requestProcessor.GetMonthSpenceAmounts(month, year),
+                    GroupMonthlySpenceBarChart = _requestProcessor.GroupMonthlySpenceBarCalc(month, year),
+                    GroupMonthlyIncomeBarChart = _requestProcessor.GroupMonthlyIncomeBarCalc(month, year)
         })
             });
         }
-        public ActionResult GroupTransations(Guid transactionGroupId)
+        public ActionResult GroupTransations(Guid transactionGroupId, int year = 1404)
         {
             return Json(new JsonResults()
             {
                 HasValue = true,
                 Html = Helpers.ViewHelper.RenderViewToString(this, "_GroupTransactionList",
-                _requestProcessor.GetTransactionByGroupId(UserId,transactionGroupId))
+                _requestProcessor.GetTransactionByGroupId(UserId,transactionGroupId,year))
             });
         }
-        public ActionResult GroupDetailReport(Guid NidGroup)
+        public ActionResult GroupDetailReport(Guid NidGroup, int year = 1404)
         {
             return Json(new JsonResults()
             {
@@ -213,10 +214,10 @@ namespace Todolist.Controllers
                 Html = Helpers.ViewHelper.RenderViewToString(this, "_GroupDetailReportPartialView",
                 new FinancialReportViewModel()
                 {
-                    GroupSpenceBarChart = _requestProcessor.GroupSpenceBarCalc(NidGroup),
-                    GroupIncomeBarChart = _requestProcessor.GroupIncomeBarCalc(NidGroup),
-                    TotalGroupIncome = _requestProcessor.GetGroupTotalIncome(NidGroup),
-                    TotalGroupSpence = _requestProcessor.GetGroupTotalSpence(NidGroup)
+                    GroupSpenceBarChart = _requestProcessor.GroupSpenceBarCalc(NidGroup, year),
+                    GroupIncomeBarChart = _requestProcessor.GroupIncomeBarCalc(NidGroup, year),
+                    TotalGroupIncome = _requestProcessor.GetGroupTotalIncome(NidGroup, year),
+                    TotalGroupSpence = _requestProcessor.GetGroupTotalSpence(NidGroup, year)
                 })
             });
         }

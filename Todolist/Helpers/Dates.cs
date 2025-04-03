@@ -31,10 +31,10 @@ namespace Todolist.Helpers
             PersianCalendar pc = new PersianCalendar();
             return pc.GetMonth(DateTime.Now);
         }
-        public static Tuple<DateTime, DateTime> GetStartAndEndOfMonth(int month)
+        public static Tuple<DateTime, DateTime> GetStartAndEndOfMonth(int month,int year = 1404)
         {
             PersianCalendar pc = new PersianCalendar();
-            var currentYear = pc.GetYear(DateTime.Now);
+            var currentYear = year;
             var StartOfMonth = pc.ToDateTime(currentYear, month, 1, 0, 0, 0, 0);
             var EndOfMonthDay = 30;
             if (month == 12 && !pc.IsLeapYear(currentYear))
@@ -44,18 +44,18 @@ namespace Todolist.Helpers
             var EndOfMonth = pc.ToDateTime(currentYear, month, EndOfMonthDay, 23, 59, 59, 999);
             return new Tuple<DateTime, DateTime>(StartOfMonth,EndOfMonth);
         }
-        public static DateTime GetStartOfYear()
+        public static Tuple<DateTime,DateTime> GetStartAndEndOfYear(int year = 1404)
         {
             PersianCalendar pc = new PersianCalendar();
-            return pc.ToDateTime(pc.GetYear(DateTime.Now), 1, 1, 0, 0, 0, 0);
+            return new Tuple<DateTime, DateTime>(pc.ToDateTime(year, 1, 1, 0, 0, 0, 0), pc.ToDateTime(year, 12, 29, 23, 59, 59, 999));
         }
-        public static List<Tuple<DateTime,DateTime>> GetMonthsOfYear()
+        public static List<Tuple<DateTime,DateTime>> GetMonthsOfYear(int year = 1404)
         {
             var result = new List<Tuple<DateTime, DateTime>>();
-            var currentMonth = CurrentMonth();
+            int currentMonth = year == 1404 ? CurrentMonth() : 12;
             for (int i = 1; i <= currentMonth; i++)
             {
-                result.Add(GetStartAndEndOfMonth(i));
+                result.Add(GetStartAndEndOfMonth(i,year));
             }
             return result;
         }
